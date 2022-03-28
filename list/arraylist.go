@@ -2,7 +2,8 @@ package list
 
 import (
 	"fmt"
-	. "stl/types"
+
+	. "github.com/kkkunny/stl/types"
 )
 
 // 动态数组
@@ -66,6 +67,16 @@ func (self *ArrayList[T]) Remove(i Usize) T {
 // 获取元素
 func (self *ArrayList[T]) Get(i Usize) T {
 	return self.data[i]
+}
+
+// 获取第一个节点
+func (self *ArrayList[T]) First() T {
+	return self.data[0]
+}
+
+// 获取最后一个节点
+func (self *ArrayList[T]) Last() T {
+	return self.data[len(self.data)-1]
 }
 
 // 设置元素

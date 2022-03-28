@@ -2,7 +2,7 @@ package types
 
 // 哈希
 type Hasher interface {
-	Hash() Usize
+	Hash() int32
 }
 
 // 比较

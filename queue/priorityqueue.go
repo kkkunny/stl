@@ -2,11 +2,12 @@ package queue
 
 import (
 	"fmt"
-	"stl/heap"
-	"stl/list"
-	"stl/table"
-	. "stl/types"
 	"strings"
+
+	"github.com/kkkunny/stl/heap"
+	"github.com/kkkunny/stl/list"
+	"github.com/kkkunny/stl/table"
+	. "github.com/kkkunny/stl/types"
 )
 
 type priorityQueueNode[P Comparator[P], V any] table.Entry[P, V]

@@ -2,9 +2,9 @@ package table
 
 import (
 	"fmt"
+	"github.com/kkkunny/stl/list"
+	. "github.com/kkkunny/stl/types"
 	"math/rand"
-	"stl/list"
-	. "stl/types"
 	"strings"
 	"time"
 )

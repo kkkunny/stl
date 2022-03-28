@@ -1,6 +1,6 @@
 package tree
 
-import . "stl/types"
+import . "github.com/kkkunny/stl/types"
 
 // 定义颜色
 const (

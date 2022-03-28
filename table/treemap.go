@@ -2,9 +2,9 @@ package table
 
 import (
 	"fmt"
-	"stl/list"
-	"stl/tree"
-	. "stl/types"
+	"github.com/kkkunny/stl/list"
+	"github.com/kkkunny/stl/tree"
+	. "github.com/kkkunny/stl/types"
 	"strings"
 )
 

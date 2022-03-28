@@ -1,7 +1,7 @@
 package tree
 
 import (
-	. "stl/types"
+	. "github.com/kkkunny/stl/types"
 )
 
 // 二叉查找树节点

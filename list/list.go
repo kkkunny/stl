@@ -2,7 +2,8 @@ package list
 
 import (
 	"fmt"
-	. "stl/types"
+
+	. "github.com/kkkunny/stl/types"
 )
 
 // 列表
@@ -14,6 +15,8 @@ type List[T any] interface {
 	Insert(i int, e ...T)
 	Remove(i int) T
 	Get(i int) T
+	First() T
+	Last() T
 	Set(i int, e T) T
 	Clear()
 }

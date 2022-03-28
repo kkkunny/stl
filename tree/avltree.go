@@ -1,6 +1,6 @@
 package tree
 
-import . "stl/types"
+import . "github.com/kkkunny/stl/types"
 
 // AVL节点
 type AVLTreeNode[T Comparator[T]] struct {

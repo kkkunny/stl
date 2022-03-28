@@ -2,8 +2,9 @@ package heap
 
 import (
 	"fmt"
-	"stl/list"
-	. "stl/types"
+
+	"github.com/kkkunny/stl/list"
+	. "github.com/kkkunny/stl/types"
 )
 
 // 堆

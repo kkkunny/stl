@@ -2,8 +2,9 @@ package list
 
 import (
 	"fmt"
-	. "stl/types"
 	"strings"
+
+	. "github.com/kkkunny/stl/types"
 )
 
 // 节点
@@ -192,6 +193,18 @@ func (self *LinkedList[T]) Get(i Usize) T {
 		index++
 	}
 	return cursor.elem
+}
+
+// 获取第一个节点
+func (self *LinkedList[T]) First() T {
+	self.checkOut(0)
+	return self.head.elem
+}
+
+// 获取最后一个节点
+func (self *LinkedList[T]) Last() T {
+	self.checkOut(0)
+	return self.tail.elem
 }
 
 // 设置元素

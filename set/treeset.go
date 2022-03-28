@@ -2,8 +2,8 @@ package set
 
 import (
 	"fmt"
-	"stl/table"
-	. "stl/types"
+	"github.com/kkkunny/stl/table"
+	. "github.com/kkkunny/stl/types"
 	"strings"
 )
 
