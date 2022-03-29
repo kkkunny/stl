@@ -2,19 +2,20 @@ package set
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/kkkunny/stl/table"
 	. "github.com/kkkunny/stl/types"
-	"strings"
 )
 
 // 有序集合
 type TreeSet[T Comparator[T]] struct {
-	data *table.TreeMap[T, any]
+	data *table.TreeMap[T, struct{}]
 }
 
 // 新建有序集合
 func NewTreeSet[T Comparator[T]](e ...T) *TreeSet[T] {
-	set := &TreeSet[T]{data: table.NewTreeMap[T, any]()}
+	set := &TreeSet[T]{data: table.NewTreeMap[T, struct{}]()}
 	for _, i := range e {
 		set.Add(i)
 	}
@@ -94,7 +95,7 @@ func (self *TreeSet[T]) End() *TreeSetIterator[T] {
 
 // 迭代器
 type TreeSetIterator[T Comparator[T]] struct {
-	data *table.TreeMapIterator[T, any]
+	data *table.TreeMapIterator[T, struct{}]
 }
 
 // 是否存在值

@@ -9,12 +9,12 @@ import (
 
 // 哈希集合
 type HashSet[T Hasher] struct {
-	data *table.HashMap[T, any]
+	data *table.HashMap[T, struct{}]
 }
 
 // 新建哈希集合
 func NewHashSet[T Hasher](e ...T) *HashSet[T] {
-	set := &HashSet[T]{data: table.NewHashMap[T, any]()}
+	set := &HashSet[T]{data: table.NewHashMap[T, struct{}]()}
 	for _, i := range e {
 		set.Add(i)
 	}
@@ -89,7 +89,7 @@ func (self *HashSet[T]) Iterator() *HashSetIterator[T] {
 
 // 迭代器
 type HashSetIterator[T Hasher] struct {
-	data *table.HashMapIterator[T, any]
+	data *table.HashMapIterator[T, struct{}]
 }
 
 // 是否存在下一个

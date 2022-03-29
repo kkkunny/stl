@@ -9,12 +9,12 @@ import (
 
 // 有序哈希集合
 type LinkedHashSet[T Hasher] struct {
-	data *table.LinkedHashMap[T, any]
+	data *table.LinkedHashMap[T, struct{}]
 }
 
 // 新建有序哈希集合
 func NewLinkedHashSet[T Hasher](e ...T) *LinkedHashSet[T] {
-	set := &LinkedHashSet[T]{data: table.NewLinkedHashMap[T, any]()}
+	set := &LinkedHashSet[T]{data: table.NewLinkedHashMap[T, struct{}]()}
 	for _, i := range e {
 		set.Add(i)
 	}
@@ -94,7 +94,7 @@ func (self *LinkedHashSet[T]) End() *LinkedHashSetIterator[T] {
 
 // 迭代器
 type LinkedHashSetIterator[T Hasher] struct {
-	data *table.LinkedHashMapIterator[T, any]
+	data *table.LinkedHashMapIterator[T, struct{}]
 }
 
 // 是否存在值
