@@ -2,9 +2,10 @@ package set
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/kkkunny/stl/table"
 	. "github.com/kkkunny/stl/types"
-	"strings"
 )
 
 // 哈希集合
@@ -28,8 +29,7 @@ func (self *HashSet[T]) String() string {
 	length := self.data.Length()
 	var index Usize
 	for iter := self.data.Iterator(); iter.HasValue(); iter.Next() {
-		k, _ := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v", k))
+		buf.WriteString(fmt.Sprintf("%v", iter.Key()))
 		if index < length-1 {
 			buf.WriteString(", ")
 		}
@@ -82,6 +82,18 @@ func (self *HashSet[T]) Clone() *HashSet[T] {
 	return &HashSet[T]{data: self.data.Clone()}
 }
 
+// 过滤
+func (self *HashSet[T]) Filter(f func(v T) bool) *HashSet[T] {
+	hs := NewHashSet[T]()
+	for iter := self.Iterator(); iter.HasNext(); iter.Next() {
+		v := iter.Value()
+		if f(v) {
+			hs.Add(v)
+		}
+	}
+	return hs
+}
+
 // 获取迭代器
 func (self *HashSet[T]) Iterator() *HashSetIterator[T] {
 	return &HashSetIterator[T]{data: self.data.Iterator()}
@@ -104,6 +116,5 @@ func (self *HashSetIterator[T]) Next() {
 
 // 获取值
 func (self *HashSetIterator[T]) Value() T {
-	k, _ := self.data.Value()
-	return k
+	return self.data.Key()
 }

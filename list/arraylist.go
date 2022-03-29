@@ -52,9 +52,7 @@ func (self *ArrayList[T]) Add(e ...T) {
 
 // 插入元素
 func (self *ArrayList[T]) Insert(i Usize, e ...T) {
-	temp := self.data[i:]
-	self.data = append(self.data[:i], e...)
-	self.data = append(self.data, temp...)
+	self.data = append(self.data[:i], append(e, self.data[i:]...)...)
 }
 
 // 移除元素
@@ -100,6 +98,17 @@ func (self *ArrayList[T]) Clone() *ArrayList[T] {
 	}
 }
 
+// 过滤
+func (self *ArrayList[T]) Filter(f func(i Usize, v T) bool) *ArrayList[T] {
+	al := NewArrayList[T](0, 0)
+	for i, v := range self.data {
+		if f(Usize(i), v) {
+			al.Add(v)
+		}
+	}
+	return al
+}
+
 // 获取起始迭代器
 func (self *ArrayList[T]) Begin() *ArrayListIterator[T] {
 	return &ArrayListIterator[T]{data: self}
@@ -132,6 +141,11 @@ func (self *ArrayListIterator[T]) Prev() {
 // 下一个
 func (self *ArrayListIterator[T]) Next() {
 	self.index++
+}
+
+// 获取索引
+func (self *ArrayListIterator[T]) Index() Usize {
+	return self.index
 }
 
 // 获取值

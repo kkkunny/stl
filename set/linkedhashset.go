@@ -2,9 +2,10 @@ package set
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/kkkunny/stl/table"
 	. "github.com/kkkunny/stl/types"
-	"strings"
 )
 
 // 有序哈希集合
@@ -28,8 +29,7 @@ func (self *LinkedHashSet[T]) String() string {
 	length := self.data.Length()
 	var index Usize
 	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
-		k, _ := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v", k))
+		buf.WriteString(fmt.Sprintf("%v", iter.Key()))
 		if index < length-1 {
 			buf.WriteString(", ")
 		}
@@ -82,6 +82,20 @@ func (self *LinkedHashSet[T]) Clone() *LinkedHashSet[T] {
 	return &LinkedHashSet[T]{data: self.data.Clone()}
 }
 
+// 过滤
+func (self *LinkedHashSet[T]) Filter(f func(i Usize, v T) bool) *LinkedHashSet[T] {
+	lhs := NewLinkedHashSet[T]()
+	var index Usize
+	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
+		v := iter.Key()
+		if f(index, v) {
+			lhs.Add(v)
+		}
+		index++
+	}
+	return lhs
+}
+
 // 获取起始迭代器
 func (self *LinkedHashSet[T]) Begin() *LinkedHashSetIterator[T] {
 	return &LinkedHashSetIterator[T]{data: self.data.Begin()}
@@ -112,8 +126,12 @@ func (self *LinkedHashSetIterator[T]) Next() {
 	self.data.Next()
 }
 
+// 获取下标
+func (self *LinkedHashSetIterator[T]) Index() Usize {
+	return self.data.Index()
+}
+
 // 获取值
 func (self *LinkedHashSetIterator[T]) Value() T {
-	k, _ := self.data.Value()
-	return k
+	return self.data.Key()
 }

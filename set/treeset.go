@@ -29,8 +29,7 @@ func (self *TreeSet[T]) String() string {
 	length := self.data.Length()
 	var index Usize
 	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
-		k, _ := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v", k))
+		buf.WriteString(fmt.Sprintf("%v", iter.Key()))
 		if index < length-1 {
 			buf.WriteString(", ")
 		}
@@ -83,6 +82,18 @@ func (self *TreeSet[T]) Clone() *TreeSet[T] {
 	return &TreeSet[T]{data: self.data.Clone()}
 }
 
+// 过滤
+func (self *TreeSet[T]) Filter(f func(v T) bool) *TreeSet[T] {
+	ts := NewTreeSet[T]()
+	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
+		v := iter.Key()
+		if f(v) {
+			ts.Add(v)
+		}
+	}
+	return ts
+}
+
 // 获取起始迭代器
 func (self *TreeSet[T]) Begin() *TreeSetIterator[T] {
 	return &TreeSetIterator[T]{data: self.data.Begin()}
@@ -115,6 +126,5 @@ func (self *TreeSetIterator[T]) Next() {
 
 // 获取值
 func (self *TreeSetIterator[T]) Value() T {
-	k, _ := self.data.Value()
-	return k
+	return self.data.Key()
 }

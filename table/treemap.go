@@ -2,10 +2,11 @@ package table
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/kkkunny/stl/list"
 	"github.com/kkkunny/stl/tree"
 	. "github.com/kkkunny/stl/types"
-	"strings"
 )
 
 type treeMapNode[K Comparator[K], V any] Entry[K, V]
@@ -31,8 +32,7 @@ func (self *TreeMap[K, V]) String() string {
 	var i Usize
 	buf.WriteByte('{')
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {
-		k, v := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v: %v", k, v))
+		buf.WriteString(fmt.Sprintf("%v: %v", iter.Key(), iter.Value()))
 		if i < self.length-1 {
 			buf.WriteString(", ")
 		}
@@ -97,8 +97,7 @@ func (self *TreeMap[K, V]) Keys() *list.ArrayList[K] {
 	keys := list.NewArrayList[K](self.Length(), self.Length())
 	var index Usize
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {
-		k, _ := iter.Value()
-		keys.Set(index, k)
+		keys.Set(index, iter.Key())
 		index++
 	}
 	return keys
@@ -109,8 +108,7 @@ func (self *TreeMap[K, V]) Values() *list.ArrayList[V] {
 	values := list.NewArrayList[V](self.Length(), self.Length())
 	var index Usize
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {
-		_, v := iter.Value()
-		values.Set(index, v)
+		values.Set(index, iter.Value())
 		index++
 	}
 	return values
@@ -126,10 +124,21 @@ func (self *TreeMap[K, V]) Clear() {
 func (self *TreeMap[K, V]) Clone() *TreeMap[K, V] {
 	newTree := NewTreeMap[K, V]()
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {
-		k, v := iter.Value()
-		newTree.Set(k, v)
+		newTree.Set(iter.Key(), iter.Value())
 	}
 	return newTree
+}
+
+// 过滤
+func (self *TreeMap[K, V]) Filter(f func(k K, v V) bool) *TreeMap[K, V] {
+	tm := NewTreeMap[K, V]()
+	for iter := self.Begin(); iter.HasValue(); iter.Next() {
+		key, value := iter.Key(), iter.Value()
+		if f(key, value) {
+			tm.Set(key, value)
+		}
+	}
+	return tm
 }
 
 // 获取起始迭代器
@@ -186,8 +195,14 @@ func (self *TreeMapIterator[K, V]) Next() {
 	self.iter.Next()
 }
 
-// 获取值
-func (self *TreeMapIterator[K, V]) Value() (K, V) {
+// 获取键
+func (self *TreeMapIterator[K, V]) Key() K {
 	value := self.iter.Value()
-	return value.Key, value.Value
+	return value.Key
+}
+
+// 获取值
+func (self *TreeMapIterator[K, V]) Value() V {
+	value := self.iter.Value()
+	return value.Value
 }

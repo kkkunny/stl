@@ -35,8 +35,7 @@ func (self *HashMap[K, V]) String() string {
 	buf.WriteByte('{')
 	var index Usize
 	for iter := self.Iterator(); iter.HasValue(); iter.Next() {
-		k, v := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v: %v", k, v))
+		buf.WriteString(fmt.Sprintf("%v: %v", iter.Key(), iter.Value()))
 		if index < self.length-1 {
 			buf.WriteString(", ")
 		}
@@ -217,6 +216,19 @@ func (self *HashMap[K, V]) Clone() *HashMap[K, V] {
 	return cpy
 }
 
+// 过滤
+func (self *HashMap[K, V]) Filter(f func(k K, v V) bool) *HashMap[K, V] {
+	hm := NewHashMap[K, V]()
+	for _, head := range self.buckets {
+		for ; head != nil; head = head.next {
+			if f(head.Key, head.Value) {
+				hm.Set(head.Key, head.Value)
+			}
+		}
+	}
+	return hm
+}
+
 // 获取迭代器
 func (self *HashMap[K, V]) Iterator() *HashMapIterator[K, V] {
 	data := make([]*hashMapEntry[K, V], self.length)
@@ -248,10 +260,14 @@ func (self *HashMapIterator[K, V]) Next() {
 	self.index++
 }
 
+// 获取键
+func (self *HashMapIterator[K, V]) Key() K {
+	return self.data[self.index].Key
+}
+
 // 获取值
-func (self *HashMapIterator[K, V]) Value() (K, V) {
-	node := self.data[self.index]
-	return node.Key, node.Value
+func (self *HashMapIterator[K, V]) Value() V {
+	return self.data[self.index].Value
 }
 
 func (self *HashMapIterator[K, V]) shuffle() {

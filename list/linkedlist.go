@@ -232,6 +232,19 @@ func (self *LinkedList[T]) Clone() *LinkedList[T] {
 	return newList
 }
 
+// 过滤
+func (self *LinkedList[T]) Filter(f func(i Usize, v T) bool) *LinkedList[T] {
+	ll := NewLinkedList[T]()
+	var index Usize
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		if f(index, cursor.elem) {
+			ll.Add(cursor.elem)
+		}
+		index++
+	}
+	return ll
+}
+
 // 获取起始迭代器
 func (self *LinkedList[T]) Begin() *LinkedListIterator[T] {
 	return &LinkedListIterator[T]{
@@ -252,6 +265,7 @@ func (self *LinkedList[T]) End() *LinkedListIterator[T] {
 type LinkedListIterator[T any] struct {
 	data   *LinkedList[T] // 列表
 	cursor *node[T]       // 目前节点
+	index  Usize          // 索引
 }
 
 // 是否存在值
@@ -267,6 +281,12 @@ func (self *LinkedListIterator[T]) Prev() {
 // 下一个
 func (self *LinkedListIterator[T]) Next() {
 	self.cursor = self.cursor.next
+	self.index++
+}
+
+// 获取索引
+func (self *LinkedListIterator[T]) Index() Usize {
+	return self.index
 }
 
 // 获取值

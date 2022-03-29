@@ -2,9 +2,10 @@ package table
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/kkkunny/stl/list"
 	. "github.com/kkkunny/stl/types"
-	"strings"
 )
 
 // 节点
@@ -40,8 +41,7 @@ func (self *LinkedHashMap[K, V]) String() string {
 	buf.WriteByte('{')
 	var index Usize
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {
-		k, v := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v: %v", k, v))
+		buf.WriteString(fmt.Sprintf("%v: %v", iter.Key(), iter.Value()))
 		if index < self.data.length-1 {
 			buf.WriteString(", ")
 		}
@@ -192,6 +192,21 @@ func (self *LinkedHashMap[K, V]) Clone() *LinkedHashMap[K, V] {
 	return newlhm
 }
 
+// 过滤
+func (self *LinkedHashMap[K, V]) Filter(f func(i Usize, k K, v V) bool) *LinkedHashMap[K, V] {
+	lhm := NewLinkedHashMap[K, V]()
+	var index Usize
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		key := cursor.key
+		value := self.data.Get(cursor.key, nil).value
+		if f(index, key, value) {
+			lhm.Set(key, value)
+		}
+		index++
+	}
+	return lhm
+}
+
 // 获取起始迭代器
 func (self *LinkedHashMap[K, V]) Begin() *LinkedHashMapIterator[K, V] {
 	return &LinkedHashMapIterator[K, V]{
@@ -212,6 +227,7 @@ func (self *LinkedHashMap[K, V]) End() *LinkedHashMapIterator[K, V] {
 type LinkedHashMapIterator[K Hasher, V any] struct {
 	data   *LinkedHashMap[K, V]
 	cursor *linkedHashMapNode[K, V] // 目前节点
+	index  Usize                    // 下标
 }
 
 // 是否存在下一个
@@ -227,9 +243,20 @@ func (self *LinkedHashMapIterator[K, V]) Prev() {
 // 下一个
 func (self *LinkedHashMapIterator[K, V]) Next() {
 	self.cursor = self.cursor.next
+	self.index++
+}
+
+// 获取下标
+func (self *LinkedHashMapIterator[K, V]) Index() Usize {
+	return self.index
+}
+
+// 获取键
+func (self *LinkedHashMapIterator[K, V]) Key() K {
+	return self.cursor.key
 }
 
 // 获取值
-func (self *LinkedHashMapIterator[K, V]) Value() (K, V) {
-	return self.cursor.key, self.data.data.Get(self.cursor.key, nil).value
+func (self *LinkedHashMapIterator[K, V]) Value() V {
+	return self.data.data.Get(self.cursor.key, nil).value
 }
