@@ -2,11 +2,12 @@ package table
 
 import (
 	"fmt"
-	"github.com/kkkunny/stl/list"
-	. "github.com/kkkunny/stl/types"
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/kkkunny/stl/list"
+	. "github.com/kkkunny/stl/types"
 )
 
 type hashMapEntry[K Hasher, V any] struct {
@@ -56,7 +57,7 @@ func (self *HashMap[K, V]) Empty() bool {
 }
 
 // 哈希
-func (self *HashMap[K, V]) getHash(k K) Usize {
+func (self *HashMap[K, V]) getHash(k K) int32 {
 	hash := k.Hash()
 	hash ^= (hash >> 20) ^ (hash >> 12)
 	return hash ^ (hash >> 7) ^ (hash >> 4)
@@ -65,7 +66,7 @@ func (self *HashMap[K, V]) getHash(k K) Usize {
 // 获取哈希所在索引
 func (self *HashMap[K, V]) getIndexFromHash(k K) Usize {
 	hash := self.getHash(k)
-	return hash % Usize(cap(self.buckets))
+	return Usize(int(hash) % cap(self.buckets))
 }
 
 // 检查扩容

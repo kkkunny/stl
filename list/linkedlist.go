@@ -36,6 +36,28 @@ func (self *LinkedList[T]) checkOut(i Usize) {
 	}
 }
 
+// 根据索引获取节点
+func (self *LinkedList[T]) getNodeByIndex(i Usize) *node[T] {
+	self.checkOut(i)
+	if i <= self.length/2 {
+		for cursor := self.head; cursor != nil; cursor = cursor.next {
+			if i == 0 {
+				return cursor
+			}
+			i--
+		}
+	} else {
+		i = self.length - i - 1
+		for cursor := self.tail; cursor != nil; cursor = cursor.prev {
+			if i == 0 {
+				return cursor
+			}
+			i--
+		}
+	}
+	return nil
+}
+
 // 转成字符串
 func (self *LinkedList[T]) String() string {
 	var buf strings.Builder
@@ -105,14 +127,7 @@ func (self *LinkedList[T]) PushBack(e ...T) {
 
 // 插入元素
 func (self *LinkedList[T]) Insert(i Usize, e ...T) {
-	self.checkOut(i)
-	cursor := self.head
-	for index := Usize(0); cursor != nil; cursor = cursor.next {
-		if index == i {
-			break
-		}
-		index++
-	}
+	cursor := self.getNodeByIndex(i)
 	if cursor.prev == nil { // 插入头部
 		self.PushFront(e...)
 	} else {
@@ -129,14 +144,7 @@ func (self *LinkedList[T]) Insert(i Usize, e ...T) {
 
 // 移除元素
 func (self *LinkedList[T]) Remove(i Usize) T {
-	self.checkOut(i)
-	cursor := self.head
-	for index := Usize(0); cursor != nil; cursor = cursor.next {
-		if index == i {
-			break
-		}
-		index++
-	}
+	cursor := self.getNodeByIndex(i)
 	if cursor.prev == nil && cursor.next == nil {
 		self.head, self.tail = nil, nil
 	} else if cursor.prev == nil { // 头部
@@ -184,14 +192,7 @@ func (self *LinkedList[T]) PopBack() T {
 
 // 获取元素
 func (self *LinkedList[T]) Get(i Usize) T {
-	self.checkOut(i)
-	cursor := self.head
-	for index := Usize(0); cursor != nil; cursor = cursor.next {
-		if index == i {
-			break
-		}
-		index++
-	}
+	cursor := self.getNodeByIndex(i)
 	return cursor.elem
 }
 
@@ -209,14 +210,7 @@ func (self *LinkedList[T]) Last() T {
 
 // 设置元素
 func (self *LinkedList[T]) Set(i Usize, e T) T {
-	self.checkOut(i)
-	cursor := self.head
-	for index := Usize(0); cursor != nil; cursor = cursor.next {
-		if index == i {
-			break
-		}
-		index++
-	}
+	cursor := self.getNodeByIndex(i)
 	elem := cursor.elem
 	cursor.elem = e
 	return elem
