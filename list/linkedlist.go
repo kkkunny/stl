@@ -245,6 +245,17 @@ func (self *LinkedList[T]) Filter(f func(i Usize, v T) bool) *LinkedList[T] {
 	return ll
 }
 
+// 切分[b, e) O(N)
+func (self *LinkedList[T]) Slice(b, e Usize) *LinkedList[T] {
+	self.checkOut(b)
+	tmp := NewLinkedList[T]()
+	for cursor := self.getNodeByIndex(b); cursor != nil && b < e; cursor = cursor.next {
+		tmp.Add(cursor.elem)
+		b++
+	}
+	return tmp
+}
+
 // 获取起始迭代器
 func (self *LinkedList[T]) Begin() *LinkedListIterator[T] {
 	return &LinkedListIterator[T]{

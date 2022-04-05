@@ -25,6 +25,13 @@ func NewArrayListWithInitial[T any](e ...T) *ArrayList[T] {
 	}
 }
 
+// 根据切片新建动态数组
+func NewArrayListFromSlice[T any](slice []T) *ArrayList[T] {
+	return &ArrayList[T]{
+		data: slice,
+	}
+}
+
 // 转成字符串 O(N)
 func (self *ArrayList[T]) String() string {
 	return fmt.Sprintf("%v", self.data)
@@ -107,6 +114,20 @@ func (self *ArrayList[T]) Filter(f func(i Usize, v T) bool) *ArrayList[T] {
 		}
 	}
 	return al
+}
+
+// 切分[b, e) O(N)
+func (self *ArrayList[T]) Slice(b, e Usize) *ArrayList[T] {
+	tmp := NewArrayList[T](e-b, e-b)
+	for i := b; i < e; i++ {
+		copy(tmp.data, self.data[b:e])
+	}
+	return tmp
+}
+
+// 转成切片(不安全) O(1)
+func (self *ArrayList[T]) ToSlice() []T {
+	return self.data
 }
 
 // 获取起始迭代器

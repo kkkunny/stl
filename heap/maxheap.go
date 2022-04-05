@@ -53,7 +53,11 @@ func (self *MaxHeap[T]) Push(e ...T) {
 
 // 弹出堆顶元素 O(NlogN)-O(N²logN)
 func (self *MaxHeap[T]) Pop() T {
-	value := self.data.Get(0)
+	value := self.data.First()
+	if self.data.Length() == 1 {
+		self.data.Remove(0)
+		return value
+	}
 	lastIndex := self.data.Length() - 1
 	last := self.data.Get(lastIndex)
 	self.data.Set(0, last)

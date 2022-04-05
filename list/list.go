@@ -12,11 +12,11 @@ type List[T any] interface {
 	Length() Usize
 	Empty() bool
 	Add(e ...T)
-	Insert(i int, e ...T)
-	Remove(i int) T
-	Get(i int) T
+	Insert(i Usize, e ...T)
+	Remove(i Usize) T
+	Get(i Usize) T
 	First() T
 	Last() T
-	Set(i int, e T) T
+	Set(i Usize, e T) T
 	Clear()
 }
