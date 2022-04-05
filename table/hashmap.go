@@ -29,7 +29,7 @@ func NewHashMap[K Hasher, V any]() *HashMap[K, V] {
 	}
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *HashMap[K, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
@@ -45,12 +45,12 @@ func (self *HashMap[K, V]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *HashMap[K, V]) Length() Usize {
 	return self.length
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *HashMap[K, V]) Empty() bool {
 	return self.length == 0
 }
@@ -75,7 +75,7 @@ func (self *HashMap[K, V]) checkExpand() {
 	}
 }
 
-// 扩容
+// 扩容 O(N)
 func (self *HashMap[K, V]) expandSize() {
 	newSize := cap(self.buckets) * 2
 	oldBuckets := self.buckets
@@ -88,7 +88,7 @@ func (self *HashMap[K, V]) expandSize() {
 	}
 }
 
-// 设置键值对
+// 设置键值对 O(1)-O(N)
 func (self *HashMap[K, V]) Set(k K, v V) {
 	index := self.getIndexFromHash(k)
 	head := self.buckets[index]
@@ -119,7 +119,7 @@ func (self *HashMap[K, V]) Set(k K, v V) {
 	self.checkExpand()
 }
 
-// 获取值
+// 获取值 O(1)
 func (self *HashMap[K, V]) Get(k K, d V) V {
 	index := self.getIndexFromHash(k)
 	head := self.buckets[index]
@@ -133,7 +133,7 @@ func (self *HashMap[K, V]) Get(k K, d V) V {
 	return d
 }
 
-// 移除键值对
+// 移除键值对 O(1)
 func (self *HashMap[K, V]) Remove(k K, d V) V {
 	index := self.getIndexFromHash(k)
 	head := self.buckets[index]
@@ -159,7 +159,7 @@ func (self *HashMap[K, V]) Remove(k K, d V) V {
 	return d
 }
 
-// 是否存在键
+// 是否存在键 O(1)
 func (self *HashMap[K, V]) ContainKey(k K) bool {
 	index := self.getIndexFromHash(k)
 	head := self.buckets[index]
@@ -173,7 +173,7 @@ func (self *HashMap[K, V]) ContainKey(k K) bool {
 	return false
 }
 
-// 获取键
+// 获取键 O(N)
 func (self *HashMap[K, V]) Keys() *list.ArrayList[K] {
 	var index Usize
 	keys := list.NewArrayList[K](self.length, self.length)
@@ -186,7 +186,7 @@ func (self *HashMap[K, V]) Keys() *list.ArrayList[K] {
 	return keys
 }
 
-// 获取值
+// 获取值 O(N)
 func (self *HashMap[K, V]) Values() *list.ArrayList[V] {
 	var index Usize
 	values := list.NewArrayList[V](self.length, self.length)
@@ -199,13 +199,13 @@ func (self *HashMap[K, V]) Values() *list.ArrayList[V] {
 	return values
 }
 
-// 清空
+// 清空 O(1)
 func (self *HashMap[K, V]) Clear() {
 	self.length = 0
 	self.buckets = make([]*hashMapEntry[K, V], cap(self.buckets))
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *HashMap[K, V]) Clone() *HashMap[K, V] {
 	cpy := NewHashMap[K, V]()
 	for _, head := range self.buckets {
@@ -216,7 +216,7 @@ func (self *HashMap[K, V]) Clone() *HashMap[K, V] {
 	return cpy
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *HashMap[K, V]) Filter(f func(k K, v V) bool) *HashMap[K, V] {
 	hm := NewHashMap[K, V]()
 	for _, head := range self.buckets {

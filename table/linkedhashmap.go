@@ -35,7 +35,7 @@ func NewLinkedHashMap[K Hasher, V any]() *LinkedHashMap[K, V] {
 	}
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *LinkedHashMap[K, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
@@ -51,17 +51,17 @@ func (self *LinkedHashMap[K, V]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *LinkedHashMap[K, V]) Length() Usize {
 	return self.data.length
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *LinkedHashMap[K, V]) Empty() bool {
 	return self.data.length == 0
 }
 
-// 设置键值对
+// 设置键值对 O(1)-O(N)
 func (self *LinkedHashMap[K, V]) Set(k K, v V) {
 	if !self.ContainKey(k) {
 		value := &linkedHashMapEntry[K, V]{
@@ -82,7 +82,7 @@ func (self *LinkedHashMap[K, V]) Set(k K, v V) {
 	}
 }
 
-// 获取值
+// 获取值 O(1)
 func (self *LinkedHashMap[K, V]) Get(k K, d V) V {
 	value := self.data.Get(k, nil)
 	if value == nil {
@@ -100,7 +100,7 @@ func (self *LinkedHashMap[K, V]) checkOut(i Usize) {
 	}
 }
 
-// 根据下标获取值
+// 根据下标获取值 O(N)
 func (self *LinkedHashMap[K, V]) GetByIndex(i Usize) (K, V) {
 	self.checkOut(i)
 	cursor := self.head
@@ -128,7 +128,7 @@ func (self *LinkedHashMap[K, V]) removeNode(node *linkedHashMapNode[K, V]) {
 	node.prev, node.next = nil, nil
 }
 
-// 移除键值对
+// 移除键值对 O(1)
 func (self *LinkedHashMap[K, V]) Remove(k K, d V) V {
 	value := self.data.Remove(k, nil)
 	if value != nil {
@@ -138,7 +138,7 @@ func (self *LinkedHashMap[K, V]) Remove(k K, d V) V {
 	return d
 }
 
-// 根据下标移除键值对
+// 根据下标移除键值对 O(N)
 func (self *LinkedHashMap[K, V]) RemoveById(i Usize) (K, V) {
 	self.checkOut(i)
 	cursor := self.head
@@ -150,12 +150,12 @@ func (self *LinkedHashMap[K, V]) RemoveById(i Usize) (K, V) {
 	return key, self.data.Remove(key, nil).value
 }
 
-// 是否存在键
+// 是否存在键 O(1)
 func (self *LinkedHashMap[K, V]) ContainKey(k K) bool {
 	return self.data.ContainKey(k)
 }
 
-// 获取键
+// 获取键 O(N)
 func (self *LinkedHashMap[K, V]) Keys() *list.ArrayList[K] {
 	keys := list.NewArrayList[K](self.data.length, self.data.length)
 	var index Usize
@@ -166,7 +166,7 @@ func (self *LinkedHashMap[K, V]) Keys() *list.ArrayList[K] {
 	return keys
 }
 
-// 获取值
+// 获取值 O(N)
 func (self *LinkedHashMap[K, V]) Values() *list.ArrayList[V] {
 	values := list.NewArrayList[V](self.data.length, self.data.length)
 	var index Usize
@@ -177,13 +177,13 @@ func (self *LinkedHashMap[K, V]) Values() *list.ArrayList[V] {
 	return values
 }
 
-// 清空
+// 清空 O(1)
 func (self *LinkedHashMap[K, V]) Clear() {
 	self.head, self.tail = nil, nil
 	self.data.Clear()
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *LinkedHashMap[K, V]) Clone() *LinkedHashMap[K, V] {
 	newlhm := NewLinkedHashMap[K, V]()
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
@@ -192,7 +192,7 @@ func (self *LinkedHashMap[K, V]) Clone() *LinkedHashMap[K, V] {
 	return newlhm
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *LinkedHashMap[K, V]) Filter(f func(i Usize, k K, v V) bool) *LinkedHashMap[K, V] {
 	lhm := NewLinkedHashMap[K, V]()
 	var index Usize

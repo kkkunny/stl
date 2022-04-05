@@ -22,7 +22,7 @@ func NewLinkedHashSet[T Hasher](e ...T) *LinkedHashSet[T] {
 	return set
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *LinkedHashSet[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
@@ -39,17 +39,17 @@ func (self *LinkedHashSet[T]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *LinkedHashSet[T]) Length() Usize {
 	return self.data.Length()
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *LinkedHashSet[T]) Empty() bool {
 	return self.data.Empty()
 }
 
-// 增加元素
+// 增加元素 O(1)-O(N)
 func (self *LinkedHashSet[T]) Add(e T) bool {
 	if self.data.ContainKey(e) {
 		return false
@@ -58,12 +58,12 @@ func (self *LinkedHashSet[T]) Add(e T) bool {
 	return true
 }
 
-// 是否包含元素
+// 是否包含元素 O(1)
 func (self *LinkedHashSet[T]) Contain(e T) bool {
 	return self.data.ContainKey(e)
 }
 
-// 删除元素
+// 删除元素 O(1)
 func (self *LinkedHashSet[T]) Remove(e T) bool {
 	if !self.data.ContainKey(e) {
 		return false
@@ -72,17 +72,17 @@ func (self *LinkedHashSet[T]) Remove(e T) bool {
 	return true
 }
 
-// 清空
+// 清空 O(1)
 func (self *LinkedHashSet[T]) Clear() {
 	self.data.Clear()
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *LinkedHashSet[T]) Clone() *LinkedHashSet[T] {
 	return &LinkedHashSet[T]{data: self.data.Clone()}
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *LinkedHashSet[T]) Filter(f func(i Usize, v T) bool) *LinkedHashSet[T] {
 	lhs := NewLinkedHashSet[T]()
 	var index Usize

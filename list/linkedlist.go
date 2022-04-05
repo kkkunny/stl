@@ -58,7 +58,7 @@ func (self *LinkedList[T]) getNodeByIndex(i Usize) *node[T] {
 	return nil
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *LinkedList[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('[')
@@ -72,22 +72,22 @@ func (self *LinkedList[T]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *LinkedList[T]) Length() Usize {
 	return self.length
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *LinkedList[T]) Empty() bool {
 	return self.head == nil
 }
 
-// 增加元素
+// 增加元素 O(1)
 func (self *LinkedList[T]) Add(e ...T) {
 	self.PushBack(e...)
 }
 
-// 增加到头部
+// 增加到头部 O(1)
 func (self *LinkedList[T]) PushFront(e ...T) {
 	for i, elem := range e {
 		if i == 0 {
@@ -110,7 +110,7 @@ func (self *LinkedList[T]) PushFront(e ...T) {
 	}
 }
 
-// 增加到尾部
+// 增加到尾部 O(1)
 func (self *LinkedList[T]) PushBack(e ...T) {
 	for _, i := range e {
 		node := &node[T]{elem: i}
@@ -125,7 +125,7 @@ func (self *LinkedList[T]) PushBack(e ...T) {
 	self.length += Usize(len(e))
 }
 
-// 插入元素
+// 插入元素 O(N)
 func (self *LinkedList[T]) Insert(i Usize, e ...T) {
 	cursor := self.getNodeByIndex(i)
 	if cursor.prev == nil { // 插入头部
@@ -142,7 +142,7 @@ func (self *LinkedList[T]) Insert(i Usize, e ...T) {
 	}
 }
 
-// 移除元素
+// 移除元素 O(N)
 func (self *LinkedList[T]) Remove(i Usize) T {
 	cursor := self.getNodeByIndex(i)
 	if cursor.prev == nil && cursor.next == nil {
@@ -162,7 +162,7 @@ func (self *LinkedList[T]) Remove(i Usize) T {
 	return cursor.elem
 }
 
-// 删除头节点
+// 删除头元素 O(1)
 func (self *LinkedList[T]) PopFront() T {
 	self.checkOut(0)
 	elem := self.head.elem
@@ -176,7 +176,7 @@ func (self *LinkedList[T]) PopFront() T {
 	return elem
 }
 
-// 删除尾节点
+// 删除尾元素 O(1)
 func (self *LinkedList[T]) PopBack() T {
 	self.checkOut(0)
 	elem := self.tail.elem
@@ -190,25 +190,25 @@ func (self *LinkedList[T]) PopBack() T {
 	return elem
 }
 
-// 获取元素
+// 获取元素 O(N)
 func (self *LinkedList[T]) Get(i Usize) T {
 	cursor := self.getNodeByIndex(i)
 	return cursor.elem
 }
 
-// 获取第一个节点
+// 获取第一个元素 O(1)
 func (self *LinkedList[T]) First() T {
 	self.checkOut(0)
 	return self.head.elem
 }
 
-// 获取最后一个节点
+// 获取最后一个元素 O(1)
 func (self *LinkedList[T]) Last() T {
 	self.checkOut(0)
 	return self.tail.elem
 }
 
-// 设置元素
+// 设置元素 O(N)
 func (self *LinkedList[T]) Set(i Usize, e T) T {
 	cursor := self.getNodeByIndex(i)
 	elem := cursor.elem
@@ -216,14 +216,14 @@ func (self *LinkedList[T]) Set(i Usize, e T) T {
 	return elem
 }
 
-// 清空
+// 清空 O(1)
 func (self *LinkedList[T]) Clear() {
 	self.head = nil
 	self.tail = nil
 	self.length = 0
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *LinkedList[T]) Clone() *LinkedList[T] {
 	newList := NewLinkedList[T]()
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
@@ -232,7 +232,7 @@ func (self *LinkedList[T]) Clone() *LinkedList[T] {
 	return newList
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *LinkedList[T]) Filter(f func(i Usize, v T) bool) *LinkedList[T] {
 	ll := NewLinkedList[T]()
 	var index Usize

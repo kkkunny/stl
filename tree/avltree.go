@@ -12,7 +12,7 @@ type AVLTreeNode[T Comparator[T]] struct {
 }
 
 // 更新节点的树高度
-func (node *AVLTreeNode[T]) UpdateHeight() {
+func (node *AVLTreeNode[T]) updateHeight() {
 	if node == nil {
 		return
 	}
@@ -34,7 +34,7 @@ func (node *AVLTreeNode[T]) UpdateHeight() {
 }
 
 // 计算平衡因子
-func (node *AVLTreeNode[T]) BalanceFactor() Isize {
+func (node *AVLTreeNode[T]) balanceFactor() Isize {
 	var leftHeight, rightHeight Usize
 	if node.Left != nil {
 		leftHeight = node.Left.Height
@@ -45,6 +45,7 @@ func (node *AVLTreeNode[T]) BalanceFactor() Isize {
 	return Isize(leftHeight) - Isize(rightHeight)
 }
 
+// 增加 O(logN)-O(N)
 func (node *AVLTreeNode[T]) Add(value T) *AVLTreeNode[T] {
 	// 添加值到根节点node，如果node为空，那么让值成为新的根节点，树的高度为1
 	if node == nil {
@@ -65,41 +66,41 @@ func (node *AVLTreeNode[T]) Add(value T) *AVLTreeNode[T] {
 		// 插入的值大于节点值，要从右子树继续插入
 		node.Right = node.Right.Add(value)
 		// 平衡因子，插入右子树后，要确保树根左子树的高度不能比右子树低一层。
-		factor := node.BalanceFactor()
+		factor := node.balanceFactor()
 		// 右子树的高度变高了，导致左子树-右子树的高度从-1变成了-2。
 		if factor == -2 {
 			if value.Compare(node.Right.Value) > 0 {
 				// 表示在右子树上插上右儿子导致失衡，需要单左旋：
-				newTreeNode = LeftRotation(node)
+				newTreeNode = leftRotation(node)
 			} else {
 				//表示在右子树上插上左儿子导致失衡，先右后左旋：
-				newTreeNode = RightLeftRotation(node)
+				newTreeNode = rightLeftRotation(node)
 			}
 		}
 	} else {
 		// 插入的值小于节点值，要从左子树继续插入
 		node.Left = node.Left.Add(value)
 		// 平衡因子，插入左子树后，要确保树根左子树的高度不能比右子树高一层。
-		factor := node.BalanceFactor()
+		factor := node.balanceFactor()
 		// 左子树的高度变高了，导致左子树-右子树的高度从1变成了2。
 		if factor == 2 {
 			if value.Compare(node.Left.Value) < 0 {
 				// 表示在左子树上插上左儿子导致失衡，需要单右旋：
-				newTreeNode = RightRotation(node)
+				newTreeNode = rightRotation(node)
 			} else {
 				//表示在左子树上插上右儿子导致失衡，先左后右旋：
-				newTreeNode = LeftRightRotation(node)
+				newTreeNode = leftRightRotation(node)
 			}
 		}
 	}
 
 	if newTreeNode == nil {
 		// 表示什么旋转都没有，根节点没变，直接刷新树高度
-		node.UpdateHeight()
+		node.updateHeight()
 		return node
 	} else {
 		// 旋转了，树根节点变了，需要刷新新的树根高度
-		newTreeNode.UpdateHeight()
+		newTreeNode.updateHeight()
 		return newTreeNode
 	}
 }
@@ -124,6 +125,7 @@ func (node *AVLTreeNode[T]) FindMaxValue() *AVLTreeNode[T] {
 	return node.Right.FindMaxValue()
 }
 
+// 查找 O(logN)-O(N)
 func (node *AVLTreeNode[T]) Find(value T) *AVLTreeNode[T] {
 	o := value.Compare(node.Value)
 	if o > 0 {
@@ -146,6 +148,7 @@ func (node *AVLTreeNode[T]) Find(value T) *AVLTreeNode[T] {
 	}
 }
 
+// 删除 O(logN)-O(N)
 func (node *AVLTreeNode[T]) Delete(value T) *AVLTreeNode[T] {
 	if node == nil {
 		// 如果是空树，直接返回
@@ -156,12 +159,12 @@ func (node *AVLTreeNode[T]) Delete(value T) *AVLTreeNode[T] {
 		// 从左子树开始删除
 		node.Left = node.Left.Delete(value)
 		// 删除后要更新该子树高度
-		node.Left.UpdateHeight()
+		node.Left.updateHeight()
 	} else if o > 0 {
 		// 从右子树开始删除
 		node.Right = node.Right.Delete(value)
 		// 删除后要更新该子树高度
-		node.Right.UpdateHeight()
+		node.Right.updateHeight()
 	} else {
 		// 找到该值对应的节点
 		// 该节点没有左右子树
@@ -187,7 +190,7 @@ func (node *AVLTreeNode[T]) Delete(value T) *AVLTreeNode[T] {
 				// 把最大的节点删掉
 				node.Left = node.Left.Delete(maxNode.Value)
 				// 删除后要更新该子树高度
-				node.Left.UpdateHeight()
+				node.Left.updateHeight()
 			} else {
 				// 右子树更高，拿右子树中最小值的节点替换
 				minNode := node.Right
@@ -202,7 +205,7 @@ func (node *AVLTreeNode[T]) Delete(value T) *AVLTreeNode[T] {
 				// 把最小的节点删掉
 				node.Right = node.Right.Delete(minNode.Value)
 				// 删除后要更新该子树高度
-				node.Right.UpdateHeight()
+				node.Right.updateHeight()
 			}
 		} else {
 			// 只有左子树或只有右子树
@@ -229,26 +232,26 @@ func (node *AVLTreeNode[T]) Delete(value T) *AVLTreeNode[T] {
 	// 左右子树递归删除节点后需要平衡
 	var newNode *AVLTreeNode[T]
 	// 相当删除了右子树的节点，左边比右边高了，不平衡
-	if node.BalanceFactor() == 2 {
-		if node.Left.BalanceFactor() >= 0 {
-			newNode = RightRotation(node)
+	if node.balanceFactor() == 2 {
+		if node.Left.balanceFactor() >= 0 {
+			newNode = rightRotation(node)
 		} else {
-			newNode = LeftRightRotation(node)
+			newNode = leftRightRotation(node)
 		}
 		//  相当删除了左子树的节点，右边比左边高了，不平衡
-	} else if node.BalanceFactor() == -2 {
-		if node.Right.BalanceFactor() <= 0 {
-			newNode = LeftRotation(node)
+	} else if node.balanceFactor() == -2 {
+		if node.Right.balanceFactor() <= 0 {
+			newNode = leftRotation(node)
 		} else {
-			newNode = RightLeftRotation(node)
+			newNode = rightLeftRotation(node)
 		}
 	}
 
 	if newNode == nil {
-		node.UpdateHeight()
+		node.updateHeight()
 		return node
 	} else {
-		newNode.UpdateHeight()
+		newNode.updateHeight()
 		return newNode
 	}
 }
@@ -263,14 +266,14 @@ func NewAVLTree[T Comparator[T]]() *AVLTree[T] {
 	return new(AVLTree[T])
 }
 
-// 添加元素
+// 添加元素 O(logN)-O(N)
 func (tree *AVLTree[T]) Add(value T) {
 	// 往树根添加元素，会返回新的树根
 	tree.Root = tree.Root.Add(value)
 }
 
 // 找出最小值的节点
-func (tree *AVLTree[T]) FindMinValue() *AVLTreeNode[T] {
+func (tree *AVLTree[T]) findMinValue() *AVLTreeNode[T] {
 	if tree.Root == nil {
 		// 如果是空树，返回空
 		return nil
@@ -280,7 +283,7 @@ func (tree *AVLTree[T]) FindMinValue() *AVLTreeNode[T] {
 }
 
 // 找出最大值的节点
-func (tree *AVLTree[T]) FindMaxValue() *AVLTreeNode[T] {
+func (tree *AVLTree[T]) findMaxValue() *AVLTreeNode[T] {
 	if tree.Root == nil {
 		// 如果是空树，返回空
 		return nil
@@ -289,7 +292,7 @@ func (tree *AVLTree[T]) FindMaxValue() *AVLTreeNode[T] {
 	return tree.Root.FindMaxValue()
 }
 
-// 查找指定节点
+// 查找指定节点 O(logN)-O(N)
 func (tree *AVLTree[T]) Find(value T) *AVLTreeNode[T] {
 	if tree.Root == nil {
 		// 如果是空树，返回空
@@ -299,7 +302,7 @@ func (tree *AVLTree[T]) Find(value T) *AVLTreeNode[T] {
 	return tree.Root.Find(value)
 }
 
-// 删除指定的元素
+// 删除指定的元素 O(logN)-O(N)
 func (tree *AVLTree[T]) Delete(value T) {
 	if tree.Root == nil {
 		// 如果是空树，直接返回
@@ -309,8 +312,8 @@ func (tree *AVLTree[T]) Delete(value T) {
 	tree.Root = tree.Root.Delete(value)
 }
 
-// 单右旋操作，看图说话
-func RightRotation[T Comparator[T]](Root *AVLTreeNode[T]) *AVLTreeNode[T] {
+// 单右旋操作
+func rightRotation[T Comparator[T]](Root *AVLTreeNode[T]) *AVLTreeNode[T] {
 	// 只有Pivot和B，Root位置变了
 	Pivot := Root.Left
 	B := Pivot.Right
@@ -318,13 +321,13 @@ func RightRotation[T Comparator[T]](Root *AVLTreeNode[T]) *AVLTreeNode[T] {
 	Root.Left = B
 
 	// 只有Root和Pivot变化了高度
-	Root.UpdateHeight()
-	Pivot.UpdateHeight()
+	Root.updateHeight()
+	Pivot.updateHeight()
 	return Pivot
 }
 
-// 单左旋操作，看图说话
-func LeftRotation[T Comparator[T]](Root *AVLTreeNode[T]) *AVLTreeNode[T] {
+// 单左旋操作
+func leftRotation[T Comparator[T]](Root *AVLTreeNode[T]) *AVLTreeNode[T] {
 	// 只有Pivot和B，Root位置变了
 	Pivot := Root.Right
 	B := Pivot.Left
@@ -332,19 +335,19 @@ func LeftRotation[T Comparator[T]](Root *AVLTreeNode[T]) *AVLTreeNode[T] {
 	Root.Right = B
 
 	// 只有Root和Pivot变化了高度
-	Root.UpdateHeight()
-	Pivot.UpdateHeight()
+	Root.updateHeight()
+	Pivot.updateHeight()
 	return Pivot
 }
 
-// 先左后右旋操作，看图说话
-func LeftRightRotation[T Comparator[T]](node *AVLTreeNode[T]) *AVLTreeNode[T] {
-	node.Left = LeftRotation(node.Left)
-	return RightRotation(node)
+// 先左后右旋操作
+func leftRightRotation[T Comparator[T]](node *AVLTreeNode[T]) *AVLTreeNode[T] {
+	node.Left = leftRotation(node.Left)
+	return rightRotation(node)
 }
 
-// 先右后左旋操作，看图说话
-func RightLeftRotation[T Comparator[T]](node *AVLTreeNode[T]) *AVLTreeNode[T] {
-	node.Right = RightRotation(node.Right)
-	return LeftRotation(node)
+// 先右后左旋操作
+func rightLeftRotation[T Comparator[T]](node *AVLTreeNode[T]) *AVLTreeNode[T] {
+	node.Right = rightRotation(node.Right)
+	return leftRotation(node)
 }

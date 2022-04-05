@@ -25,71 +25,71 @@ func NewArrayListWithInitial[T any](e ...T) *ArrayList[T] {
 	}
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *ArrayList[T]) String() string {
 	return fmt.Sprintf("%v", self.data)
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *ArrayList[T]) Length() Usize {
 	return Usize(len(self.data))
 }
 
-// 获取容量
+// 获取容量 O(1)
 func (self *ArrayList[T]) Capacity() Usize {
 	return Usize(cap(self.data))
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *ArrayList[T]) Empty() bool {
 	return len(self.data) == 0
 }
 
-// 增加元素
+// 增加元素 O(1)-O(N)
 func (self *ArrayList[T]) Add(e ...T) {
 	self.data = append(self.data, e...)
 }
 
-// 插入元素
+// 插入元素 O(N)
 func (self *ArrayList[T]) Insert(i Usize, e ...T) {
 	self.data = append(self.data[:i], append(e, self.data[i:]...)...)
 }
 
-// 移除元素
+// 移除元素 O(N)
 func (self *ArrayList[T]) Remove(i Usize) T {
 	elem := self.data[i]
 	self.data = append(self.data[:i], self.data[i+1:]...)
 	return elem
 }
 
-// 获取元素
+// 获取元素 O(1)
 func (self *ArrayList[T]) Get(i Usize) T {
 	return self.data[i]
 }
 
-// 获取第一个节点
+// 获取第一个元素 O(1)
 func (self *ArrayList[T]) First() T {
 	return self.data[0]
 }
 
-// 获取最后一个节点
+// 获取最后一个元素 O(1)
 func (self *ArrayList[T]) Last() T {
 	return self.data[len(self.data)-1]
 }
 
-// 设置元素
+// 设置元素 O(1)
 func (self *ArrayList[T]) Set(i Usize, e T) T {
 	elem := self.data[i]
 	self.data[i] = e
 	return elem
 }
 
-// 清空
+// 清空 O(1)
 func (self *ArrayList[T]) Clear() {
 	self.data = make([]T, self.Capacity())
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *ArrayList[T]) Clone() *ArrayList[T] {
 	data := make([]T, len(self.data), cap(self.data))
 	copy(data, self.data)
@@ -98,7 +98,7 @@ func (self *ArrayList[T]) Clone() *ArrayList[T] {
 	}
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *ArrayList[T]) Filter(f func(i Usize, v T) bool) *ArrayList[T] {
 	al := NewArrayList[T](0, 0)
 	for i, v := range self.data {

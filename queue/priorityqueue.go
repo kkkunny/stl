@@ -28,6 +28,7 @@ func NewPriorityQueue[P Comparator[P], V any]() *PriorityQueue[P, V] {
 	}
 }
 
+// 转成字符串 O(N)
 func (self *PriorityQueue[P, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('[')
@@ -45,17 +46,17 @@ func (self *PriorityQueue[P, V]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *PriorityQueue[P, V]) Length() Usize {
 	return self.data.Length()
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *PriorityQueue[P, V]) Empty() bool {
 	return self.data.Empty()
 }
 
-// 压入队列
+// 压入队列 O(logN)-O(NlogN)
 func (self *PriorityQueue[P, V]) Push(p P, v V) {
 	self.data.Push(&priorityQueueNode[P, V]{
 		Key:   p,
@@ -63,24 +64,24 @@ func (self *PriorityQueue[P, V]) Push(p P, v V) {
 	})
 }
 
-// 弹出队列
+// 弹出队列 O(NlogN)-O(N²logN)
 func (self *PriorityQueue[P, V]) Pop() (P, V) {
 	node := self.data.Pop()
 	return node.Key, node.Value
 }
 
-// 提前获取队首
+// 提前获取队首 O(1)
 func (self *PriorityQueue[P, V]) Peek() (P, V) {
 	node := self.data.Peek()
 	return node.Key, node.Value
 }
 
-// 清空
+// 清空 O(1)
 func (self *PriorityQueue[P, V]) Clear() {
 	self.data.Clear()
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *PriorityQueue[P, V]) Clone() *PriorityQueue[P, V] {
 	return &PriorityQueue[P, V]{
 		data: self.data.Clone(),

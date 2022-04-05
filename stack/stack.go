@@ -17,37 +17,37 @@ func NewStack[T any](e ...T) *Stack[T] {
 	}
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *Stack[T]) String() string {
 	return self.data.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *Stack[T]) Length() Usize {
 	return self.data.Length()
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *Stack[T]) Empty() bool {
 	return self.data.Empty()
 }
 
-// 压入栈
+// 压入栈 O(1)
 func (self *Stack[T]) Push(e ...T) {
 	self.data.PushBack(e...)
 }
 
-// 弹出栈
+// 弹出栈 O(1)
 func (self *Stack[T]) Pop() T {
 	return self.data.PopBack()
 }
 
-// 清空
+// 清空 O(1)
 func (self *Stack[T]) Clear() {
 	self.data.Clear()
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *Stack[T]) Clone() *Stack[T] {
 	return &Stack[T]{
 		data: self.data.Clone(),

@@ -26,7 +26,7 @@ func NewTreeMap[K Comparator[K], V any]() *TreeMap[K, V] {
 	return &TreeMap[K, V]{data: tree.NewRBTree[treeMapNode[K, V]]()}
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *TreeMap[K, V]) String() string {
 	var buf strings.Builder
 	var i Usize
@@ -42,17 +42,17 @@ func (self *TreeMap[K, V]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *TreeMap[K, V]) Length() Usize {
 	return self.length
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *TreeMap[K, V]) Empty() bool {
 	return self.length == 0
 }
 
-// 设置键值对
+// 设置键值对 O(logN)
 func (self *TreeMap[K, V]) Set(k K, v V) {
 	node := treeMapNode[K, V]{Key: k, Value: v}
 	findNode := self.data.Find(node)
@@ -64,7 +64,7 @@ func (self *TreeMap[K, V]) Set(k K, v V) {
 	}
 }
 
-// 获取值
+// 获取值 O(logN)
 func (self *TreeMap[K, V]) Get(k K, d V) V {
 	node := self.data.Find(treeMapNode[K, V]{Key: k})
 	if node == nil {
@@ -73,7 +73,7 @@ func (self *TreeMap[K, V]) Get(k K, d V) V {
 	return node.Value.Value
 }
 
-// 移除键值对
+// 移除键值对 O(logN)
 func (self *TreeMap[K, V]) Remove(k K, d V) V {
 	node := treeMapNode[K, V]{Key: k}
 	findNode := self.data.Find(node)
@@ -86,13 +86,13 @@ func (self *TreeMap[K, V]) Remove(k K, d V) V {
 	return value
 }
 
-// 是否存在键
+// 是否存在键 O(logN)
 func (self *TreeMap[K, V]) ContainKey(k K) bool {
 	node := self.data.Find(treeMapNode[K, V]{Key: k})
 	return node != nil
 }
 
-// 获取键
+// 获取键 O(N)
 func (self *TreeMap[K, V]) Keys() *list.ArrayList[K] {
 	keys := list.NewArrayList[K](self.Length(), self.Length())
 	var index Usize
@@ -103,7 +103,7 @@ func (self *TreeMap[K, V]) Keys() *list.ArrayList[K] {
 	return keys
 }
 
-// 获取值
+// 获取值 O(N)
 func (self *TreeMap[K, V]) Values() *list.ArrayList[V] {
 	values := list.NewArrayList[V](self.Length(), self.Length())
 	var index Usize
@@ -114,13 +114,13 @@ func (self *TreeMap[K, V]) Values() *list.ArrayList[V] {
 	return values
 }
 
-// 清空
+// 清空 O(1)
 func (self *TreeMap[K, V]) Clear() {
 	self.data = tree.NewRBTree[treeMapNode[K, V]]()
 	self.length = 0
 }
 
-// 克隆
+// 克隆 O(NlogN)
 func (self *TreeMap[K, V]) Clone() *TreeMap[K, V] {
 	newTree := NewTreeMap[K, V]()
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {
@@ -129,7 +129,7 @@ func (self *TreeMap[K, V]) Clone() *TreeMap[K, V] {
 	return newTree
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *TreeMap[K, V]) Filter(f func(k K, v V) bool) *TreeMap[K, V] {
 	tm := NewTreeMap[K, V]()
 	for iter := self.Begin(); iter.HasValue(); iter.Next() {

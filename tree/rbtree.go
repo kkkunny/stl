@@ -120,7 +120,7 @@ func (tree *RBTree[T]) RotateRight(h *RBTreeNode[T]) {
 	}
 }
 
-// 普通红黑树添加元素
+// 普通红黑树添加元素 O(logN)
 func (tree *RBTree[T]) Add(value T) {
 	// 根节点为空
 	if tree.Root == nil {
@@ -243,7 +243,7 @@ func (tree *RBTree[T]) fixAfterInsertion(node *RBTreeNode[T]) {
 	tree.Root.Color = BLACK
 }
 
-// 普通红黑树删除元素
+// 普通红黑树删除元素 O(logN)
 func (tree *RBTree[T]) Delete(value T) {
 	// 查找元素是否存在，不存在则退出
 	p := tree.Find(value)
@@ -334,7 +334,6 @@ func (tree *RBTree[T]) delete(node *RBTreeNode[T]) {
 	}
 
 	node.Parent = nil
-
 }
 
 // 调整删除的叶子节点，自底向上
@@ -439,7 +438,7 @@ func (tree *RBTree[T]) FindMaxValue() *RBTreeNode[T] {
 	return tree.Root.FindMaxValue()
 }
 
-// 查找指定节点
+// 查找指定节点 O(logN)
 func (tree *RBTree[T]) Find(value T) *RBTreeNode[T] {
 	if tree.Root == nil {
 		// 如果是空树，返回空

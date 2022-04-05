@@ -19,22 +19,22 @@ func NewMinHeap[T Comparator[T]](e ...T) *MinHeap[T] {
 	return h
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *MinHeap[T]) String() string {
 	return self.data.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *MinHeap[T]) Length() Usize {
 	return self.data.Length()
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *MinHeap[T]) Empty() bool {
 	return self.data.Empty()
 }
 
-// 压入元素
+// 压入元素 O(logN)-O(NlogN)
 func (self *MinHeap[T]) Push(e ...T) {
 	for _, v := range e {
 		index := Isize(self.data.Length())
@@ -51,7 +51,7 @@ func (self *MinHeap[T]) Push(e ...T) {
 	}
 }
 
-// 弹出堆顶元素
+// 弹出堆顶元素 O(NlogN)-O(N²logN)
 func (self *MinHeap[T]) Pop() T {
 	value := self.data.Get(0)
 	lastIndex := self.data.Length() - 1
@@ -96,17 +96,17 @@ func (self *MinHeap[T]) Pop() T {
 	return value
 }
 
-// 提前获取堆顶
+// 提前获取堆顶 O(1)
 func (self *MinHeap[T]) Peek() T {
 	return self.data.Get(0)
 }
 
-// 清空
+// 清空 O(1)
 func (self *MinHeap[T]) Clear() {
 	self.data.Clear()
 }
 
-// 克隆
+// 克隆 O(N)
 func (self *MinHeap[T]) Clone() *MinHeap[T] {
 	return &MinHeap[T]{
 		data: self.data.Clone(),

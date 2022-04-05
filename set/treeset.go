@@ -22,7 +22,7 @@ func NewTreeSet[T Comparator[T]](e ...T) *TreeSet[T] {
 	return set
 }
 
-// 转成字符串
+// 转成字符串 O(N)
 func (self *TreeSet[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
@@ -39,17 +39,17 @@ func (self *TreeSet[T]) String() string {
 	return buf.String()
 }
 
-// 获取长度
+// 获取长度 O(1)
 func (self *TreeSet[T]) Length() Usize {
 	return self.data.Length()
 }
 
-// 是否为空
+// 是否为空 O(1)
 func (self *TreeSet[T]) Empty() bool {
 	return self.data.Empty()
 }
 
-// 增加元素
+// 增加元素 O(logN)
 func (self *TreeSet[T]) Add(e T) bool {
 	if self.data.ContainKey(e) {
 		return false
@@ -58,12 +58,12 @@ func (self *TreeSet[T]) Add(e T) bool {
 	return true
 }
 
-// 是否包含元素
+// 是否包含元素 O(logN)
 func (self *TreeSet[T]) Contain(e T) bool {
 	return self.data.ContainKey(e)
 }
 
-// 删除元素
+// 删除元素 O(logN)
 func (self *TreeSet[T]) Remove(e T) bool {
 	if !self.data.ContainKey(e) {
 		return false
@@ -72,17 +72,17 @@ func (self *TreeSet[T]) Remove(e T) bool {
 	return true
 }
 
-// 清空
+// 清空 O(1)
 func (self *TreeSet[T]) Clear() {
 	self.data.Clear()
 }
 
-// 克隆
+// 克隆 O(NlogN)
 func (self *TreeSet[T]) Clone() *TreeSet[T] {
 	return &TreeSet[T]{data: self.data.Clone()}
 }
 
-// 过滤
+// 过滤 O(N)
 func (self *TreeSet[T]) Filter(f func(v T) bool) *TreeSet[T] {
 	ts := NewTreeSet[T]()
 	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {

@@ -124,7 +124,7 @@ func NewBSTree[T Comparator[T]]() *BSTree[T] {
 	return new(BSTree[T])
 }
 
-// 添加元素
+// 添加元素 O(logN)-O(N)
 func (tree *BSTree[T]) Add(value T) {
 	// 如果没有树根，证明是棵空树，添加树根后返回
 	if tree.Root == nil {
@@ -156,7 +156,7 @@ func (tree *BSTree[T]) FindMaxValue() *BSTreeNode[T] {
 	return tree.Root.FindMaxValue()
 }
 
-// 查找指定节点
+// 查找指定节点 O(logN)-O(N)
 func (tree *BSTree[T]) Find(value T) *BSTreeNode[T] {
 	if tree.Root == nil {
 		// 如果是空树，返回空
@@ -180,7 +180,7 @@ func (tree *BSTree[T]) FindParent(value T) *BSTreeNode[T] {
 	return tree.Root.FindParent(value)
 }
 
-// 删除指定的元素
+// 删除指定的元素 O(logN)-O(N)
 func (tree *BSTree[T]) Delete(value T) {
 	if tree.Root == nil {
 		// 如果是空树，直接返回
