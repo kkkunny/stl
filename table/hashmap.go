@@ -65,7 +65,7 @@ func (self *HashMap[K, V]) getHash(k K) int32 {
 // 获取哈希所在索引
 func (self *HashMap[K, V]) getIndexFromHash(k K) Usize {
 	hash := self.getHash(k)
-	return Usize(int(hash) % cap(self.buckets))
+	return Usize(hash) % Usize(cap(self.buckets))
 }
 
 // 检查扩容

@@ -57,6 +57,20 @@ func (self *Logger) Level() int8 {
 	return self.level
 }
 
+// 设置输出
+func (self *Logger) SetWriter(writer io.Writer) {
+	self.mutex.Lock()
+	defer self.mutex.Unlock()
+	self.writer = writer
+}
+
+// 获取输出
+func (self *Logger) Writer() io.Writer {
+	self.mutex.RLock()
+	defer self.mutex.RUnlock()
+	return self.writer
+}
+
 // 输出
 func (self *Logger) output(prefix string, msg string, skip int, fcolor, bcolor int) (err error) {
 	self.mutex.Lock()

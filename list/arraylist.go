@@ -1,6 +1,7 @@
 package list
 
 import (
+	"encoding/json"
 	"fmt"
 
 	. "github.com/kkkunny/stl/types"
@@ -35,6 +36,16 @@ func NewArrayListFromSlice[T any](slice []T) *ArrayList[T] {
 // 转成字符串 O(N)
 func (self *ArrayList[T]) String() string {
 	return fmt.Sprintf("%v", self.data)
+}
+
+// json序列化
+func (self *ArrayList[T]) MarshalJSON() ([]byte, error) {
+	return json.Marshal(self.data)
+}
+
+// json反序列化
+func (self *ArrayList[T]) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &self.data)
 }
 
 // 获取长度 O(1)
@@ -152,6 +163,11 @@ type ArrayListIterator[T any] struct {
 // 是否存在值
 func (self *ArrayListIterator[T]) HasValue() bool {
 	return 0 <= self.index && self.index < Usize(len(self.data.data))
+}
+
+// 是否存在下一个
+func (self *ArrayListIterator[T]) HasNext() bool {
+	return self.index+1 < Usize(len(self.data.data))
 }
 
 // 上一个

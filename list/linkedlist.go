@@ -1,6 +1,8 @@
 package list
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -70,6 +72,45 @@ func (self *LinkedList[T]) String() string {
 	}
 	buf.WriteByte(']')
 	return buf.String()
+}
+
+// json序列化
+func (self *LinkedList[T]) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	if err := buf.WriteByte('['); err != nil {
+		return nil, err
+	}
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		data, err := json.Marshal(cursor.elem)
+		if err != nil {
+			return nil, err
+		}
+		if _, err = buf.Write(data); err != nil {
+			return nil, err
+		}
+		if cursor.next != nil {
+			if err = buf.WriteByte(','); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if err := buf.WriteByte(']'); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
+// json反序列化
+func (self *LinkedList[T]) UnmarshalJSON(data []byte) error {
+	var tmp []T
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+	self.Clear()
+	for _, e := range tmp {
+		self.PushBack(e)
+	}
+	return nil
 }
 
 // 获取长度 O(1)
@@ -282,6 +323,11 @@ type LinkedListIterator[T any] struct {
 // 是否存在值
 func (self *LinkedListIterator[T]) HasValue() bool {
 	return self.cursor != nil
+}
+
+// 是否存在下一个
+func (self *LinkedListIterator[T]) HasNext() bool {
+	return self.cursor.next != nil
 }
 
 // 上一个
