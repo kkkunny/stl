@@ -83,13 +83,16 @@ func (self *LinkedHashMap[K, V]) Set(k K, v V) {
 }
 
 // 获取值 O(1)
-func (self *LinkedHashMap[K, V]) Get(k K, d V) V {
+func (self *LinkedHashMap[K, V]) Get(k K, v ...V) V {
 	value := self.data.Get(k, nil)
-	if value == nil {
-		return d
-	} else {
+	if value != nil {
 		return value.value
 	}
+	if len(v) == 0 {
+		var v V
+		return v
+	}
+	return v[0]
 }
 
 // 检查越界
@@ -129,13 +132,17 @@ func (self *LinkedHashMap[K, V]) removeNode(node *linkedHashMapNode[K, V]) {
 }
 
 // 移除键值对 O(1)
-func (self *LinkedHashMap[K, V]) Remove(k K, d V) V {
+func (self *LinkedHashMap[K, V]) Remove(k K, v ...V) V {
 	value := self.data.Remove(k, nil)
 	if value != nil {
 		self.removeNode(value.node)
 		return value.value
 	}
-	return d
+	if len(v) == 0 {
+		var v V
+		return v
+	}
+	return v[0]
 }
 
 // 根据下标移除键值对 O(N)

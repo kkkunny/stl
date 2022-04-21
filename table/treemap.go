@@ -65,20 +65,28 @@ func (self *TreeMap[K, V]) Set(k K, v V) {
 }
 
 // 获取值 O(logN)
-func (self *TreeMap[K, V]) Get(k K, d V) V {
+func (self *TreeMap[K, V]) Get(k K, v ...V) V {
 	node := self.data.Find(treeMapNode[K, V]{Key: k})
-	if node == nil {
-		return d
+	if node != nil {
+		return node.Value.Value
 	}
-	return node.Value.Value
+	if len(v) == 0 {
+		var v V
+		return v
+	}
+	return v[0]
 }
 
 // 移除键值对 O(logN)
-func (self *TreeMap[K, V]) Remove(k K, d V) V {
+func (self *TreeMap[K, V]) Remove(k K, v ...V) V {
 	node := treeMapNode[K, V]{Key: k}
 	findNode := self.data.Find(node)
 	if findNode == nil {
-		return d
+		if len(v) == 0 {
+			var v V
+			return v
+		}
+		return v[0]
 	}
 	self.length--
 	value := findNode.Value.Value

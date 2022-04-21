@@ -85,6 +85,20 @@ func (self *ArrayList[T]) Get(i Usize) T {
 	return self.data[i]
 }
 
+// 删除头元素 O(1)
+func (self *ArrayList[T]) PopFront() T {
+	elem := self.data[0]
+	self.data = self.data[1:]
+	return elem
+}
+
+// 删除尾元素 O(1)
+func (self *ArrayList[T]) PopBack() T {
+	elem := self.data[len(self.data)-1]
+	self.data = self.data[:len(self.data)-1]
+	return elem
+}
+
 // 获取第一个元素 O(1)
 func (self *ArrayList[T]) First() T {
 	return self.data[0]
@@ -109,7 +123,7 @@ func (self *ArrayList[T]) Clear() {
 
 // 克隆 O(N)
 func (self *ArrayList[T]) Clone() *ArrayList[T] {
-	data := make([]T, len(self.data), cap(self.data))
+	data := make([]T, len(self.data))
 	copy(data, self.data)
 	return &ArrayList[T]{
 		data: data,
@@ -129,11 +143,10 @@ func (self *ArrayList[T]) Filter(f func(i Usize, v T) bool) *ArrayList[T] {
 
 // 切分[b, e) O(N)
 func (self *ArrayList[T]) Slice(b, e Usize) *ArrayList[T] {
-	tmp := NewArrayList[T](e-b, e-b)
-	for i := b; i < e; i++ {
-		copy(tmp.data, self.data[b:e])
-	}
-	return tmp
+	tmp := self.data[b:e]
+	a := NewArrayList[T](Usize(len(tmp)), Usize(len(tmp)))
+	copy(a.data, tmp)
+	return a
 }
 
 // 转成切片(不安全) O(1)

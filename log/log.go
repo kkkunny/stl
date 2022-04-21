@@ -25,11 +25,9 @@ type Logger struct {
 	writer io.Writer
 }
 
-var std = New(os.Stdout, LEVEL_DEBUG)
-
 // 默认日志管理器
 func Default() *Logger {
-	return std
+	return New(os.Stdout, LEVEL_DEBUG)
 }
 
 // 新建日志管理器
@@ -78,7 +76,7 @@ func (self *Logger) output(prefix string, msg string, skip int, fcolor, bcolor i
 	timeStr := time.Now().Format("2006-01-02 15:04:05")
 	_, file, line, _ := runtime.Caller(skip)
 	if self.writer == os.Stdout || self.writer == os.Stderr {
-		_, err = fmt.Fprintf(self.writer, "\033[1;%d;%dm %s \033[0m\033[1;%dm| %s | %s:%d | %s\033[0m\n", fcolor, bcolor, prefix, fcolor, timeStr, file, line, msg)
+		_, err = fmt.Fprintf(self.writer, "\033[1;37;%dm %s \033[0m\033[1;%dm| %s | %s:%d | %s\033[0m\n", bcolor, prefix, fcolor, timeStr, file, line, msg)
 	} else {
 		_, err = fmt.Fprintf(self.writer, " %s | %s | %s:%d | %s\n", prefix, timeStr, file, line, msg)
 	}

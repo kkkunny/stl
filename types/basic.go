@@ -2,6 +2,7 @@ package types
 
 import (
 	"math"
+	"strconv"
 	"unsafe"
 )
 
@@ -72,7 +73,11 @@ func (self I64) Compare(dst I64) int {
 type Isize int
 
 func (self Isize) Hash() int32 {
-	return int32(self ^ (self >> 32))
+	length := len(strconv.FormatInt(int64(self), 2))
+	if length <= 32 {
+		return int32(self)
+	}
+	return int32(self ^ (self >> (length - 32)))
 }
 
 func (self Isize) Compare(dst Isize) int {
@@ -153,8 +158,12 @@ func (self U64) Compare(dst U64) int {
 type Usize uint
 
 func (self Usize) Hash() int32 {
-	hash := *(*int64)(unsafe.Pointer(&self))
-	return int32(hash ^ (hash >> 32))
+	hash := *(*int)(unsafe.Pointer(&self))
+	length := len(strconv.FormatInt(int64(hash), 2))
+	if length <= 32 {
+		return int32(hash)
+	}
+	return int32(hash ^ (hash >> (length - 32)))
 }
 
 func (self Usize) Compare(dst Usize) int {
@@ -231,7 +240,7 @@ type String string
 func (self String) Hash() int32 {
 	var hash int32
 	for _, c := range self {
-		hash = hash*31 + int32(c)
+		hash = hash*31 + c
 	}
 	return hash
 }

@@ -18,6 +18,8 @@ type List[T any] interface {
 	Insert(i Usize, e ...T)
 	Remove(i Usize) T
 	Get(i Usize) T
+	PopFront() T
+	PopBack() T
 	First() T
 	Last() T
 	Set(i Usize, e T) T

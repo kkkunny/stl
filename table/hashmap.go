@@ -58,8 +58,7 @@ func (self *HashMap[K, V]) Empty() bool {
 // 哈希
 func (self *HashMap[K, V]) getHash(k K) int32 {
 	hash := k.Hash()
-	hash ^= (hash >> 20) ^ (hash >> 12)
-	return hash ^ (hash >> 7) ^ (hash >> 4)
+	return hash ^ hash>>16
 }
 
 // 获取哈希所在索引
@@ -120,7 +119,7 @@ func (self *HashMap[K, V]) Set(k K, v V) {
 }
 
 // 获取值 O(1)
-func (self *HashMap[K, V]) Get(k K, d V) V {
+func (self *HashMap[K, V]) Get(k K, v ...V) V {
 	index := self.getIndexFromHash(k)
 	head := self.buckets[index]
 	if head != nil {
@@ -130,11 +129,15 @@ func (self *HashMap[K, V]) Get(k K, d V) V {
 			}
 		}
 	}
-	return d
+	if len(v) == 0 {
+		var v V
+		return v
+	}
+	return v[0]
 }
 
 // 移除键值对 O(1)
-func (self *HashMap[K, V]) Remove(k K, d V) V {
+func (self *HashMap[K, V]) Remove(k K, v ...V) V {
 	index := self.getIndexFromHash(k)
 	head := self.buckets[index]
 	if head != nil {
@@ -156,7 +159,11 @@ func (self *HashMap[K, V]) Remove(k K, d V) V {
 			return elem
 		}
 	}
-	return d
+	if len(v) == 0 {
+		var v V
+		return v
+	}
+	return v[0]
 }
 
 // 是否存在键 O(1)
