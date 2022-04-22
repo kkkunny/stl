@@ -181,23 +181,28 @@ func (self *LinkedList[T]) Insert(i int, e ...T) {
 	}
 }
 
+// 移除节点
+func (self *LinkedList[T]) removeNode(node *node[T]) {
+	if node.prev == nil && node.next == nil {
+		self.head, self.tail = nil, nil
+	} else if node.prev == nil {
+		node.next.prev = nil
+		self.head = node.next
+	} else if node.next == nil {
+		node.prev.next = nil
+		self.tail = node.prev
+	} else {
+		node.prev.next = node.next
+		node.next.prev = node.prev
+	}
+	node.prev, node.next = nil, nil
+	self.length--
+}
+
 // 移除元素 O(N)
 func (self *LinkedList[T]) Remove(i int) T {
 	cursor := self.getNodeByIndex(i)
-	if cursor.prev == nil && cursor.next == nil {
-		self.head, self.tail = nil, nil
-	} else if cursor.prev == nil { // 头部
-		self.head = cursor.next
-		self.head.prev = nil
-	} else if cursor.next == nil { // 尾部
-		self.tail = cursor.prev
-		self.tail.next = nil
-	} else { // 中间
-		cursor.prev.next = cursor.next
-		cursor.next.prev = cursor.prev
-	}
-	cursor.prev, cursor.next = nil, nil
-	self.length--
+	self.removeNode(cursor)
 	return cursor.elem
 }
 
@@ -205,13 +210,7 @@ func (self *LinkedList[T]) Remove(i int) T {
 func (self *LinkedList[T]) PopFront() T {
 	self.checkOut(0)
 	elem := self.head.elem
-	if self.length == 1 {
-		self.head, self.tail = nil, nil
-	} else {
-		self.head = self.head.next
-		self.head.prev = nil
-	}
-	self.length--
+	self.removeNode(self.head)
 	return elem
 }
 
@@ -219,13 +218,7 @@ func (self *LinkedList[T]) PopFront() T {
 func (self *LinkedList[T]) PopBack() T {
 	self.checkOut(0)
 	elem := self.tail.elem
-	if self.length == 1 {
-		self.head, self.tail = nil, nil
-	} else {
-		self.tail = self.tail.prev
-		self.tail.next = nil
-	}
-	self.length--
+	self.removeNode(self.tail)
 	return elem
 }
 
@@ -296,6 +289,37 @@ func (self *LinkedList[T]) Slice(b, e int) *LinkedList[T] {
 		b++
 	}
 	return tmp
+}
+
+// 拼接 O(N)
+func (self *LinkedList[T]) Contact(a *LinkedList[T]) {
+	for cursor := a.head; cursor != nil; cursor = cursor.next {
+		self.PushBack(cursor.elem)
+	}
+}
+
+// 是否有任何元素满足条件 O(N)
+func (self *LinkedList[T]) Any(f func(i int, v T) bool) bool {
+	var index int
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		if f(index, cursor.elem) {
+			return true
+		}
+		index++
+	}
+	return false
+}
+
+// 是否所有元素都满足条件 O(N)
+func (self *LinkedList[T]) Every(f func(i int, v T) bool) bool {
+	var index int
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		if !f(index, cursor.elem) {
+			return false
+		}
+		index++
+	}
+	return true
 }
 
 // 获取起始迭代器

@@ -22,4 +22,6 @@ type List[T any] interface {
 	Last() T
 	Set(i int, e T) T
 	Clear()
+	Any(f func(i int, v T) bool) bool
+	Every(f func(i int, v T) bool) bool
 }

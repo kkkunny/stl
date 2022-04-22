@@ -150,9 +150,29 @@ func (self *ArrayList[T]) Slice(b, e int) *ArrayList[T] {
 	return a
 }
 
-// 转成切片(不安全) O(1)
-func (self *ArrayList[T]) ToSlice() []T {
-	return self.data
+// 拼接 O(N)
+func (self *ArrayList[T]) Contact(a *ArrayList[T]) {
+	self.data = append(self.data, a.data...)
+}
+
+// 是否有任何元素满足条件 O(N)
+func (self *ArrayList[T]) Any(f func(i int, v T) bool) bool {
+	for i, v := range self.data {
+		if f(i, v) {
+			return true
+		}
+	}
+	return false
+}
+
+// 是否所有元素都满足条件 O(N)
+func (self *ArrayList[T]) Every(f func(i int, v T) bool) bool {
+	for i, v := range self.data {
+		if !f(i, v) {
+			return false
+		}
+	}
+	return true
 }
 
 // 获取起始迭代器
