@@ -5,8 +5,8 @@ import . "github.com/kkkunny/stl/types"
 // AVL节点
 type AVLTreeNode[T Comparator[T]] struct {
 	Value  T               // 值
-	Times  Usize           // 值出现的次数
-	Height Usize           // 该节点作为树根节点，树的高度，方便计算平衡因子
+	Times  int             // 值出现的次数
+	Height int             // 该节点作为树根节点，树的高度，方便计算平衡因子
 	Left   *AVLTreeNode[T] // 左子树
 	Right  *AVLTreeNode[T] // 右字树
 }
@@ -17,7 +17,7 @@ func (node *AVLTreeNode[T]) updateHeight() {
 		return
 	}
 
-	var leftHeight, rightHeight Usize
+	var leftHeight, rightHeight int
 	if node.Left != nil {
 		leftHeight = node.Left.Height
 	}
@@ -34,15 +34,15 @@ func (node *AVLTreeNode[T]) updateHeight() {
 }
 
 // 计算平衡因子
-func (node *AVLTreeNode[T]) balanceFactor() Isize {
-	var leftHeight, rightHeight Usize
+func (node *AVLTreeNode[T]) balanceFactor() int {
+	var leftHeight, rightHeight int
 	if node.Left != nil {
 		leftHeight = node.Left.Height
 	}
 	if node.Right != nil {
 		rightHeight = node.Right.Height
 	}
-	return Isize(leftHeight) - Isize(rightHeight)
+	return leftHeight - rightHeight
 }
 
 // 增加 O(logN)-O(N)

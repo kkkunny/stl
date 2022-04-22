@@ -1,15 +1,15 @@
 package sort
 
 import (
-	. "github.com/kkkunny/stl/types"
+	"golang.org/x/exp/constraints"
 )
 
 // 冒泡排序 O(N²)
-func BubbleSort[T Comparator[T]](l []T, reverse bool) {
+func BubbleSort[T constraints.Ordered](l []T, reverse bool) {
 	for i := 0; i < len(l); i++ {
 		for j := i + 1; j < len(l); j++ {
-			if (!reverse && l[i].Compare(l[j]) > 0) ||
-				(reverse && l[i].Compare(l[j]) < 0) {
+			if (!reverse && l[i] > l[j]) ||
+				(reverse && l[i] < l[j]) {
 				l[i], l[j] = l[j], l[i]
 			}
 		}
@@ -17,12 +17,12 @@ func BubbleSort[T Comparator[T]](l []T, reverse bool) {
 }
 
 // 快速排序 O(NlogN)
-func QuickSort[T Comparator[T]](l []T, reverse bool) {
+func QuickSort[T constraints.Ordered](l []T, reverse bool) {
 	switch len(l) {
 	case 0, 1:
 	case 2:
-		if (!reverse && l[0].Compare(l[1]) > 0) ||
-			(reverse && l[0].Compare(l[1]) < 0) {
+		if (!reverse && l[0] > l[1]) ||
+			(reverse && l[0] < l[1]) {
 			l[0], l[1] = l[1], l[0]
 		}
 	default:
@@ -30,13 +30,12 @@ func QuickSort[T Comparator[T]](l []T, reverse bool) {
 		var midCount int
 		var small, big []T
 		for i := 0; i < len(l); i++ {
-			diff := l[i].Compare(mid)
-			if diff == 0 {
-				midCount++
-			} else if diff > 0 {
+			if l[i] > mid {
 				big = append(big, l[i])
-			} else {
+			} else if l[i] < mid {
 				small = append(small, l[i])
+			} else {
+				midCount++
 			}
 		}
 		if midCount == len(l) {

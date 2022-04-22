@@ -3,18 +3,16 @@ package heap
 import (
 	"fmt"
 
-	"github.com/kkkunny/stl/list"
-	. "github.com/kkkunny/stl/types"
+	"golang.org/x/exp/constraints"
 )
 
 // 堆
-type Heap[T Comparator[T]] interface {
+type Heap[T constraints.Ordered] interface {
 	fmt.Stringer
-	Length() Usize
+	Length() int
 	Empty() bool
 	Push(e ...T)
 	Pop() T
 	Peek() T
 	Clear()
-	Iterator() *list.ArrayListIterator[T]
 }

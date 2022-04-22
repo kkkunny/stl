@@ -4,43 +4,42 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kkkunny/stl/list"
+	"golang.org/x/exp/constraints"
+
 	"github.com/kkkunny/stl/table"
-	. "github.com/kkkunny/stl/types"
 )
 
 // 有序集合
-type TreeSet[T Comparator[T]] struct {
+type TreeSet[T constraints.Ordered] struct {
 	data *table.TreeMap[T, struct{}]
 }
 
 // 新建有序集合
-func NewTreeSet[T Comparator[T]](e ...T) *TreeSet[T] {
-	set := &TreeSet[T]{data: table.NewTreeMap[T, struct{}]()}
+func NewTreeSet[T constraints.Ordered](e ...T) *TreeSet[T] {
+	ts := &TreeSet[T]{data: table.NewTreeMap[T, struct{}]()}
 	for _, i := range e {
-		set.Add(i)
+		ts.Add(i)
 	}
-	return set
+	return ts
 }
 
 // 转成字符串 O(N)
 func (self *TreeSet[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
-	length := self.data.Length()
-	var index Usize
 	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
 		buf.WriteString(fmt.Sprintf("%v", iter.Key()))
-		if index < length-1 {
+		if iter.HasNext() {
 			buf.WriteString(", ")
 		}
-		index++
 	}
 	buf.WriteByte('}')
 	return buf.String()
 }
 
 // 获取长度 O(1)
-func (self *TreeSet[T]) Length() Usize {
+func (self *TreeSet[T]) Length() int {
 	return self.data.Length()
 }
 
@@ -68,7 +67,7 @@ func (self *TreeSet[T]) Remove(e T) bool {
 	if !self.data.ContainKey(e) {
 		return false
 	}
-	self.data.Remove(e, struct{}{})
+	self.data.Remove(e)
 	return true
 }
 
@@ -84,47 +83,29 @@ func (self *TreeSet[T]) Clone() *TreeSet[T] {
 
 // 过滤 O(N)
 func (self *TreeSet[T]) Filter(f func(v T) bool) *TreeSet[T] {
-	ts := NewTreeSet[T]()
-	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
-		v := iter.Key()
-		if f(v) {
-			ts.Add(v)
-		}
-	}
-	return ts
+	return &TreeSet[T]{data: self.data.Filter(func(k T, _ struct{}) bool {
+		return f(k)
+	})}
 }
 
 // 获取起始迭代器
-func (self *TreeSet[T]) Begin() *TreeSetIterator[T] {
-	return &TreeSetIterator[T]{data: self.data.Begin()}
+func (self *TreeSet[T]) Begin() *list.ArrayListIterator[T] {
+	al := list.NewArrayList[T](self.data.Length(), self.data.Length())
+	var index int
+	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
+		al.Set(index, iter.Key())
+		index++
+	}
+	return al.Begin()
 }
 
 // 获取结束迭代器
-func (self *TreeSet[T]) End() *TreeSetIterator[T] {
-	return &TreeSetIterator[T]{data: self.data.End()}
-}
-
-// 迭代器
-type TreeSetIterator[T Comparator[T]] struct {
-	data *table.TreeMapIterator[T, struct{}]
-}
-
-// 是否存在值
-func (self *TreeSetIterator[T]) HasValue() bool {
-	return self.data.HasValue()
-}
-
-// 上一个
-func (self *TreeSetIterator[T]) Prev() {
-	self.data.Prev()
-}
-
-// 下一个
-func (self *TreeSetIterator[T]) Next() {
-	self.data.Next()
-}
-
-// 获取值
-func (self *TreeSetIterator[T]) Value() T {
-	return self.data.Key()
+func (self *TreeSet[T]) End() *list.ArrayListIterator[T] {
+	al := list.NewArrayList[T](self.data.Length(), self.data.Length())
+	var index int
+	for iter := self.data.Begin(); iter.HasValue(); iter.Next() {
+		al.Set(index, iter.Key())
+		index++
+	}
+	return al.End()
 }

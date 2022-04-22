@@ -3,8 +3,6 @@ package list
 import (
 	"encoding/json"
 	"fmt"
-
-	. "github.com/kkkunny/stl/types"
 )
 
 // 动态数组
@@ -13,7 +11,7 @@ type ArrayList[T any] struct {
 }
 
 // 新建动态数组
-func NewArrayList[T any](length, capacity Usize) *ArrayList[T] {
+func NewArrayList[T any](length, capacity int) *ArrayList[T] {
 	return &ArrayList[T]{
 		data: make([]T, length, capacity),
 	}
@@ -49,13 +47,13 @@ func (self *ArrayList[T]) UnmarshalJSON(data []byte) error {
 }
 
 // 获取长度 O(1)
-func (self *ArrayList[T]) Length() Usize {
-	return Usize(len(self.data))
+func (self *ArrayList[T]) Length() int {
+	return len(self.data)
 }
 
 // 获取容量 O(1)
-func (self *ArrayList[T]) Capacity() Usize {
-	return Usize(cap(self.data))
+func (self *ArrayList[T]) Capacity() int {
+	return cap(self.data)
 }
 
 // 是否为空 O(1)
@@ -69,19 +67,19 @@ func (self *ArrayList[T]) Add(e ...T) {
 }
 
 // 插入元素 O(N)
-func (self *ArrayList[T]) Insert(i Usize, e ...T) {
+func (self *ArrayList[T]) Insert(i int, e ...T) {
 	self.data = append(self.data[:i], append(e, self.data[i:]...)...)
 }
 
 // 移除元素 O(N)
-func (self *ArrayList[T]) Remove(i Usize) T {
+func (self *ArrayList[T]) Remove(i int) T {
 	elem := self.data[i]
 	self.data = append(self.data[:i], self.data[i+1:]...)
 	return elem
 }
 
 // 获取元素 O(1)
-func (self *ArrayList[T]) Get(i Usize) T {
+func (self *ArrayList[T]) Get(i int) T {
 	return self.data[i]
 }
 
@@ -110,7 +108,7 @@ func (self *ArrayList[T]) Last() T {
 }
 
 // 设置元素 O(1)
-func (self *ArrayList[T]) Set(i Usize, e T) T {
+func (self *ArrayList[T]) Set(i int, e T) T {
 	elem := self.data[i]
 	self.data[i] = e
 	return elem
@@ -118,7 +116,10 @@ func (self *ArrayList[T]) Set(i Usize, e T) T {
 
 // 清空 O(1)
 func (self *ArrayList[T]) Clear() {
-	self.data = make([]T, self.Capacity())
+	if self.Empty() {
+		return
+	}
+	self.data = nil
 }
 
 // 克隆 O(N)
@@ -131,10 +132,10 @@ func (self *ArrayList[T]) Clone() *ArrayList[T] {
 }
 
 // 过滤 O(N)
-func (self *ArrayList[T]) Filter(f func(i Usize, v T) bool) *ArrayList[T] {
+func (self *ArrayList[T]) Filter(f func(i int, v T) bool) *ArrayList[T] {
 	al := NewArrayList[T](0, 0)
 	for i, v := range self.data {
-		if f(Usize(i), v) {
+		if f(i, v) {
 			al.Add(v)
 		}
 	}
@@ -142,9 +143,9 @@ func (self *ArrayList[T]) Filter(f func(i Usize, v T) bool) *ArrayList[T] {
 }
 
 // 切分[b, e) O(N)
-func (self *ArrayList[T]) Slice(b, e Usize) *ArrayList[T] {
+func (self *ArrayList[T]) Slice(b, e int) *ArrayList[T] {
 	tmp := self.data[b:e]
-	a := NewArrayList[T](Usize(len(tmp)), Usize(len(tmp)))
+	a := NewArrayList[T](len(tmp), len(tmp))
 	copy(a.data, tmp)
 	return a
 }
@@ -156,49 +157,58 @@ func (self *ArrayList[T]) ToSlice() []T {
 
 // 获取起始迭代器
 func (self *ArrayList[T]) Begin() *ArrayListIterator[T] {
-	return &ArrayListIterator[T]{data: self}
+	return &ArrayListIterator[T]{data: self.data}
 }
 
 // 获取结束迭代器
 func (self *ArrayList[T]) End() *ArrayListIterator[T] {
 	return &ArrayListIterator[T]{
-		data:  self,
+		data:  self.data,
 		index: self.Length() - 1,
 	}
 }
 
 // 迭代器
 type ArrayListIterator[T any] struct {
-	data  *ArrayList[T] // 列表
-	index Usize         // 目前索引
+	data  []T // 列表
+	index int // 目前索引
 }
 
 // 是否存在值
 func (self *ArrayListIterator[T]) HasValue() bool {
-	return 0 <= self.index && self.index < Usize(len(self.data.data))
+	return 0 <= self.index && self.index < len(self.data)
+}
+
+// 是否存在上一个
+func (self *ArrayListIterator[T]) HasPrev() bool {
+	return self.index >= 1
 }
 
 // 是否存在下一个
 func (self *ArrayListIterator[T]) HasNext() bool {
-	return self.index+1 < Usize(len(self.data.data))
+	return self.index+1 < len(self.data)
 }
 
 // 上一个
 func (self *ArrayListIterator[T]) Prev() {
-	self.index--
+	if self.HasPrev() {
+		self.index--
+	}
 }
 
 // 下一个
 func (self *ArrayListIterator[T]) Next() {
-	self.index++
+	if self.HasNext() {
+		self.index++
+	}
 }
 
 // 获取索引
-func (self *ArrayListIterator[T]) Index() Usize {
+func (self *ArrayListIterator[T]) Index() int {
 	return self.index
 }
 
 // 获取值
 func (self *ArrayListIterator[T]) Value() T {
-	return self.data.data[self.index]
+	return self.data[self.index]
 }

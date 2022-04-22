@@ -1,50 +1,49 @@
 package heap
 
 import (
-	"github.com/kkkunny/stl/list"
-	. "github.com/kkkunny/stl/types"
+	"fmt"
+
+	"golang.org/x/exp/constraints"
 )
 
 // 大顶堆
-type MaxHeap[T Comparator[T]] struct {
-	data *list.ArrayList[T]
+type MaxHeap[T constraints.Ordered] struct {
+	data []T
 }
 
 // 新建大顶堆
-func NewMaxHeap[T Comparator[T]](e ...T) *MaxHeap[T] {
-	h := &MaxHeap[T]{
-		data: list.NewArrayList[T](0, 0),
-	}
+func NewMaxHeap[T constraints.Ordered](e ...T) *MaxHeap[T] {
+	h := new(MaxHeap[T])
 	h.Push(e...)
 	return h
 }
 
 // 转成字符串 O(N)
 func (self *MaxHeap[T]) String() string {
-	return self.data.String()
+	return fmt.Sprintf("%v", self.data)
 }
 
 // 获取长度 O(1)
-func (self *MaxHeap[T]) Length() Usize {
-	return self.data.Length()
+func (self *MaxHeap[T]) Length() int {
+	return len(self.data)
 }
 
 // 是否为空 O(1)
 func (self *MaxHeap[T]) Empty() bool {
-	return self.data.Empty()
+	return len(self.data) == 0
 }
 
 // 压入元素 O(logN)-O(NlogN)
 func (self *MaxHeap[T]) Push(e ...T) {
 	for _, v := range e {
-		index := Isize(self.data.Length())
-		self.data.Add(v)
+		index := len(self.data)
+		self.data = append(self.data, v)
 		sIndex := index
 		fIndex := (index - 1) / 2
-		for sIndex != fIndex && fIndex >= 0 && self.data.Get(Usize(sIndex)).Compare(self.data.Get(Usize(fIndex))) > 0 {
-			s, f := self.data.Get(Usize(sIndex)), self.data.Get(Usize(fIndex))
-			self.data.Set(Usize(sIndex), f)
-			self.data.Set(Usize(fIndex), s)
+		for sIndex != fIndex && fIndex >= 0 && self.data[sIndex] > self.data[fIndex] {
+			s, f := self.data[sIndex], self.data[fIndex]
+			self.data[sIndex] = f
+			self.data[fIndex] = s
 			sIndex = fIndex
 			fIndex = (fIndex - 1) / 2
 		}
@@ -53,44 +52,44 @@ func (self *MaxHeap[T]) Push(e ...T) {
 
 // 弹出堆顶元素 O(NlogN)-O(N²logN)
 func (self *MaxHeap[T]) Pop() T {
-	value := self.data.First()
-	if self.data.Length() == 1 {
-		self.data.Remove(0)
+	value := self.data[0]
+	if len(self.data) == 1 {
+		self.data = self.data[1:]
 		return value
 	}
-	lastIndex := self.data.Length() - 1
-	last := self.data.Get(lastIndex)
-	self.data.Set(0, last)
-	self.data.Remove(lastIndex)
-	var curIndex Usize
+	lastIndex := len(self.data) - 1
+	last := self.data[lastIndex]
+	self.data[0] = last
+	self.data = self.data[:len(self.data)-1]
+	var curIndex int
 	length := lastIndex - 1
 	for {
 		leftIndex, rightIndex := 2*curIndex+1, 2*curIndex+2
 		if leftIndex >= length { // 无左节点，无右节点
 			break
 		} else if rightIndex >= length { // 有左节点，无右节点
-			if self.data.Get(curIndex).Compare(self.data.Get(leftIndex)) < 0 {
-				f, l := self.data.Get(curIndex), self.data.Get(leftIndex)
-				self.data.Set(curIndex, l)
-				self.data.Set(leftIndex, f)
+			if self.data[curIndex] < self.data[leftIndex] {
+				f, l := self.data[curIndex], self.data[leftIndex]
+				self.data[curIndex] = l
+				self.data[leftIndex] = f
 				curIndex = leftIndex
 			} else {
 				break
 			}
-		} else if self.data.Get(leftIndex).Compare(self.data.Get(rightIndex)) >= 0 { // 左节点比右节点小
-			if self.data.Get(curIndex).Compare(self.data.Get(leftIndex)) < 0 {
-				f, l := self.data.Get(curIndex), self.data.Get(leftIndex)
-				self.data.Set(curIndex, l)
-				self.data.Set(leftIndex, f)
+		} else if self.data[leftIndex] >= self.data[rightIndex] { // 左节点比右节点小
+			if self.data[curIndex] < self.data[leftIndex] {
+				f, l := self.data[curIndex], self.data[leftIndex]
+				self.data[curIndex] = l
+				self.data[leftIndex] = f
 				curIndex = leftIndex
 			} else {
 				break
 			}
 		} else { // 左节点比右节点大
-			if self.data.Get(curIndex).Compare(self.data.Get(rightIndex)) < 0 {
-				f, r := self.data.Get(curIndex), self.data.Get(rightIndex)
-				self.data.Set(curIndex, r)
-				self.data.Set(rightIndex, f)
+			if self.data[curIndex] < self.data[rightIndex] {
+				f, r := self.data[curIndex], self.data[rightIndex]
+				self.data[curIndex] = r
+				self.data[rightIndex] = f
 				curIndex = rightIndex
 			} else {
 				break
@@ -102,22 +101,20 @@ func (self *MaxHeap[T]) Pop() T {
 
 // 提前获取堆顶 O(1)
 func (self *MaxHeap[T]) Peek() T {
-	return self.data.First()
+	return self.data[0]
 }
 
 // 清空 O(1)
 func (self *MaxHeap[T]) Clear() {
-	self.data.Clear()
+	if self.Empty() {
+		return
+	}
+	self.data = nil
 }
 
 // 克隆 O(N)
 func (self *MaxHeap[T]) Clone() *MaxHeap[T] {
-	return &MaxHeap[T]{
-		data: self.data.Clone(),
-	}
-}
-
-// 获取迭代器
-func (self *MaxHeap[T]) Iterator() *list.ArrayListIterator[T] {
-	return self.data.Begin()
+	data := make([]T, len(self.data))
+	copy(data, self.data)
+	return &MaxHeap[T]{data: data}
 }

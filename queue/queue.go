@@ -1,65 +1,64 @@
 package queue
 
 import (
-	"github.com/kkkunny/stl/list"
-	. "github.com/kkkunny/stl/types"
+	"fmt"
 )
 
 // 队列
 type Queue[T any] struct {
-	data *list.LinkedList[T]
+	data []T
 }
 
 // 新建队列
 func NewQueue[T any](e ...T) *Queue[T] {
 	return &Queue[T]{
-		data: list.NewLinkedList(e...),
+		data: e,
 	}
 }
 
 // 转成字符串 O(N)
 func (self *Queue[T]) String() string {
-	return self.data.String()
+	return fmt.Sprintf("%v", self.data)
 }
 
 // 获取长度 O(1)
-func (self *Queue[T]) Length() Usize {
-	return self.data.Length()
+func (self *Queue[T]) Length() int {
+	return len(self.data)
 }
 
 // 是否为空 O(1)
 func (self *Queue[T]) Empty() bool {
-	return self.data.Empty()
+	return len(self.data) == 0
 }
 
 // 压入队列 O(1)
 func (self *Queue[T]) Push(e ...T) {
-	self.data.PushBack(e...)
+	self.data = append(self.data, e...)
 }
 
 // 弹出队列 O(1)
 func (self *Queue[T]) Pop() T {
-	return self.data.PopFront()
+	v := self.data[0]
+	self.data = self.data[1:]
+	return v
 }
 
-// 提前获取队首 O(1)
+// 获取队首 O(1)
 func (self *Queue[T]) Peek() T {
-	return self.data.First()
+	return self.data[0]
 }
 
 // 清空 O(1)
 func (self *Queue[T]) Clear() {
-	self.data.Clear()
+	if self.Empty() {
+		return
+	}
+	self.data = nil
 }
 
 // 克隆 O(N)
 func (self *Queue[T]) Clone() *Queue[T] {
-	return &Queue[T]{
-		data: self.data.Clone(),
-	}
-}
-
-// 获取迭代器
-func (self *Queue[T]) Iterator() *list.LinkedListIterator[T] {
-	return self.data.Begin()
+	data := make([]T, len(self.data))
+	copy(data, self.data)
+	return &Queue[T]{data: data}
 }

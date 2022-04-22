@@ -4,33 +4,33 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/kkkunny/stl/table"
-	. "github.com/kkkunny/stl/types"
+	"github.com/kkkunny/stl/list"
 )
 
 // 哈希集合
-type HashSet[T Hasher] struct {
-	data *table.HashMap[T, struct{}]
+type HashSet[T comparable] struct {
+	data map[T]struct{}
 }
 
 // 新建哈希集合
-func NewHashSet[T Hasher](e ...T) *HashSet[T] {
-	set := &HashSet[T]{data: table.NewHashMap[T, struct{}]()}
-	for _, i := range e {
-		set.Add(i)
+func NewHashSet[T comparable](e ...T) *HashSet[T] {
+	hs := &HashSet[T]{
+		data: make(map[T]struct{}),
 	}
-	return set
+	for _, v := range e {
+		hs.data[v] = struct{}{}
+	}
+	return hs
 }
 
 // 转成字符串 O(N)
 func (self *HashSet[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
-	length := self.data.Length()
-	var index Usize
-	for iter := self.data.Iterator(); iter.HasValue(); iter.Next() {
-		buf.WriteString(fmt.Sprintf("%v", iter.Key()))
-		if index < length-1 {
+	var index int
+	for k := range self.data {
+		buf.WriteString(fmt.Sprintf("%v", k))
+		if index < len(self.data)-1 {
 			buf.WriteString(", ")
 		}
 		index++
@@ -40,81 +40,73 @@ func (self *HashSet[T]) String() string {
 }
 
 // 获取长度 O(1)
-func (self *HashSet[T]) Length() Usize {
-	return self.data.Length()
+func (self *HashSet[T]) Length() int {
+	return len(self.data)
 }
 
 // 是否为空 O(1)
 func (self *HashSet[T]) Empty() bool {
-	return self.data.Empty()
+	return len(self.data) == 0
 }
 
-// 增加元素 O(1)-O(N)
+// 增加元素 O(1)
 func (self *HashSet[T]) Add(e T) bool {
-	if self.data.ContainKey(e) {
+	if _, ok := self.data[e]; ok {
 		return false
 	}
-	self.data.Set(e, struct{}{})
+	self.data[e] = struct{}{}
 	return true
 }
 
 // 是否包含元素 O(1)
 func (self *HashSet[T]) Contain(e T) bool {
-	return self.data.ContainKey(e)
+	_, ok := self.data[e]
+	return ok
 }
 
 // 删除元素 O(1)
 func (self *HashSet[T]) Remove(e T) bool {
-	if !self.data.ContainKey(e) {
-		return false
+	if _, ok := self.data[e]; ok {
+		delete(self.data, e)
+		return true
 	}
-	self.data.Remove(e, struct{}{})
-	return true
+	return false
 }
 
 // 清空 O(1)
 func (self *HashSet[T]) Clear() {
-	self.data.Clear()
+	if !self.Empty() {
+		self.data = make(map[T]struct{})
+	}
 }
 
 // 克隆 O(N)
 func (self *HashSet[T]) Clone() *HashSet[T] {
-	return &HashSet[T]{data: self.data.Clone()}
+	hs := NewHashSet[T]()
+	for k := range self.data {
+		hs.data[k] = struct{}{}
+	}
+	return hs
 }
 
 // 过滤 O(N)
 func (self *HashSet[T]) Filter(f func(v T) bool) *HashSet[T] {
 	hs := NewHashSet[T]()
-	for iter := self.Iterator(); iter.HasNext(); iter.Next() {
-		v := iter.Value()
-		if f(v) {
-			hs.Add(v)
+	for k := range self.data {
+		if f(k) {
+			hs.Add(k)
 		}
 	}
 	return hs
 }
 
 // 获取迭代器
-func (self *HashSet[T]) Iterator() *HashSetIterator[T] {
-	return &HashSetIterator[T]{data: self.data.Iterator()}
-}
-
-// 迭代器
-type HashSetIterator[T Hasher] struct {
-	data *table.HashMapIterator[T, struct{}]
-}
-
-// 是否存在下一个
-func (self *HashSetIterator[T]) HasNext() bool {
-	return self.data.HasValue()
-}
-
-// 下一个
-func (self *HashSetIterator[T]) Next() {
-	self.data.Next()
-}
-
-// 获取值
-func (self *HashSetIterator[T]) Value() T {
-	return self.data.Key()
+func (self *HashSet[T]) Iterator() *list.ArrayListIterator[T] {
+	al := list.NewArrayList[T](len(self.data), len(self.data))
+	var index int
+	for k := range self.data {
+		al.Set(index, k)
+		index++
+	}
+	return al.Begin()
 }

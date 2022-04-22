@@ -2,114 +2,111 @@ package queue
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/kkkunny/stl/heap"
-	"github.com/kkkunny/stl/list"
-	"github.com/kkkunny/stl/table"
-	. "github.com/kkkunny/stl/types"
+	"github.com/kkkunny/stl/types"
+	"golang.org/x/exp/constraints"
 )
 
-type priorityQueueNode[P Comparator[P], V any] table.Entry[P, V]
-
-func (self *priorityQueueNode[P, V]) Compare(dst *priorityQueueNode[P, V]) int {
-	return self.Key.Compare(dst.Key)
-}
-
 // 优先级队列
-type PriorityQueue[P Comparator[P], V any] struct {
-	data *heap.MaxHeap[*priorityQueueNode[P, V]]
+type PriorityQueue[P constraints.Ordered, V any] struct {
+	data []types.Pair[P, V]
 }
 
-// 新建队列
-func NewPriorityQueue[P Comparator[P], V any]() *PriorityQueue[P, V] {
-	return &PriorityQueue[P, V]{
-		data: heap.NewMaxHeap[*priorityQueueNode[P, V]](),
-	}
+// 新建优先级队列
+func NewPriorityQueue[P constraints.Ordered, V any]() *PriorityQueue[P, V] {
+	return new(PriorityQueue[P, V])
 }
 
 // 转成字符串 O(N)
 func (self *PriorityQueue[P, V]) String() string {
-	var buf strings.Builder
-	buf.WriteByte('[')
-	var index Usize
-	length := self.data.Length()
-	for iter := self.data.Iterator(); iter.HasValue(); iter.Next() {
-		node := iter.Value()
-		buf.WriteString(fmt.Sprintf("%v: %v", node.Key, node.Value))
-		if index < length-1 {
-			buf.WriteString(", ")
-		}
-		index++
-	}
-	buf.WriteByte(']')
-	return buf.String()
+	return fmt.Sprintf("%v", self.data)
 }
 
 // 获取长度 O(1)
-func (self *PriorityQueue[P, V]) Length() Usize {
-	return self.data.Length()
+func (self *PriorityQueue[P, V]) Length() int {
+	return len(self.data)
 }
 
 // 是否为空 O(1)
 func (self *PriorityQueue[P, V]) Empty() bool {
-	return self.data.Empty()
+	return len(self.data) == 0
 }
 
-// 压入队列 O(logN)-O(NlogN)
+// 压入队列 O(1)
 func (self *PriorityQueue[P, V]) Push(p P, v V) {
-	self.data.Push(&priorityQueueNode[P, V]{
-		Key:   p,
-		Value: v,
-	})
+	self.data = append(self.data, types.NewPair(p, v))
+	sIndex, fIndex := len(self.data), (len(self.data)-1)/2
+	for sIndex != fIndex && fIndex >= 0 && self.data[sIndex].First > self.data[fIndex].First {
+		s, f := self.data[sIndex], self.data[fIndex]
+		self.data[sIndex], self.data[fIndex] = f, s
+		sIndex, fIndex = fIndex, (fIndex-1)/2
+	}
 }
 
-// 弹出队列 O(NlogN)-O(N²logN)
+// 弹出队列 O(1)
 func (self *PriorityQueue[P, V]) Pop() (P, V) {
-	node := self.data.Pop()
-	return node.Key, node.Value
+	value := self.data[0]
+	if len(self.data) == 1 {
+		self.data = self.data[1:]
+		return value.First, value.Second
+	}
+	lastIndex := len(self.data) - 1
+	last := self.data[lastIndex]
+	self.data[0] = last
+	self.data = self.data[:len(self.data)-1]
+	var curIndex int
+	length := lastIndex - 1
+	for {
+		leftIndex, rightIndex := 2*curIndex+1, 2*curIndex+2
+		if leftIndex >= length { // 无左节点，无右节点
+			break
+		} else if rightIndex >= length { // 有左节点，无右节点
+			if self.data[curIndex].First < self.data[leftIndex].First {
+				f, l := self.data[curIndex], self.data[leftIndex]
+				self.data[curIndex] = l
+				self.data[leftIndex] = f
+				curIndex = leftIndex
+			} else {
+				break
+			}
+		} else if self.data[leftIndex].First >= self.data[rightIndex].First { // 左节点比右节点小
+			if self.data[curIndex].First < self.data[leftIndex].First {
+				f, l := self.data[curIndex], self.data[leftIndex]
+				self.data[curIndex] = l
+				self.data[leftIndex] = f
+				curIndex = leftIndex
+			} else {
+				break
+			}
+		} else { // 左节点比右节点大
+			if self.data[curIndex].First < self.data[rightIndex].First {
+				f, r := self.data[curIndex], self.data[rightIndex]
+				self.data[curIndex] = r
+				self.data[rightIndex] = f
+				curIndex = rightIndex
+			} else {
+				break
+			}
+		}
+	}
+	return value.First, value.Second
 }
 
-// 提前获取队首 O(1)
+// 获取队首 O(1)
 func (self *PriorityQueue[P, V]) Peek() (P, V) {
-	node := self.data.Peek()
-	return node.Key, node.Value
+	return self.data[0].First, self.data[0].Second
 }
 
 // 清空 O(1)
 func (self *PriorityQueue[P, V]) Clear() {
-	self.data.Clear()
+	if self.Empty() {
+		return
+	}
+	self.data = nil
 }
 
 // 克隆 O(N)
 func (self *PriorityQueue[P, V]) Clone() *PriorityQueue[P, V] {
-	return &PriorityQueue[P, V]{
-		data: self.data.Clone(),
-	}
-}
-
-// 获取迭代器
-func (self *PriorityQueue[P, V]) Iterator() *PriorityQueueIterator[P, V] {
-	return &PriorityQueueIterator[P, V]{iter: self.data.Iterator()}
-}
-
-// 迭代器
-type PriorityQueueIterator[P Comparator[P], V any] struct {
-	iter *list.ArrayListIterator[*priorityQueueNode[P, V]]
-}
-
-// 是否存在值
-func (self *PriorityQueueIterator[P, V]) HasValue() bool {
-	return self.iter.HasValue()
-}
-
-// 下一个
-func (self *PriorityQueueIterator[P, V]) Next() {
-	self.iter.Next()
-}
-
-// 获取值
-func (self *PriorityQueueIterator[P, V]) Value() (P, V) {
-	node := self.iter.Value()
-	return node.Key, node.Value
+	data := make([]types.Pair[P, V], len(self.data))
+	copy(data, self.data)
+	return &PriorityQueue[P, V]{data: data}
 }

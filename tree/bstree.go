@@ -7,7 +7,7 @@ import (
 // 二叉查找树节点
 type BSTreeNode[T Comparator[T]] struct {
 	Value T              // 值
-	Times Usize          // 值出现的次数
+	Times int            // 值出现的次数
 	Left  *BSTreeNode[T] // 左子树
 	Right *BSTreeNode[T] // 右字树
 }

@@ -5,117 +5,107 @@ import (
 	"strings"
 
 	"github.com/kkkunny/stl/list"
-	. "github.com/kkkunny/stl/types"
 )
 
 // 节点
-type linkedHashMapNode[K Hasher, V any] struct {
-	key  K
-	prev *linkedHashMapNode[K, V]
-	next *linkedHashMapNode[K, V]
-}
-
-// 节点
-type linkedHashMapEntry[K Hasher, V any] struct {
-	value V
-	node  *linkedHashMapNode[K, V]
+type linkedHashMapEntry[K comparable, V any] struct {
+	Entry[K, V]
+	prev *linkedHashMapEntry[K, V]
+	next *linkedHashMapEntry[K, V]
 }
 
 // 有序哈希表
-type LinkedHashMap[K Hasher, V any] struct {
-	head *linkedHashMapNode[K, V]
-	tail *linkedHashMapNode[K, V]
-	data *HashMap[K, *linkedHashMapEntry[K, V]]
+type LinkedHashMap[K comparable, V any] struct {
+	data map[K]*linkedHashMapEntry[K, V]
+	head *linkedHashMapEntry[K, V]
+	tail *linkedHashMapEntry[K, V]
 }
 
 // 新建有序哈希表
-func NewLinkedHashMap[K Hasher, V any]() *LinkedHashMap[K, V] {
-	return &LinkedHashMap[K, V]{
-		data: NewHashMap[K, *linkedHashMapEntry[K, V]](),
-	}
+func NewLinkedHashMap[K comparable, V any]() *LinkedHashMap[K, V] {
+	return &LinkedHashMap[K, V]{data: make(map[K]*linkedHashMapEntry[K, V])}
 }
 
 // 转成字符串 O(N)
 func (self *LinkedHashMap[K, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
-	var index Usize
-	for iter := self.Begin(); iter.HasValue(); iter.Next() {
-		buf.WriteString(fmt.Sprintf("%v: %v", iter.Key(), iter.Value()))
-		if index < self.data.length-1 {
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		buf.WriteString(fmt.Sprintf("%v: %v", cursor.Key, cursor.Value))
+		if cursor.next != nil {
 			buf.WriteString(", ")
 		}
-		index++
 	}
 	buf.WriteByte('}')
 	return buf.String()
 }
 
 // 获取长度 O(1)
-func (self *LinkedHashMap[K, V]) Length() Usize {
-	return self.data.length
+func (self *LinkedHashMap[K, V]) Length() int {
+	return len(self.data)
 }
 
 // 是否为空 O(1)
 func (self *LinkedHashMap[K, V]) Empty() bool {
-	return self.data.length == 0
+	return len(self.data) == 0
 }
 
-// 设置键值对 O(1)-O(N)
+// 设置键值对 O(1)
 func (self *LinkedHashMap[K, V]) Set(k K, v V) {
-	if !self.ContainKey(k) {
-		value := &linkedHashMapEntry[K, V]{
-			value: v,
-			node:  &linkedHashMapNode[K, V]{key: k},
-		}
-		if self.head == nil {
-			self.head, self.tail = value.node, value.node
-		} else {
-			self.tail.next = value.node
-			value.node.prev = self.tail
-			self.tail = value.node
-		}
-		self.data.Set(k, value)
+	if _, ok := self.data[k]; ok {
+		return
+	}
+	node := &linkedHashMapEntry[K, V]{
+		Entry: Entry[K, V]{
+			Key:   k,
+			Value: v,
+		},
+	}
+	self.data[k] = node
+	if self.tail == nil {
+		self.head, self.tail = node, node
 	} else {
-		value := self.data.Get(k, nil)
-		value.value = v
+		self.tail.next = node
+		node.prev = self.tail
+		self.tail = node
 	}
 }
 
 // 获取值 O(1)
 func (self *LinkedHashMap[K, V]) Get(k K, v ...V) V {
-	value := self.data.Get(k, nil)
-	if value != nil {
-		return value.value
+	if node, ok := self.data[k]; ok {
+		return node.Value
+	} else if len(v) == 0 {
+		var vv V
+		return vv
+	} else {
+		return v[0]
 	}
-	if len(v) == 0 {
-		var v V
-		return v
-	}
-	return v[0]
 }
 
 // 检查越界
-func (self *LinkedHashMap[K, V]) checkOut(i Usize) {
+func (self *LinkedHashMap[K, V]) checkOut(i int) {
 	length := self.Length()
-	if i >= length {
+	if i < 0 || i >= length {
 		panic(fmt.Sprintf("index out of range [%d] with length %d", i, length))
 	}
 }
 
 // 根据下标获取值 O(N)
-func (self *LinkedHashMap[K, V]) GetByIndex(i Usize) (K, V) {
+func (self *LinkedHashMap[K, V]) GetByIndex(i int) (K, V) {
 	self.checkOut(i)
 	cursor := self.head
-	for index := Usize(0); index < i; index++ {
-		cursor = cursor.next
+	for index := 0; cursor != nil; cursor = cursor.next {
+		if index == i {
+			break
+		}
+		index++
 	}
-	key := cursor.key
-	return key, self.data.Get(key, nil).value
+	return cursor.Key, cursor.Value
 }
 
 // 移除链表节点
-func (self *LinkedHashMap[K, V]) removeNode(node *linkedHashMapNode[K, V]) {
+func (self *LinkedHashMap[K, V]) removeNode(node *linkedHashMapEntry[K, V]) {
 	if node.prev == nil && node.next == nil {
 		self.head, self.tail = nil, nil
 	} else if node.prev == nil {
@@ -133,41 +123,45 @@ func (self *LinkedHashMap[K, V]) removeNode(node *linkedHashMapNode[K, V]) {
 
 // 移除键值对 O(1)
 func (self *LinkedHashMap[K, V]) Remove(k K, v ...V) V {
-	value := self.data.Remove(k, nil)
-	if value != nil {
-		self.removeNode(value.node)
-		return value.value
+	if node, ok := self.data[k]; ok {
+		delete(self.data, k)
+		self.removeNode(node)
+		return node.Value
+	} else if len(v) == 0 {
+		var vv V
+		return vv
+	} else {
+		return v[0]
 	}
-	if len(v) == 0 {
-		var v V
-		return v
-	}
-	return v[0]
 }
 
 // 根据下标移除键值对 O(N)
-func (self *LinkedHashMap[K, V]) RemoveById(i Usize) (K, V) {
+func (self *LinkedHashMap[K, V]) RemoveByIndex(i int) (K, V) {
 	self.checkOut(i)
 	cursor := self.head
-	for index := Usize(0); index < i; index++ {
-		cursor = cursor.next
+	for index := 0; cursor != nil; cursor = cursor.next {
+		if index == i {
+			break
+		}
+		index++
 	}
-	key := cursor.key
+	delete(self.data, cursor.Key)
 	self.removeNode(cursor)
-	return key, self.data.Remove(key, nil).value
+	return cursor.Key, cursor.Value
 }
 
 // 是否存在键 O(1)
 func (self *LinkedHashMap[K, V]) ContainKey(k K) bool {
-	return self.data.ContainKey(k)
+	_, ok := self.data[k]
+	return ok
 }
 
 // 获取键 O(N)
 func (self *LinkedHashMap[K, V]) Keys() *list.ArrayList[K] {
-	keys := list.NewArrayList[K](self.data.length, self.data.length)
-	var index Usize
+	keys := list.NewArrayList[K](len(self.data), len(self.data))
+	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
-		keys.Set(index, cursor.key)
+		keys.Set(index, cursor.Key)
 		index++
 	}
 	return keys
@@ -175,10 +169,10 @@ func (self *LinkedHashMap[K, V]) Keys() *list.ArrayList[K] {
 
 // 获取值 O(N)
 func (self *LinkedHashMap[K, V]) Values() *list.ArrayList[V] {
-	values := list.NewArrayList[V](self.data.length, self.data.length)
-	var index Usize
+	values := list.NewArrayList[V](len(self.data), len(self.data))
+	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
-		values.Set(index, self.data.Get(cursor.key, nil).value)
+		values.Set(index, cursor.Value)
 		index++
 	}
 	return values
@@ -186,28 +180,29 @@ func (self *LinkedHashMap[K, V]) Values() *list.ArrayList[V] {
 
 // 清空 O(1)
 func (self *LinkedHashMap[K, V]) Clear() {
+	if self.Empty() {
+		return
+	}
 	self.head, self.tail = nil, nil
-	self.data.Clear()
+	self.data = make(map[K]*linkedHashMapEntry[K, V])
 }
 
 // 克隆 O(N)
 func (self *LinkedHashMap[K, V]) Clone() *LinkedHashMap[K, V] {
-	newlhm := NewLinkedHashMap[K, V]()
+	lhm := NewLinkedHashMap[K, V]()
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
-		newlhm.Set(cursor.key, self.data.Get(cursor.key, nil).value)
+		lhm.Set(cursor.Key, cursor.Value)
 	}
-	return newlhm
+	return lhm
 }
 
 // 过滤 O(N)
-func (self *LinkedHashMap[K, V]) Filter(f func(i Usize, k K, v V) bool) *LinkedHashMap[K, V] {
+func (self *LinkedHashMap[K, V]) Filter(f func(i int, k K, v V) bool) *LinkedHashMap[K, V] {
 	lhm := NewLinkedHashMap[K, V]()
-	var index Usize
+	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
-		key := cursor.key
-		value := self.data.Get(cursor.key, nil).value
-		if f(index, key, value) {
-			lhm.Set(key, value)
+		if f(index, cursor.Key, cursor.Value) {
+			lhm.Set(cursor.Key, cursor.Value)
 		}
 		index++
 	}
@@ -216,54 +211,65 @@ func (self *LinkedHashMap[K, V]) Filter(f func(i Usize, k K, v V) bool) *LinkedH
 
 // 获取起始迭代器
 func (self *LinkedHashMap[K, V]) Begin() *LinkedHashMapIterator[K, V] {
-	return &LinkedHashMapIterator[K, V]{
-		data:   self,
-		cursor: self.head,
-	}
+	return &LinkedHashMapIterator[K, V]{cursor: self.head}
 }
 
 // 获取结束迭代器
 func (self *LinkedHashMap[K, V]) End() *LinkedHashMapIterator[K, V] {
 	return &LinkedHashMapIterator[K, V]{
-		data:   self,
 		cursor: self.tail,
+		index:  len(self.data) - 1,
 	}
 }
 
 // 迭代器
-type LinkedHashMapIterator[K Hasher, V any] struct {
-	data   *LinkedHashMap[K, V]
-	cursor *linkedHashMapNode[K, V] // 目前节点
-	index  Usize                    // 下标
+type LinkedHashMapIterator[K comparable, V any] struct {
+	cursor *linkedHashMapEntry[K, V] // 目前节点
+	index  int                       // 下标
 }
 
-// 是否存在下一个
+// 是否存在值
 func (self *LinkedHashMapIterator[K, V]) HasValue() bool {
 	return self.cursor != nil
 }
 
+// 是否存在上一个
+func (self *LinkedHashMapIterator[K, V]) HasPrev() bool {
+	return self.cursor.prev != nil
+}
+
+// 是否存在下一个
+func (self *LinkedHashMapIterator[K, V]) HasNext() bool {
+	return self.cursor.next != nil
+}
+
 // 上一个
 func (self *LinkedHashMapIterator[K, V]) Prev() {
-	self.cursor = self.cursor.prev
+	if self.HasPrev() {
+		self.cursor = self.cursor.prev
+		self.index--
+	}
 }
 
 // 下一个
 func (self *LinkedHashMapIterator[K, V]) Next() {
-	self.cursor = self.cursor.next
-	self.index++
+	if self.HasNext() {
+		self.cursor = self.cursor.next
+		self.index++
+	}
 }
 
 // 获取下标
-func (self *LinkedHashMapIterator[K, V]) Index() Usize {
+func (self *LinkedHashMapIterator[K, V]) Index() int {
 	return self.index
 }
 
 // 获取键
 func (self *LinkedHashMapIterator[K, V]) Key() K {
-	return self.cursor.key
+	return self.cursor.Key
 }
 
 // 获取值
 func (self *LinkedHashMapIterator[K, V]) Value() V {
-	return self.data.data.Get(self.cursor.key, nil).value
+	return self.cursor.Value
 }

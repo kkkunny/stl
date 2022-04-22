@@ -1,15 +1,15 @@
 package sort
 
 import (
-	. "github.com/kkkunny/stl/types"
+	"golang.org/x/exp/constraints"
 )
 
 // 插入排序 O(N²)
-func InsertSort[T Comparator[T]](l []T, reverse bool) {
+func InsertSort[T constraints.Ordered](l []T, reverse bool) {
 	for i := 1; i < len(l); i++ {
 		tmp := l[i]
 		j := i - 1
-		for ; j >= 0 && ((!reverse && l[j].Compare(tmp) > 0) || (reverse && l[j].Compare(tmp) < 0)); j-- {
+		for ; j >= 0 && ((!reverse && l[j] > tmp) || (reverse && l[j] < tmp)); j-- {
 			l[j+1] = l[j]
 		}
 		l[j+1] = tmp
@@ -17,14 +17,14 @@ func InsertSort[T Comparator[T]](l []T, reverse bool) {
 }
 
 // 二分插入排序 O(N²)
-func BinaryInsertSort[T Comparator[T]](l []T, reverse bool) {
+func BinaryInsertSort[T constraints.Ordered](l []T, reverse bool) {
 	for i := 1; i < len(l); i++ {
 		tmp := l[i]
 		left, right := 0, i-1
 		for left <= right {
 			mid := left + (right-left)/2
-			if (!reverse && tmp.Compare(l[mid]) <= 0) ||
-				(reverse && tmp.Compare(l[mid]) >= 0) {
+			if (!reverse && tmp <= l[mid]) ||
+				(reverse && tmp > l[mid]) {
 				right = mid - 1
 			} else {
 				left = mid + 1
@@ -38,13 +38,13 @@ func BinaryInsertSort[T Comparator[T]](l []T, reverse bool) {
 }
 
 // 希尔排序 O(N**1.3) - O(N²)
-func ShellSort[T Comparator[T]](l []T, reverse bool) {
+func ShellSort[T constraints.Ordered](l []T, reverse bool) {
 	gap := len(l) / 2
 	for gap > 0 {
 		for i := gap; i < len(l); i++ {
 			tmp := l[i]
 			j := i - gap
-			for ; j >= 0 && ((!reverse && l[j].Compare(tmp) > 0) || (reverse && l[j].Compare(tmp) < 0)); j -= gap {
+			for ; j >= 0 && ((!reverse && l[j] > tmp) || (reverse && l[j] < tmp)); j -= gap {
 				l[j+gap] = l[j]
 			}
 			l[j+gap] = tmp

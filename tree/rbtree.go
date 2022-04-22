@@ -11,7 +11,7 @@ const (
 // 普通红黑树节点
 type RBTreeNode[T Comparator[T]] struct {
 	Value  T              // 值
-	Times  Usize          // 值出现的次数
+	Times  int            // 值出现的次数
 	Left   *RBTreeNode[T] // 左子树
 	Right  *RBTreeNode[T] // 右子树
 	Parent *RBTreeNode[T] // 父节点

@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	. "github.com/kkkunny/stl/types"
 )
 
 // 节点
@@ -20,7 +18,7 @@ type node[T any] struct {
 type LinkedList[T any] struct {
 	head   *node[T]
 	tail   *node[T]
-	length Usize
+	length int
 }
 
 // 新建动态数组
@@ -31,15 +29,15 @@ func NewLinkedList[T any](e ...T) *LinkedList[T] {
 }
 
 // 检查越界
-func (self *LinkedList[T]) checkOut(i Usize) {
+func (self *LinkedList[T]) checkOut(i int) {
 	length := self.Length()
-	if i >= length {
+	if i < 0 || i >= length {
 		panic(fmt.Sprintf("index out of range [%d] with length %d", i, length))
 	}
 }
 
 // 根据索引获取节点
-func (self *LinkedList[T]) getNodeByIndex(i Usize) *node[T] {
+func (self *LinkedList[T]) getNodeByIndex(i int) *node[T] {
 	self.checkOut(i)
 	if i <= self.length/2 {
 		for cursor := self.head; cursor != nil; cursor = cursor.next {
@@ -114,7 +112,7 @@ func (self *LinkedList[T]) UnmarshalJSON(data []byte) error {
 }
 
 // 获取长度 O(1)
-func (self *LinkedList[T]) Length() Usize {
+func (self *LinkedList[T]) Length() int {
 	return self.length
 }
 
@@ -141,7 +139,7 @@ func (self *LinkedList[T]) PushFront(e ...T) {
 				self.head = node
 			}
 			self.length++
-		} else if self.length == Usize(i) {
+		} else if self.length == i {
 			self.PushBack(e[i:]...)
 			break
 		} else {
@@ -163,11 +161,11 @@ func (self *LinkedList[T]) PushBack(e ...T) {
 			self.tail = node
 		}
 	}
-	self.length += Usize(len(e))
+	self.length += len(e)
 }
 
 // 插入元素 O(N)
-func (self *LinkedList[T]) Insert(i Usize, e ...T) {
+func (self *LinkedList[T]) Insert(i int, e ...T) {
 	cursor := self.getNodeByIndex(i)
 	if cursor.prev == nil { // 插入头部
 		self.PushFront(e...)
@@ -179,12 +177,12 @@ func (self *LinkedList[T]) Insert(i Usize, e ...T) {
 			cursor.prev = node
 			node.next = cursor
 		}
-		self.length += Usize(len(e))
+		self.length += len(e)
 	}
 }
 
 // 移除元素 O(N)
-func (self *LinkedList[T]) Remove(i Usize) T {
+func (self *LinkedList[T]) Remove(i int) T {
 	cursor := self.getNodeByIndex(i)
 	if cursor.prev == nil && cursor.next == nil {
 		self.head, self.tail = nil, nil
@@ -232,7 +230,7 @@ func (self *LinkedList[T]) PopBack() T {
 }
 
 // 获取元素 O(N)
-func (self *LinkedList[T]) Get(i Usize) T {
+func (self *LinkedList[T]) Get(i int) T {
 	cursor := self.getNodeByIndex(i)
 	return cursor.elem
 }
@@ -250,7 +248,7 @@ func (self *LinkedList[T]) Last() T {
 }
 
 // 设置元素 O(N)
-func (self *LinkedList[T]) Set(i Usize, e T) T {
+func (self *LinkedList[T]) Set(i int, e T) T {
 	cursor := self.getNodeByIndex(i)
 	elem := cursor.elem
 	cursor.elem = e
@@ -259,6 +257,9 @@ func (self *LinkedList[T]) Set(i Usize, e T) T {
 
 // 清空 O(1)
 func (self *LinkedList[T]) Clear() {
+	if self.Empty() {
+		return
+	}
 	self.head = nil
 	self.tail = nil
 	self.length = 0
@@ -274,9 +275,9 @@ func (self *LinkedList[T]) Clone() *LinkedList[T] {
 }
 
 // 过滤 O(N)
-func (self *LinkedList[T]) Filter(f func(i Usize, v T) bool) *LinkedList[T] {
+func (self *LinkedList[T]) Filter(f func(i int, v T) bool) *LinkedList[T] {
 	ll := NewLinkedList[T]()
-	var index Usize
+	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
 		if f(index, cursor.elem) {
 			ll.Add(cursor.elem)
@@ -287,7 +288,7 @@ func (self *LinkedList[T]) Filter(f func(i Usize, v T) bool) *LinkedList[T] {
 }
 
 // 切分[b, e) O(N)
-func (self *LinkedList[T]) Slice(b, e Usize) *LinkedList[T] {
+func (self *LinkedList[T]) Slice(b, e int) *LinkedList[T] {
 	self.checkOut(b)
 	tmp := NewLinkedList[T]()
 	for cursor := self.getNodeByIndex(b); cursor != nil && b < e; cursor = cursor.next {
@@ -299,30 +300,28 @@ func (self *LinkedList[T]) Slice(b, e Usize) *LinkedList[T] {
 
 // 获取起始迭代器
 func (self *LinkedList[T]) Begin() *LinkedListIterator[T] {
-	return &LinkedListIterator[T]{
-		data:   self,
-		cursor: self.head,
-	}
+	return &LinkedListIterator[T]{cursor: self.head}
 }
 
 // 获取结束迭代器
 func (self *LinkedList[T]) End() *LinkedListIterator[T] {
-	return &LinkedListIterator[T]{
-		data:   self,
-		cursor: self.tail,
-	}
+	return &LinkedListIterator[T]{cursor: self.tail}
 }
 
 // 迭代器
 type LinkedListIterator[T any] struct {
-	data   *LinkedList[T] // 列表
-	cursor *node[T]       // 目前节点
-	index  Usize          // 索引
+	cursor *node[T] // 目前节点
+	index  int      // 索引
 }
 
 // 是否存在值
 func (self *LinkedListIterator[T]) HasValue() bool {
 	return self.cursor != nil
+}
+
+// 是否存在上一个
+func (self *LinkedListIterator[T]) HasPrev() bool {
+	return self.cursor.prev != nil
 }
 
 // 是否存在下一个
@@ -332,17 +331,22 @@ func (self *LinkedListIterator[T]) HasNext() bool {
 
 // 上一个
 func (self *LinkedListIterator[T]) Prev() {
-	self.cursor = self.cursor.prev
+	if self.HasPrev() {
+		self.cursor = self.cursor.prev
+		self.index--
+	}
 }
 
 // 下一个
 func (self *LinkedListIterator[T]) Next() {
-	self.cursor = self.cursor.next
-	self.index++
+	if self.HasNext() {
+		self.cursor = self.cursor.next
+		self.index++
+	}
 }
 
 // 获取索引
-func (self *LinkedListIterator[T]) Index() Usize {
+func (self *LinkedListIterator[T]) Index() int {
 	return self.index
 }
 

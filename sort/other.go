@@ -1,11 +1,11 @@
 package sort
 
 import (
-	. "github.com/kkkunny/stl/types"
+	"golang.org/x/exp/constraints"
 )
 
 // 归并排序 O(NlogN)
-func MergeSort[T Comparator[T]](l []T, reverse bool) {
+func MergeSort[T constraints.Ordered](l []T, reverse bool) {
 	if len(l) == 1 {
 		return
 	}
@@ -23,8 +23,8 @@ func MergeSort[T Comparator[T]](l []T, reverse bool) {
 		} else if ri == len(right) {
 			l[i] = left[li]
 			li++
-		} else if (!reverse && left[li].Compare(right[ri]) < 0) ||
-			(reverse && left[li].Compare(right[ri]) > 0) {
+		} else if (!reverse && left[li] < right[ri]) ||
+			(reverse && left[li] > right[ri]) {
 			l[i] = left[li]
 			li++
 		} else {

@@ -2,30 +2,20 @@ package table
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
-	"time"
 
 	"github.com/kkkunny/stl/list"
-	. "github.com/kkkunny/stl/types"
 )
 
-type hashMapEntry[K Hasher, V any] struct {
-	Entry[K, V]
-	next *hashMapEntry[K, V]
-}
-
 // 哈希表
-type HashMap[K Hasher, V any] struct {
-	length  Usize
-	buckets []*hashMapEntry[K, V]
+type HashMap[K comparable, V any] struct {
+	data map[K]V
 }
 
 // 新建哈希表
-func NewHashMap[K Hasher, V any]() *HashMap[K, V] {
+func NewHashMap[K comparable, V any]() *HashMap[K, V] {
 	return &HashMap[K, V]{
-		length:  0,
-		buckets: make([]*hashMapEntry[K, V], 16),
+		data: make(map[K]V),
 	}
 }
 
@@ -33,10 +23,10 @@ func NewHashMap[K Hasher, V any]() *HashMap[K, V] {
 func (self *HashMap[K, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
-	var index Usize
-	for iter := self.Iterator(); iter.HasValue(); iter.Next() {
-		buf.WriteString(fmt.Sprintf("%v: %v", iter.Key(), iter.Value()))
-		if index < self.length-1 {
+	var index int
+	for k, v := range self.data {
+		buf.WriteString(fmt.Sprintf("%v: %v", k, v))
+		if index < len(self.data)-1 {
 			buf.WriteString(", ")
 		}
 		index++
@@ -46,191 +36,93 @@ func (self *HashMap[K, V]) String() string {
 }
 
 // 获取长度 O(1)
-func (self *HashMap[K, V]) Length() Usize {
-	return self.length
+func (self *HashMap[K, V]) Length() int {
+	return len(self.data)
 }
 
 // 是否为空 O(1)
 func (self *HashMap[K, V]) Empty() bool {
-	return self.length == 0
+	return len(self.data) == 0
 }
 
-// 哈希
-func (self *HashMap[K, V]) getHash(k K) int32 {
-	hash := k.Hash()
-	return hash ^ hash>>16
-}
-
-// 获取哈希所在索引
-func (self *HashMap[K, V]) getIndexFromHash(k K) Usize {
-	hash := self.getHash(k)
-	return Usize(hash) % Usize(cap(self.buckets))
-}
-
-// 检查扩容
-func (self *HashMap[K, V]) checkExpand() {
-	if float64(self.length)/float64(cap(self.buckets)) > 0.75 {
-		self.expandSize()
-	}
-}
-
-// 扩容 O(N)
-func (self *HashMap[K, V]) expandSize() {
-	newSize := cap(self.buckets) * 2
-	oldBuckets := self.buckets
-	self.buckets = make([]*hashMapEntry[K, V], newSize)
-	self.length = 0
-	for _, head := range oldBuckets {
-		for cursor := head; cursor != nil; cursor = cursor.next {
-			self.Set(cursor.Key, cursor.Value)
-		}
-	}
-}
-
-// 设置键值对 O(1)-O(N)
+// 设置键值对 O(1)
 func (self *HashMap[K, V]) Set(k K, v V) {
-	index := self.getIndexFromHash(k)
-	head := self.buckets[index]
-	if head == nil {
-		self.buckets[index] = &hashMapEntry[K, V]{
-			Entry: Entry[K, V]{
-				Key:   k,
-				Value: v,
-			},
-		}
-	} else {
-		var prev *hashMapEntry[K, V]
-		for ; head != nil; head = head.next {
-			if head.Key.Hash() == k.Hash() {
-				head.Value = v
-				return
-			}
-			prev = head
-		}
-		prev.next = &hashMapEntry[K, V]{
-			Entry: Entry[K, V]{
-				Key:   k,
-				Value: v,
-			},
-		}
-	}
-	self.length++
-	self.checkExpand()
+	self.data[k] = v
 }
 
 // 获取值 O(1)
 func (self *HashMap[K, V]) Get(k K, v ...V) V {
-	index := self.getIndexFromHash(k)
-	head := self.buckets[index]
-	if head != nil {
-		for ; head != nil; head = head.next {
-			if head.Key.Hash() == k.Hash() {
-				return head.Value
-			}
-		}
+	if vv, ok := self.data[k]; ok {
+		return vv
+	} else if len(v) == 0 {
+		return vv
+	} else {
+		return v[0]
 	}
-	if len(v) == 0 {
-		var v V
-		return v
-	}
-	return v[0]
 }
 
 // 移除键值对 O(1)
 func (self *HashMap[K, V]) Remove(k K, v ...V) V {
-	index := self.getIndexFromHash(k)
-	head := self.buckets[index]
-	if head != nil {
-		var prev *hashMapEntry[K, V]
-		for ; head != nil; head = head.next {
-			if head.Key.Hash() == k.Hash() {
-				break
-			}
-			prev = head
-		}
-		if head != nil {
-			elem := head.Value
-			if prev == nil {
-				self.buckets[index] = head.next
-			} else {
-				prev.next = head.next
-			}
-			self.length--
-			return elem
-		}
+	if vv, ok := self.data[k]; ok {
+		delete(self.data, k)
+		return vv
+	} else if len(v) == 0 {
+		return vv
+	} else {
+		return v[0]
 	}
-	if len(v) == 0 {
-		var v V
-		return v
-	}
-	return v[0]
 }
 
 // 是否存在键 O(1)
 func (self *HashMap[K, V]) ContainKey(k K) bool {
-	index := self.getIndexFromHash(k)
-	head := self.buckets[index]
-	if head != nil {
-		for ; head != nil; head = head.next {
-			if head.Key.Hash() == k.Hash() {
-				return true
-			}
-		}
-	}
-	return false
+	_, ok := self.data[k]
+	return ok
 }
 
 // 获取键 O(N)
 func (self *HashMap[K, V]) Keys() *list.ArrayList[K] {
-	var index Usize
-	keys := list.NewArrayList[K](self.length, self.length)
-	for _, head := range self.buckets {
-		for ; head != nil; head = head.next {
-			keys.Set(index, head.Key)
-			index++
-		}
+	keys := list.NewArrayList[K](len(self.data), len(self.data))
+	var index int
+	for k := range self.data {
+		keys.Set(index, k)
+		index++
 	}
 	return keys
 }
 
 // 获取值 O(N)
 func (self *HashMap[K, V]) Values() *list.ArrayList[V] {
-	var index Usize
-	values := list.NewArrayList[V](self.length, self.length)
-	for _, head := range self.buckets {
-		for ; head != nil; head = head.next {
-			values.Set(index, head.Value)
-			index++
-		}
+	values := list.NewArrayList[V](len(self.data), len(self.data))
+	var index int
+	for _, v := range self.data {
+		values.Set(index, v)
+		index++
 	}
 	return values
 }
 
 // 清空 O(1)
 func (self *HashMap[K, V]) Clear() {
-	self.length = 0
-	self.buckets = make([]*hashMapEntry[K, V], cap(self.buckets))
+	if !self.Empty() {
+		self.data = make(map[K]V)
+	}
 }
 
 // 克隆 O(N)
 func (self *HashMap[K, V]) Clone() *HashMap[K, V] {
-	cpy := NewHashMap[K, V]()
-	for _, head := range self.buckets {
-		for ; head != nil; head = head.next {
-			cpy.Set(head.Key, head.Value)
-		}
+	hm := NewHashMap[K, V]()
+	for k, v := range self.data {
+		hm.data[k] = v
 	}
-	return cpy
+	return hm
 }
 
 // 过滤 O(N)
 func (self *HashMap[K, V]) Filter(f func(k K, v V) bool) *HashMap[K, V] {
 	hm := NewHashMap[K, V]()
-	for _, head := range self.buckets {
-		for ; head != nil; head = head.next {
-			if f(head.Key, head.Value) {
-				hm.Set(head.Key, head.Value)
-			}
+	for k, v := range self.data {
+		if f(k, v) {
+			hm.data[k] = v
 		}
 	}
 	return hm
@@ -238,33 +130,42 @@ func (self *HashMap[K, V]) Filter(f func(k K, v V) bool) *HashMap[K, V] {
 
 // 获取迭代器
 func (self *HashMap[K, V]) Iterator() *HashMapIterator[K, V] {
-	data := make([]*hashMapEntry[K, V], self.length)
-	var index Usize
-	for _, head := range self.buckets {
-		for ; head != nil; head = head.next {
-			data[index] = head
-			index++
+	data := make([]Entry[K, V], len(self.data))
+	var index int
+	for k, v := range self.data {
+		data[index] = Entry[K, V]{
+			Key:   k,
+			Value: v,
 		}
+		index++
 	}
-	iter := &HashMapIterator[K, V]{data: data}
-	iter.shuffle()
-	return iter
+	return &HashMapIterator[K, V]{
+		data:  data,
+		index: 0,
+	}
 }
 
 // 迭代器
-type HashMapIterator[K Hasher, V any] struct {
-	data  []*hashMapEntry[K, V]
-	index Usize
+type HashMapIterator[K comparable, V any] struct {
+	data  []Entry[K, V]
+	index int
 }
 
 // 是否存在值
 func (self *HashMapIterator[K, V]) HasValue() bool {
-	return 0 <= self.index && self.index < Usize(len(self.data))
+	return 0 <= self.index && self.index < len(self.data)
+}
+
+// 是否存在下一个
+func (self *HashMapIterator[K, V]) HasNext() bool {
+	return self.index+1 < len(self.data)
 }
 
 // 下一个
 func (self *HashMapIterator[K, V]) Next() {
-	self.index++
+	if self.HasNext() {
+		self.index++
+	}
 }
 
 // 获取键
@@ -275,12 +176,4 @@ func (self *HashMapIterator[K, V]) Key() K {
 // 获取值
 func (self *HashMapIterator[K, V]) Value() V {
 	return self.data[self.index].Value
-}
-
-func (self *HashMapIterator[K, V]) shuffle() {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	for i := 0; i < len(self.data); i++ {
-		randIndex := r.Intn(len(self.data))
-		self.data[i], self.data[randIndex] = self.data[randIndex], self.data[i]
-	}
 }
