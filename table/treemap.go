@@ -159,7 +159,7 @@ func (self *TreeMap[K, V]) Filter(f func(k K, v V) bool) *TreeMap[K, V] {
 
 // 获取起始迭代器
 func (self *TreeMap[K, V]) Begin() *TreeMapIterator[K, V] {
-	ll := list.NewLinkedList[treeMapEntry[K, V]]()
+	ll := list.NewDoubleLinkedList[treeMapEntry[K, V]]()
 	var mid func(node *tree.RBTreeNode[treeMapEntry[K, V]])
 	mid = func(node *tree.RBTreeNode[treeMapEntry[K, V]]) {
 		if node.Left != nil {
@@ -176,7 +176,7 @@ func (self *TreeMap[K, V]) Begin() *TreeMapIterator[K, V] {
 
 // 获取结束迭代器
 func (self *TreeMap[K, V]) End() *TreeMapIterator[K, V] {
-	ll := list.NewLinkedList[treeMapEntry[K, V]]()
+	ll := list.NewDoubleLinkedList[treeMapEntry[K, V]]()
 	var mid func(node *tree.RBTreeNode[treeMapEntry[K, V]])
 	mid = func(node *tree.RBTreeNode[treeMapEntry[K, V]]) {
 		if node.Left != nil {
@@ -193,7 +193,7 @@ func (self *TreeMap[K, V]) End() *TreeMapIterator[K, V] {
 
 // 迭代器
 type TreeMapIterator[K constraints.Ordered, V any] struct {
-	iter *list.LinkedListIterator[treeMapEntry[K, V]]
+	iter *list.DoubleLinkedListIterator[treeMapEntry[K, V]]
 }
 
 // 是否存在值

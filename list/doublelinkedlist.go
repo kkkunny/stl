@@ -8,36 +8,36 @@ import (
 )
 
 // 节点
-type node[T any] struct {
+type doubleLinkedListNode[T any] struct {
 	elem T
-	prev *node[T]
-	next *node[T]
+	prev *doubleLinkedListNode[T]
+	next *doubleLinkedListNode[T]
 }
 
-// 链表
-type LinkedList[T any] struct {
-	head   *node[T]
-	tail   *node[T]
+// 双向链表
+type DoubleLinkedList[T any] struct {
+	head   *doubleLinkedListNode[T]
+	tail   *doubleLinkedListNode[T]
 	length int
 }
 
-// 新建动态数组
-func NewLinkedList[T any](e ...T) *LinkedList[T] {
-	ll := &LinkedList[T]{}
+// 新建双向链表
+func NewDoubleLinkedList[T any](e ...T) *DoubleLinkedList[T] {
+	ll := &DoubleLinkedList[T]{}
 	ll.Add(e...)
 	return ll
 }
 
 // 检查越界
-func (self *LinkedList[T]) checkOut(i int) {
+func (self *DoubleLinkedList[T]) checkOut(i int) {
 	length := self.Length()
-	if i < 0 || i >= length {
+	if i >= length {
 		panic(fmt.Sprintf("index out of range [%d] with length %d", i, length))
 	}
 }
 
 // 根据索引获取节点
-func (self *LinkedList[T]) getNodeByIndex(i int) *node[T] {
+func (self *DoubleLinkedList[T]) getNodeByIndex(i int) *doubleLinkedListNode[T] {
 	self.checkOut(i)
 	if i <= self.length/2 {
 		for cursor := self.head; cursor != nil; cursor = cursor.next {
@@ -59,7 +59,7 @@ func (self *LinkedList[T]) getNodeByIndex(i int) *node[T] {
 }
 
 // 转成字符串 O(N)
-func (self *LinkedList[T]) String() string {
+func (self *DoubleLinkedList[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('[')
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
@@ -73,7 +73,7 @@ func (self *LinkedList[T]) String() string {
 }
 
 // json序列化
-func (self *LinkedList[T]) MarshalJSON() ([]byte, error) {
+func (self *DoubleLinkedList[T]) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	if err := buf.WriteByte('['); err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (self *LinkedList[T]) MarshalJSON() ([]byte, error) {
 }
 
 // json反序列化
-func (self *LinkedList[T]) UnmarshalJSON(data []byte) error {
+func (self *DoubleLinkedList[T]) UnmarshalJSON(data []byte) error {
 	var tmp []T
 	if err := json.Unmarshal(data, &tmp); err != nil {
 		return err
@@ -112,47 +112,50 @@ func (self *LinkedList[T]) UnmarshalJSON(data []byte) error {
 }
 
 // 获取长度 O(1)
-func (self *LinkedList[T]) Length() int {
+func (self *DoubleLinkedList[T]) Length() int {
 	return self.length
 }
 
 // 是否为空 O(1)
-func (self *LinkedList[T]) Empty() bool {
+func (self *DoubleLinkedList[T]) Empty() bool {
 	return self.head == nil
 }
 
 // 增加元素 O(1)
-func (self *LinkedList[T]) Add(e ...T) {
+func (self *DoubleLinkedList[T]) Add(e ...T) {
 	self.PushBack(e...)
 }
 
 // 增加到头部 O(1)
-func (self *LinkedList[T]) PushFront(e ...T) {
-	for i, elem := range e {
-		if i == 0 {
-			node := &node[T]{elem: elem}
-			if self.Empty() {
-				self.head, self.tail = node, node
-			} else {
-				node.next = self.head
-				self.head.prev = node
-				self.head = node
-			}
-			self.length++
-		} else if self.length == i {
-			self.PushBack(e[i:]...)
-			break
+func (self *DoubleLinkedList[T]) PushFront(e ...T) {
+	if len(e) == 0 {
+		return
+	}
+	var begin, end *doubleLinkedListNode[T]
+	for _, elem := range e {
+		node := &doubleLinkedListNode[T]{elem: elem}
+		if begin == nil {
+			begin, end = node, node
 		} else {
-			self.Insert(1, e[i:]...)
-			break
+			end.next = node
+			node.prev = end
+			end = node
 		}
 	}
+	if self.head == nil {
+		self.head, self.tail = begin, end
+	} else {
+		end.next = self.head
+		self.head.prev = end
+		self.head = begin
+	}
+	self.length += len(e)
 }
 
 // 增加到尾部 O(1)
-func (self *LinkedList[T]) PushBack(e ...T) {
+func (self *DoubleLinkedList[T]) PushBack(e ...T) {
 	for _, i := range e {
-		node := &node[T]{elem: i}
+		node := &doubleLinkedListNode[T]{elem: i}
 		if self.Empty() {
 			self.head, self.tail = node, node
 		} else {
@@ -165,13 +168,13 @@ func (self *LinkedList[T]) PushBack(e ...T) {
 }
 
 // 插入元素 O(N)
-func (self *LinkedList[T]) Insert(i int, e ...T) {
+func (self *DoubleLinkedList[T]) Insert(i int, e ...T) {
 	cursor := self.getNodeByIndex(i)
-	if cursor.prev == nil { // 插入头部
+	if cursor.prev == nil { // 头部
 		self.PushFront(e...)
 	} else {
 		for _, i := range e {
-			node := &node[T]{elem: i}
+			node := &doubleLinkedListNode[T]{elem: i}
 			cursor.prev.next = node
 			node.prev = cursor.prev
 			cursor.prev = node
@@ -182,7 +185,7 @@ func (self *LinkedList[T]) Insert(i int, e ...T) {
 }
 
 // 移除节点
-func (self *LinkedList[T]) removeNode(node *node[T]) {
+func (self *DoubleLinkedList[T]) removeNode(node *doubleLinkedListNode[T]) {
 	if node.prev == nil && node.next == nil {
 		self.head, self.tail = nil, nil
 	} else if node.prev == nil {
@@ -200,14 +203,14 @@ func (self *LinkedList[T]) removeNode(node *node[T]) {
 }
 
 // 移除元素 O(N)
-func (self *LinkedList[T]) Remove(i int) T {
+func (self *DoubleLinkedList[T]) Remove(i int) T {
 	cursor := self.getNodeByIndex(i)
 	self.removeNode(cursor)
 	return cursor.elem
 }
 
 // 删除头元素 O(1)
-func (self *LinkedList[T]) PopFront() T {
+func (self *DoubleLinkedList[T]) PopFront() T {
 	self.checkOut(0)
 	elem := self.head.elem
 	self.removeNode(self.head)
@@ -215,7 +218,7 @@ func (self *LinkedList[T]) PopFront() T {
 }
 
 // 删除尾元素 O(1)
-func (self *LinkedList[T]) PopBack() T {
+func (self *DoubleLinkedList[T]) PopBack() T {
 	self.checkOut(0)
 	elem := self.tail.elem
 	self.removeNode(self.tail)
@@ -223,25 +226,25 @@ func (self *LinkedList[T]) PopBack() T {
 }
 
 // 获取元素 O(N)
-func (self *LinkedList[T]) Get(i int) T {
+func (self *DoubleLinkedList[T]) Get(i int) T {
 	cursor := self.getNodeByIndex(i)
 	return cursor.elem
 }
 
 // 获取第一个元素 O(1)
-func (self *LinkedList[T]) First() T {
+func (self *DoubleLinkedList[T]) First() T {
 	self.checkOut(0)
 	return self.head.elem
 }
 
 // 获取最后一个元素 O(1)
-func (self *LinkedList[T]) Last() T {
+func (self *DoubleLinkedList[T]) Last() T {
 	self.checkOut(0)
 	return self.tail.elem
 }
 
 // 设置元素 O(N)
-func (self *LinkedList[T]) Set(i int, e T) T {
+func (self *DoubleLinkedList[T]) Set(i int, e T) T {
 	cursor := self.getNodeByIndex(i)
 	elem := cursor.elem
 	cursor.elem = e
@@ -249,7 +252,7 @@ func (self *LinkedList[T]) Set(i int, e T) T {
 }
 
 // 清空 O(1)
-func (self *LinkedList[T]) Clear() {
+func (self *DoubleLinkedList[T]) Clear() {
 	if self.Empty() {
 		return
 	}
@@ -259,47 +262,47 @@ func (self *LinkedList[T]) Clear() {
 }
 
 // 克隆 O(N)
-func (self *LinkedList[T]) Clone() *LinkedList[T] {
-	newList := NewLinkedList[T]()
+func (self *DoubleLinkedList[T]) Clone() *DoubleLinkedList[T] {
+	dll := NewDoubleLinkedList[T]()
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
-		newList.PushBack(cursor.elem)
+		dll.PushBack(cursor.elem)
 	}
-	return newList
+	return dll
 }
 
 // 过滤 O(N)
-func (self *LinkedList[T]) Filter(f func(i int, v T) bool) *LinkedList[T] {
-	ll := NewLinkedList[T]()
+func (self *DoubleLinkedList[T]) Filter(f func(i int, v T) bool) *DoubleLinkedList[T] {
+	dll := NewDoubleLinkedList[T]()
 	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
 		if f(index, cursor.elem) {
-			ll.Add(cursor.elem)
+			dll.Add(cursor.elem)
 		}
 		index++
 	}
-	return ll
+	return dll
 }
 
 // 切分[b, e) O(N)
-func (self *LinkedList[T]) Slice(b, e int) *LinkedList[T] {
+func (self *DoubleLinkedList[T]) Slice(b, e int) *DoubleLinkedList[T] {
 	self.checkOut(b)
-	tmp := NewLinkedList[T]()
+	dll := NewDoubleLinkedList[T]()
 	for cursor := self.getNodeByIndex(b); cursor != nil && b < e; cursor = cursor.next {
-		tmp.Add(cursor.elem)
+		dll.Add(cursor.elem)
 		b++
 	}
-	return tmp
+	return dll
 }
 
 // 拼接 O(N)
-func (self *LinkedList[T]) Contact(a *LinkedList[T]) {
+func (self *DoubleLinkedList[T]) Contact(a *DoubleLinkedList[T]) {
 	for cursor := a.head; cursor != nil; cursor = cursor.next {
 		self.PushBack(cursor.elem)
 	}
 }
 
 // 是否有任何元素满足条件 O(N)
-func (self *LinkedList[T]) Any(f func(i int, v T) bool) bool {
+func (self *DoubleLinkedList[T]) Any(f func(i int, v T) bool) bool {
 	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
 		if f(index, cursor.elem) {
@@ -311,7 +314,7 @@ func (self *LinkedList[T]) Any(f func(i int, v T) bool) bool {
 }
 
 // 是否所有元素都满足条件 O(N)
-func (self *LinkedList[T]) Every(f func(i int, v T) bool) bool {
+func (self *DoubleLinkedList[T]) Every(f func(i int, v T) bool) bool {
 	var index int
 	for cursor := self.head; cursor != nil; cursor = cursor.next {
 		if !f(index, cursor.elem) {
@@ -323,38 +326,38 @@ func (self *LinkedList[T]) Every(f func(i int, v T) bool) bool {
 }
 
 // 获取起始迭代器
-func (self *LinkedList[T]) Begin() *LinkedListIterator[T] {
-	return &LinkedListIterator[T]{cursor: self.head}
+func (self *DoubleLinkedList[T]) Begin() *DoubleLinkedListIterator[T] {
+	return &DoubleLinkedListIterator[T]{cursor: self.head}
 }
 
 // 获取结束迭代器
-func (self *LinkedList[T]) End() *LinkedListIterator[T] {
-	return &LinkedListIterator[T]{cursor: self.tail}
+func (self *DoubleLinkedList[T]) End() *DoubleLinkedListIterator[T] {
+	return &DoubleLinkedListIterator[T]{cursor: self.tail}
 }
 
 // 迭代器
-type LinkedListIterator[T any] struct {
-	cursor *node[T] // 目前节点
-	index  int      // 索引
+type DoubleLinkedListIterator[T any] struct {
+	cursor *doubleLinkedListNode[T] // 目前节点
+	index  int                      // 索引
 }
 
 // 是否存在值
-func (self *LinkedListIterator[T]) HasValue() bool {
+func (self *DoubleLinkedListIterator[T]) HasValue() bool {
 	return self.cursor != nil
 }
 
 // 是否存在上一个
-func (self *LinkedListIterator[T]) HasPrev() bool {
+func (self *DoubleLinkedListIterator[T]) HasPrev() bool {
 	return self.cursor.prev != nil
 }
 
 // 是否存在下一个
-func (self *LinkedListIterator[T]) HasNext() bool {
+func (self *DoubleLinkedListIterator[T]) HasNext() bool {
 	return self.cursor.next != nil
 }
 
 // 上一个
-func (self *LinkedListIterator[T]) Prev() {
+func (self *DoubleLinkedListIterator[T]) Prev() {
 	if self.HasPrev() {
 		self.cursor = self.cursor.prev
 		self.index--
@@ -362,7 +365,7 @@ func (self *LinkedListIterator[T]) Prev() {
 }
 
 // 下一个
-func (self *LinkedListIterator[T]) Next() {
+func (self *DoubleLinkedListIterator[T]) Next() {
 	if self.HasNext() {
 		self.cursor = self.cursor.next
 		self.index++
@@ -370,11 +373,11 @@ func (self *LinkedListIterator[T]) Next() {
 }
 
 // 获取索引
-func (self *LinkedListIterator[T]) Index() int {
+func (self *DoubleLinkedListIterator[T]) Index() int {
 	return self.index
 }
 
 // 获取值
-func (self *LinkedListIterator[T]) Value() T {
+func (self *DoubleLinkedListIterator[T]) Value() T {
 	return self.cursor.elem
 }
