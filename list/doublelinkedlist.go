@@ -358,18 +358,14 @@ func (self *DoubleLinkedListIterator[T]) HasNext() bool {
 
 // 上一个
 func (self *DoubleLinkedListIterator[T]) Prev() {
-	if self.HasPrev() {
-		self.cursor = self.cursor.prev
-		self.index--
-	}
+	self.cursor = self.cursor.prev
+	self.index--
 }
 
 // 下一个
 func (self *DoubleLinkedListIterator[T]) Next() {
-	if self.HasNext() {
-		self.cursor = self.cursor.next
-		self.index++
-	}
+	self.cursor = self.cursor.next
+	self.index++
 }
 
 // 获取索引

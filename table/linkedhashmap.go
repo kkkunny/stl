@@ -245,18 +245,14 @@ func (self *LinkedHashMapIterator[K, V]) HasNext() bool {
 
 // 上一个
 func (self *LinkedHashMapIterator[K, V]) Prev() {
-	if self.HasPrev() {
-		self.cursor = self.cursor.prev
-		self.index--
-	}
+	self.cursor = self.cursor.prev
+	self.index--
 }
 
 // 下一个
 func (self *LinkedHashMapIterator[K, V]) Next() {
-	if self.HasNext() {
-		self.cursor = self.cursor.next
-		self.index++
-	}
+	self.cursor = self.cursor.next
+	self.index++
 }
 
 // 获取下标

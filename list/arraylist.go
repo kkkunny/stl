@@ -211,16 +211,12 @@ func (self *ArrayListIterator[T]) HasNext() bool {
 
 // 上一个
 func (self *ArrayListIterator[T]) Prev() {
-	if self.HasPrev() {
-		self.index--
-	}
+	self.index--
 }
 
 // 下一个
 func (self *ArrayListIterator[T]) Next() {
-	if self.HasNext() {
-		self.index++
-	}
+	self.index++
 }
 
 // 获取索引

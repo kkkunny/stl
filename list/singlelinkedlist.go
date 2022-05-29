@@ -363,10 +363,8 @@ func (self *SingleLinkedListIterator[T]) HasNext() bool {
 
 // 下一个
 func (self *SingleLinkedListIterator[T]) Next() {
-	if self.HasNext() {
-		self.cursor = self.cursor.next
-		self.index++
-	}
+	self.cursor = self.cursor.next
+	self.index++
 }
 
 // 获取索引

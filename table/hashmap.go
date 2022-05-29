@@ -163,9 +163,7 @@ func (self *HashMapIterator[K, V]) HasNext() bool {
 
 // 下一个
 func (self *HashMapIterator[K, V]) Next() {
-	if self.HasNext() {
-		self.index++
-	}
+	self.index++
 }
 
 // 获取键
