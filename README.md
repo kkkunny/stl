@@ -17,9 +17,9 @@
     + avl_tree
     + red_black_tree
   + table
-    + hash_table
-    + linked_hash_table
-    + tree_table
+    + hash_map
+    + linked_hash_map
+    + tree_map
   + set
     + hash_set
     + linked_hash_set
