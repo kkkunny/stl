@@ -2,17 +2,18 @@ package queue
 
 import (
 	"fmt"
+	"github.com/kkkunny/stl/list"
 )
 
 // 队列
 type Queue[T any] struct {
-	data []T
+	data *list.SingleLinkedList[T]
 }
 
 // 新建队列
 func NewQueue[T any](e ...T) *Queue[T] {
 	return &Queue[T]{
-		data: e,
+		data: list.NewSingleLinkedList(e...),
 	}
 }
 
@@ -23,42 +24,37 @@ func (self *Queue[T]) String() string {
 
 // 获取长度 O(1)
 func (self *Queue[T]) Length() int {
-	return len(self.data)
+	return self.data.Length()
 }
 
 // 是否为空 O(1)
 func (self *Queue[T]) Empty() bool {
-	return len(self.data) == 0
+	return self.data.Empty()
 }
 
 // 压入队列 O(1)
 func (self *Queue[T]) Push(e ...T) {
-	self.data = append(self.data, e...)
+	self.data.PushBack(e...)
 }
 
 // 弹出队列 O(1)
 func (self *Queue[T]) Pop() T {
-	v := self.data[0]
-	self.data = self.data[1:]
-	return v
+	return self.data.PopFront()
 }
 
 // 获取队首 O(1)
 func (self *Queue[T]) Peek() T {
-	return self.data[0]
+	return self.data.First()
 }
 
 // 清空 O(1)
 func (self *Queue[T]) Clear() {
-	if self.Empty() {
-		return
-	}
-	self.data = nil
+	self.data.Clear()
 }
 
 // 克隆 O(N)
 func (self *Queue[T]) Clone() *Queue[T] {
-	data := make([]T, len(self.data))
-	copy(data, self.data)
-	return &Queue[T]{data: data}
+	return &Queue[T]{
+		data: self.data.Clone(),
+	}
 }
