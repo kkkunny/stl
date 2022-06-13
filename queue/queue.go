@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"fmt"
 	"github.com/kkkunny/stl/list"
 )
 
@@ -19,7 +18,7 @@ func NewQueue[T any](e ...T) *Queue[T] {
 
 // 转成字符串 O(N)
 func (self *Queue[T]) String() string {
-	return fmt.Sprintf("%v", self.data)
+	return self.data.String()
 }
 
 // 获取长度 O(1)
@@ -54,7 +53,5 @@ func (self *Queue[T]) Clear() {
 
 // 克隆 O(N)
 func (self *Queue[T]) Clone() *Queue[T] {
-	return &Queue[T]{
-		data: self.data.Clone(),
-	}
+	return &Queue[T]{data: self.data.Clone()}
 }

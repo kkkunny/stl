@@ -1,64 +1,57 @@
 package stack
 
 import (
-	"fmt"
+	"github.com/kkkunny/stl/list"
 )
 
 // 栈
 type Stack[T any] struct {
-	data []T
+	data *list.SingleLinkedList[T]
 }
 
 // 新建栈
 func NewStack[T any](e ...T) *Stack[T] {
 	return &Stack[T]{
-		data: e,
+		data: list.NewSingleLinkedList[T](e...),
 	}
 }
 
 // 转成字符串 O(N)
 func (self *Stack[T]) String() string {
-	return fmt.Sprintf("%v", self.data)
+	return self.data.String()
 }
 
 // 获取长度 O(1)
 func (self *Stack[T]) Length() int {
-	return len(self.data)
+	return self.data.Length()
 }
 
 // 是否为空 O(1)
 func (self *Stack[T]) Empty() bool {
-	return len(self.data) == 0
+	return self.data.Empty()
 }
 
 // 压入栈 O(1)
 func (self *Stack[T]) Push(e ...T) {
-	self.data = append(self.data, e...)
+	self.data.PushBack(e...)
 }
 
 // 弹出栈 O(1)
 func (self *Stack[T]) Pop() T {
-	v := self.data[len(self.data)-1]
-	self.data = self.data[:len(self.data)-1]
-	return v
+	return self.data.PopBack()
 }
 
 // 获取栈顶 O(1)
 func (self *Stack[T]) Peek() T {
-	return self.data[len(self.data)-1]
+	return self.data.Last()
 }
 
 // 清空 O(1)
 func (self *Stack[T]) Clear() {
-	if self.Empty() {
-		return
-	}
-	self.data = nil
+	self.data.Clear()
 }
 
 // 克隆 O(N)
 func (self *Stack[T]) Clone() *Stack[T] {
-	data := make([]T, len(self.data))
-	copy(data, self.data)
-	return &Stack[T]{data: data}
+	return &Stack[T]{data: self.data.Clone()}
 }
