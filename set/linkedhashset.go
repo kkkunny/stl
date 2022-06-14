@@ -107,3 +107,15 @@ func (self *LinkedHashSet[T]) End() *list.ArrayListIterator[T] {
 	}
 	return al.End()
 }
+
+// First 获取第一个值 O(1)
+func (self *LinkedHashSet[T]) First() T {
+	k, _ := self.data.First()
+	return k
+}
+
+// Last 获取最后一个值 O(1)
+func (self *LinkedHashSet[T]) Last() T {
+	k, _ := self.data.Last()
+	return k
+}

@@ -222,6 +222,16 @@ func (self *LinkedHashMap[K, V]) End() *LinkedHashMapIterator[K, V] {
 	}
 }
 
+// First 获取第一个键值对 O(1)
+func (self *LinkedHashMap[K, V]) First() (K, V) {
+	return self.head.Key, self.head.Value
+}
+
+// Last 获取最后一个键值对 O(1)
+func (self *LinkedHashMap[K, V]) Last() (K, V) {
+	return self.tail.Key, self.tail.Value
+}
+
 // 迭代器
 type LinkedHashMapIterator[K comparable, V any] struct {
 	cursor *linkedHashMapEntry[K, V] // 目前节点
