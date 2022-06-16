@@ -28,7 +28,7 @@ func UnJson(v any, data []byte) error {
 	return decoder.Decode(v)
 }
 
-// Must must
+// Must 必须没有异常
 func Must[T any](v T, e error) T {
 	if e != nil {
 		panic(e)
