@@ -49,3 +49,15 @@ func (self Option[T]) UnwrapOr(v T) T {
 func (self Option[T]) UnwrapOrDefault() T {
 	return self.value
 }
+
+// Take 获取并赋空
+func (self *Option[T]) Take() T {
+	if !self.ok {
+		panic("expect a value but there is none")
+	}
+	self.ok = false
+	var v2 T
+	v := self.value
+	self.value = v2
+	return v
+}
