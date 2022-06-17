@@ -177,6 +177,16 @@ func (self *TreeMap[K, V]) Every(f func(k K, v V) bool) bool {
 	return true
 }
 
+// TreeMapMap 映射
+func TreeMapMap[K1 constraints.Ordered, V1 any, K2 constraints.Ordered, V2 any](src *TreeMap[K1, V1], f func(k K1, v V1) (K2, V2)) *TreeMap[K2, V2] {
+	newMap := NewTreeMap[K2, V2]()
+	for iter := src.Begin(); iter.HasValue(); iter.Next() {
+		k2, v2 := f(iter.Key(), iter.Value())
+		newMap.Set(k2, v2)
+	}
+	return newMap
+}
+
 // 获取起始迭代器
 func (self *TreeMap[K, V]) Begin() *TreeMapIterator[K, V] {
 	ll := list.NewDoubleLinkedList[treeMapEntry[K, V]]()

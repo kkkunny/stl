@@ -188,6 +188,15 @@ func (self *ArrayList[T]) End() *ArrayListIterator[T] {
 	}
 }
 
+// ArrayListMap 映射
+func ArrayListMap[T any, E any](src *ArrayList[T], f func(i int, v T) E) *ArrayList[E] {
+	newData := make([]E, len(src.data))
+	for i, v := range src.data {
+		newData[i] = f(i, v)
+	}
+	return &ArrayList[E]{data: newData}
+}
+
 // 迭代器
 type ArrayListIterator[T any] struct {
 	data  []T // 列表

@@ -148,6 +148,16 @@ func (self *HashMap[K, V]) Every(f func(k K, v V) bool) bool {
 	return true
 }
 
+// HashMapMap 映射
+func HashMapMap[K1 comparable, V1 any, K2 comparable, V2 any](src *HashMap[K1, V1], f func(k K1, v V1) (K2, V2)) *HashMap[K2, V2] {
+	newMap := NewHashMap[K2, V2]()
+	for k, v := range src.data {
+		k2, v2 := f(k, v)
+		newMap.data[k2] = v2
+	}
+	return newMap
+}
+
 // 获取迭代器
 func (self *HashMap[K, V]) Iterator() *HashMapIterator[K, V] {
 	data := make([]Entry[K, V], len(self.data))

@@ -340,6 +340,17 @@ func (self *SingleLinkedList[T]) Every(f func(i int, v T) bool) bool {
 	return true
 }
 
+// SingleLinkedListMap 映射
+func SingleLinkedListMap[T any, E any](src *SingleLinkedList[T], f func(i int, v T) E) *SingleLinkedList[E] {
+	newList := NewSingleLinkedList[E]()
+	var i int
+	for cursor := src.head; cursor != nil; cursor = cursor.next {
+		newList.PushBack(f(i, cursor.elem))
+		i++
+	}
+	return newList
+}
+
 // 获取迭代器
 func (self *SingleLinkedList[T]) Iterator() *SingleLinkedListIterator[T] {
 	return &SingleLinkedListIterator[T]{cursor: self.head}

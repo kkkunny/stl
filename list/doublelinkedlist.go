@@ -325,6 +325,17 @@ func (self *DoubleLinkedList[T]) Every(f func(i int, v T) bool) bool {
 	return true
 }
 
+// DoubleLinkedListMap 映射
+func DoubleLinkedListMap[T any, E any](src *DoubleLinkedList[T], f func(i int, v T) E) *DoubleLinkedList[E] {
+	newList := NewDoubleLinkedList[E]()
+	var i int
+	for cursor := src.head; cursor != nil; cursor = cursor.next {
+		newList.PushBack(f(i, cursor.elem))
+		i++
+	}
+	return newList
+}
+
 // 获取起始迭代器
 func (self *DoubleLinkedList[T]) Begin() *DoubleLinkedListIterator[T] {
 	return &DoubleLinkedListIterator[T]{cursor: self.head}

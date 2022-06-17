@@ -233,6 +233,18 @@ func (self *LinkedHashMap[K, V]) Every(f func(i int, k K, v V) bool) bool {
 	return true
 }
 
+// LinkedHashMapMap 映射
+func LinkedHashMapMap[K1 comparable, V1 any, K2 comparable, V2 any](src *LinkedHashMap[K1, V1], f func(i int, k K1, v V1) (K2, V2)) *LinkedHashMap[K2, V2] {
+	newMap := NewLinkedHashMap[K2, V2]()
+	var i int
+	for cursor := src.head; cursor != nil; cursor = cursor.next {
+		k2, v2 := f(i, cursor.Key, cursor.Value)
+		newMap.Set(k2, v2)
+		i++
+	}
+	return newMap
+}
+
 // 获取起始迭代器
 func (self *LinkedHashMap[K, V]) Begin() *LinkedHashMapIterator[K, V] {
 	return &LinkedHashMapIterator[K, V]{cursor: self.head}
