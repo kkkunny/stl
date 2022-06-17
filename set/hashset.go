@@ -100,6 +100,26 @@ func (self *HashSet[T]) Filter(f func(v T) bool) *HashSet[T] {
 	return hs
 }
 
+// 任意一个满足条件 O(N)
+func (self *HashSet[T]) Any(f func(v T) bool) bool {
+	for k := range self.data {
+		if f(k) {
+			return true
+		}
+	}
+	return false
+}
+
+// 每一个满足条件 O(N)
+func (self *HashSet[T]) Every(f func(v T) bool) bool {
+	for k := range self.data {
+		if !f(k) {
+			return false
+		}
+	}
+	return true
+}
+
 // 获取迭代器
 func (self *HashSet[T]) Iterator() *list.ArrayListIterator[T] {
 	al := list.NewArrayList[T](len(self.data), len(self.data))

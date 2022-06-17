@@ -157,6 +157,26 @@ func (self *TreeMap[K, V]) Filter(f func(k K, v V) bool) *TreeMap[K, V] {
 	return tm
 }
 
+// 任意一个满足条件 O(N)
+func (self *TreeMap[K, V]) Any(f func(k K, v V) bool) bool {
+	for iter := self.Begin(); iter.HasValue(); iter.Next() {
+		if f(iter.Key(), iter.Value()) {
+			return true
+		}
+	}
+	return false
+}
+
+// 全部满足条件 O(N)
+func (self *TreeMap[K, V]) Every(f func(k K, v V) bool) bool {
+	for iter := self.Begin(); iter.HasValue(); iter.Next() {
+		if !f(iter.Key(), iter.Value()) {
+			return false
+		}
+	}
+	return true
+}
+
 // 获取起始迭代器
 func (self *TreeMap[K, V]) Begin() *TreeMapIterator[K, V] {
 	ll := list.NewDoubleLinkedList[treeMapEntry[K, V]]()

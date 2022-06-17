@@ -128,6 +128,26 @@ func (self *HashMap[K, V]) Filter(f func(k K, v V) bool) *HashMap[K, V] {
 	return hm
 }
 
+// 任意一个满足条件 O(N)
+func (self *HashMap[K, V]) Any(f func(k K, v V) bool) bool {
+	for k, v := range self.data {
+		if f(k, v) {
+			return true
+		}
+	}
+	return false
+}
+
+// 每一个满足条件 O(N)
+func (self *HashMap[K, V]) Every(f func(k K, v V) bool) bool {
+	for k, v := range self.data {
+		if !f(k, v) {
+			return false
+		}
+	}
+	return true
+}
+
 // 获取迭代器
 func (self *HashMap[K, V]) Iterator() *HashMapIterator[K, V] {
 	data := make([]Entry[K, V], len(self.data))

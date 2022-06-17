@@ -88,6 +88,20 @@ func (self *TreeSet[T]) Filter(f func(v T) bool) *TreeSet[T] {
 	})}
 }
 
+// 任意一个满足条件 O(N)
+func (self *TreeSet[T]) Any(f func(v T) bool) bool {
+	return self.data.Any(func(k T, _ struct{}) bool {
+		return f(k)
+	})
+}
+
+// 全部满足条件 O(N)
+func (self *TreeSet[T]) Every(f func(v T) bool) bool {
+	return self.data.Every(func(k T, _ struct{}) bool {
+		return f(k)
+	})
+}
+
 // 获取起始迭代器
 func (self *TreeSet[T]) Begin() *list.ArrayListIterator[T] {
 	al := list.NewArrayList[T](self.data.Length(), self.data.Length())

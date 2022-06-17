@@ -90,6 +90,20 @@ func (self *LinkedHashSet[T]) Filter(f func(i int, v T) bool) *LinkedHashSet[T] 
 	})}
 }
 
+// 任意一个满足条件 O(N)
+func (self *LinkedHashSet[T]) Any(f func(i int, v T) bool) bool {
+	return self.data.Any(func(i int, k T, _ struct{}) bool {
+		return f(i, k)
+	})
+}
+
+// 全部满足条件 O(N)
+func (self *LinkedHashSet[T]) Every(f func(i int, v T) bool) bool {
+	return self.data.Every(func(i int, k T, _ struct{}) bool {
+		return f(i, k)
+	})
+}
+
 // 获取起始迭代器
 func (self *LinkedHashSet[T]) Begin() *list.ArrayListIterator[T] {
 	al := list.NewArrayList[T](self.data.Length(), self.data.Length())

@@ -209,6 +209,30 @@ func (self *LinkedHashMap[K, V]) Filter(f func(i int, k K, v V) bool) *LinkedHas
 	return lhm
 }
 
+// 任意一个满足条件 O(N)
+func (self *LinkedHashMap[K, V]) Any(f func(i int, k K, v V) bool) bool {
+	var index int
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		if f(index, cursor.Key, cursor.Value) {
+			return true
+		}
+		index++
+	}
+	return false
+}
+
+// 每一个满足条件 O(N)
+func (self *LinkedHashMap[K, V]) Every(f func(i int, k K, v V) bool) bool {
+	var index int
+	for cursor := self.head; cursor != nil; cursor = cursor.next {
+		if !f(index, cursor.Key, cursor.Value) {
+			return false
+		}
+		index++
+	}
+	return true
+}
+
 // 获取起始迭代器
 func (self *LinkedHashMap[K, V]) Begin() *LinkedHashMapIterator[K, V] {
 	return &LinkedHashMapIterator[K, V]{cursor: self.head}

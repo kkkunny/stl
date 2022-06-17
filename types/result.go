@@ -6,6 +6,14 @@ type Result[T any] struct {
 	value T     // 值
 }
 
+// NewResult 新建结果
+func NewResult[T any](v T, e error) Result[T] {
+	return Result[T]{
+		error: e,
+		value: v,
+	}
+}
+
 // Ok 有结果
 func Ok[T any](v T) Result[T] {
 	return Result[T]{value: v}
