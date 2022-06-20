@@ -212,13 +212,11 @@ func (self *SingleLinkedList[T]) PopBack() T {
 	self.checkOut(0)
 	elem := self.tail.elem
 	cursor := self.head
-	for ; ; cursor = cursor.next {
-		if cursor.next.next == nil {
-			break
-		}
+	for ; cursor.next.next != nil; cursor = cursor.next {
 	}
 	cursor.next = nil
 	self.tail = cursor
+	self.length--
 	return elem
 }
 
