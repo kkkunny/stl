@@ -10,3 +10,8 @@ func TestMust(t *testing.T) {
 	content := Must(Json(&a))
 	fmt.Println(string(content))
 }
+
+func TestGetGoroutineID(t *testing.T) {
+	id := GetGoroutineID()
+	fmt.Println(id)
+}
