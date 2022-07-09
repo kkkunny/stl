@@ -31,7 +31,14 @@ func UnJson(v any, data []byte) error {
 }
 
 // Must 必须没有异常
-func Must[T any](v T, e error) T {
+func Must(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+// MustValue 必须没有异常并返回值
+func MustValue[T any](v T, e error) T {
 	if e != nil {
 		panic(e)
 	}
