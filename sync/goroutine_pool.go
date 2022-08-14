@@ -2,7 +2,6 @@ package sync
 
 import (
 	"context"
-	"github.com/kkkunny/stl/util"
 	"testing/iotest"
 	"time"
 )
@@ -64,11 +63,10 @@ loop:
 		case _ = <-self.waitCh:
 			go func() {
 				taskErr := self.task(self.ctx)
+				self.waitCh <- struct{}{}
 				if taskErr != nil {
 					self.err = taskErr
 					self.cannel()
-				} else if !util.IsChanClosed(self.waitCh) {
-					self.waitCh <- struct{}{}
 				}
 			}()
 		}
