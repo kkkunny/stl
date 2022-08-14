@@ -14,12 +14,11 @@ type WaitGroup struct {
 }
 
 // NewWaitGroup 新建等待组
-func NewWaitGroup(limit ...uint) *WaitGroup {
-	return NewWaitGroupWaitContext(context.Background(), limit...)
-}
+func NewWaitGroup(ctx context.Context, limit ...uint) *WaitGroup {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 
-// NewWaitGroupWaitContext 新建带上下文的等待组
-func NewWaitGroupWaitContext(ctx context.Context, limit ...uint) *WaitGroup {
 	group, ctx := errgroup.WithContext(ctx)
 	if len(limit) > 0 && limit[0] > 0 {
 		group.SetLimit(int(limit[0]))
@@ -52,10 +51,6 @@ func (self *WaitGroup) Wait() error {
 
 // WaitWithTimeOut 超时等待
 func (self *WaitGroup) WaitWithTimeOut(d time.Duration) (err error) {
-	if d < 0 {
-		panic("expect a duration which is greater than zero")
-	}
-
 	timeout := time.NewTimer(d)
 	endCh := make(chan error)
 
