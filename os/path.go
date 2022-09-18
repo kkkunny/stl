@@ -35,7 +35,11 @@ func (self Path) GetBase() Path {
 
 // GetExtension 获取拓展名
 func (self Path) GetExtension() string {
-	return filepath.Ext(string(self))
+	index := strings.LastIndexByte(string(self), '.')
+	if index < 0 || index+1 >= len(self) {
+		return ""
+	}
+	return string(self)[index+1:]
 }
 
 // IsAbsolute 是否是绝对路径
