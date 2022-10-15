@@ -1,6 +1,7 @@
 package os
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -70,8 +71,9 @@ func (self Path) WithExtension(ext string) Path {
 	index := strings.LastIndexByte(string(self), '.')
 	if index >= 0 {
 		return Path(string(self)[:index] + "." + ext)
+	} else {
+		return Path(fmt.Sprintf("%s.%s", self, ext))
 	}
-	return self
 }
 
 // IsDir 是否是目录
