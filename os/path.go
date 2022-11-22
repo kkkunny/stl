@@ -93,3 +93,13 @@ func (self Path) IsFile() bool {
 	}
 	return !info.IsDir()
 }
+
+// OpenFile 打开文件
+func (self Path) OpenFile(flag int, perm os.FileMode) (*os.File, error) {
+	return os.OpenFile(self.String(), flag, perm)
+}
+
+// OpenDir 打开目录
+func (self Path) OpenDir() ([]os.DirEntry, error) {
+	return os.ReadDir(self.String())
+}
