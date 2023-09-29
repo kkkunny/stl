@@ -1,5 +1,7 @@
 package stltype
 
+import stlbasic "github.com/kkkunny/stl/basic"
+
 type Either[L, R any] struct {
 	data any
 }
@@ -30,4 +32,8 @@ func (self Either[L, R]) IsLeft() bool {
 func (self Either[L, R]) IsRight() bool {
 	_, ok := self.data.(R)
 	return ok
+}
+
+func (self Either[L, R]) Clone() any {
+	return Either[L, R]{data: stlbasic.Clone(self.data)}
 }

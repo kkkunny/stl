@@ -138,3 +138,7 @@ func (self DynArray[T]) Back() T {
 func (self DynArray[T]) Front() T {
 	return (*self.data)[0]
 }
+
+func (self DynArray[T]) Clone() any {
+	return DynArray[T]{data: stlbasic.Clone(self.data)}
+}
