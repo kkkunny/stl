@@ -12,6 +12,10 @@ func _NewIterator[T any](src *DynArray[T]) *_iterator[T] {
 	}
 }
 
+func (self *_iterator[T]) Length() uint{
+	return self.src.Length()
+}
+
 func (self *_iterator[T]) Next() bool {
 	if self.next >= self.src.Length() {
 		return false
@@ -22,4 +26,8 @@ func (self *_iterator[T]) Next() bool {
 
 func (self _iterator[T]) Value() T {
 	return self.src.Get(self.next - 1)
+}
+
+func (self *_iterator[T]) Reset() {
+	self.next = 0
 }
