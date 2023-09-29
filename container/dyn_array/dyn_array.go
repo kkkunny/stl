@@ -138,6 +138,14 @@ func (self DynArray[T]) Clone() any {
 	return DynArray[T]{data: stlbasic.Clone(self.data)}
 }
 
+func (self *DynArray[T]) Clear() {
+	*self.data = make([]T, 0)
+}
+
+func (self DynArray[T]) Empty() bool {
+	return self.Length() == 0
+}
+
 func (self DynArray[T]) Iterator() iterator.Iterator[DynArray[T], T] {
 	return iterator.NewIterator[DynArray[T], T](_NewIterator[T](&self))
 }
