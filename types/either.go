@@ -1,32 +1,33 @@
 package types
 
 type Either[L, R any] struct {
-	left  *L
-	right *R
+	value any
 }
 
 func Left[L, R any](v L) Either[L, R] {
-	return Either[L, R]{left: &v}
+	return Either[L, R]{value: v}
 }
 
 func Right[L, R any](v R) Either[L, R] {
-	return Either[L, R]{right: &v}
+	return Either[L, R]{value: v}
 }
 
-// Left dangerous
-func (self Either[L, R]) Left() L {
-	return *self.left
+func (self Either[L, R]) Left() (L, bool) {
+	v, ok := self.value.(L)
+	return v, ok
 }
 
-// Right dangerous
-func (self Either[L, R]) Right() R {
-	return *self.right
+func (self Either[L, R]) Right() (R, bool) {
+	v, ok := self.value.(R)
+	return v, ok
 }
 
 func (self Either[L, R]) IsLeft() bool {
-	return self.left != nil
+	_, ok := self.value.(L)
+	return ok
 }
 
 func (self Either[L, R]) IsRight() bool {
-	return self.right != nil
+	_, ok := self.value.(R)
+	return ok
 }
