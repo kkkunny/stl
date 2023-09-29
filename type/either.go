@@ -1,4 +1,4 @@
-package types
+package stltype
 
 type Either[L, R any] struct {
 	value any

@@ -1,4 +1,4 @@
-package types
+package stltype
 
 import "golang.org/x/exp/constraints"
 
