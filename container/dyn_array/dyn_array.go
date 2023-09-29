@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/container/iterator"
 )
 
 // DynArray 动态数组
@@ -29,6 +30,14 @@ func NewDynArrayWithLength[T any](l uint) DynArray[T] {
 
 func NewDynArrayWith[T any](vs ...T) DynArray[T] {
 	return DynArray[T]{data: &vs}
+}
+
+func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[DynArray[T], T]) DynArray[T] {
+	self := NewDynArray[T]()
+	for iter.Next() {
+		self.PushBack(iter.Value())
+	}
+	return self
 }
 
 func (self DynArray[T]) Length() uint {
@@ -92,7 +101,7 @@ func (self *DynArray[T]) Remove(i uint) T {
 	return v
 }
 
-func (self *DynArray[T]) String() string {
+func (self DynArray[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('[')
 	for i, v := range *self.data {
@@ -127,4 +136,8 @@ func (self DynArray[T]) Front() T {
 
 func (self DynArray[T]) Clone() any {
 	return DynArray[T]{data: stlbasic.Clone(self.data)}
+}
+
+func (self DynArray[T]) Iterator() iterator.Iterator[DynArray[T], T] {
+	return iterator.NewIterator[DynArray[T], T](_NewIterator[T](&self))
 }
