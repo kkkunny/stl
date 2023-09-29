@@ -6,6 +6,7 @@ import stlbasic "github.com/kkkunny/stl/basic"
 type _Iter[T any] interface {
 	stlbasic.Length
 	Next() bool
+	HasNext() bool
 	Value() T
 	Reset()
 }

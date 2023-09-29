@@ -12,7 +12,7 @@ func TestNewHashMap(t *testing.T) {
 }
 
 func TestNewHashMapWithCapacity(t *testing.T) {
-	v := NewHashMap[int, int]()
+	v := NewHashMapWithCapacity[int, int](10)
 	stltest.AssertEq(t, v.Length(), 0)
 }
 
@@ -44,7 +44,7 @@ func TestHashMap_Remove(t *testing.T) {
 }
 
 func TestHashMap_Clear(t *testing.T) {
-	v := NewHashMap[int, int]()
+	v := NewHashMapWith[int, int](1, 1, 2, 2, 3, 3)
 	v.Clear()
 	stltest.AssertEq(t, int(v.Length()), 0)
 }
@@ -52,4 +52,11 @@ func TestHashMap_Clear(t *testing.T) {
 func TestHashMap_Empty(t *testing.T) {
 	v := NewHashMap[int, int]()
 	stltest.AssertEq(t, v.Empty(), true)
+}
+
+func TestHashMap_ContainKey(t *testing.T) {
+	v := NewHashMap[int, int]()
+	stltest.AssertEq(t, v.ContainKey(1), false)
+	v.Set(1, 2)
+	stltest.AssertEq(t, v.ContainKey(1), true)
 }

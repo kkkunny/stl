@@ -24,6 +24,10 @@ func (self *_iterator[T]) Next() bool {
 	return true
 }
 
+func (self _iterator[T]) HasNext() bool {
+	return self.next < self.Length()
+}
+
 func (self _iterator[T]) Value() T {
 	return self.src.Get(self.next - 1)
 }

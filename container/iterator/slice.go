@@ -24,6 +24,10 @@ func (self *_SliceIterator[T]) Next() bool {
 	return true
 }
 
+func (self _SliceIterator[T]) HasNext() bool {
+	return self.next < len(*self.src)
+}
+
 func (self _SliceIterator[T]) Value() T {
 	return (*self.src)[self.next-1]
 }

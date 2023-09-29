@@ -34,6 +34,10 @@ func (self *_iterator[K, V]) Next() bool {
 	return true
 }
 
+func (self _iterator[K, V]) HasNext() bool {
+	return self.next < self.Length()
+}
+
 func (self _iterator[K, V]) Value() pair.Pair[K, V] {
 	key := self.keys[self.next-1]
 	val := self.src.Get(key)
