@@ -1,33 +1,33 @@
 package stltype
 
 type Either[L, R any] struct {
-	value any
+	data any
 }
 
 func Left[L, R any](v L) Either[L, R] {
-	return Either[L, R]{value: v}
+	return Either[L, R]{data: v}
 }
 
 func Right[L, R any](v R) Either[L, R] {
-	return Either[L, R]{value: v}
+	return Either[L, R]{data: v}
 }
 
 func (self Either[L, R]) Left() (L, bool) {
-	v, ok := self.value.(L)
+	v, ok := self.data.(L)
 	return v, ok
 }
 
 func (self Either[L, R]) Right() (R, bool) {
-	v, ok := self.value.(R)
+	v, ok := self.data.(R)
 	return v, ok
 }
 
 func (self Either[L, R]) IsLeft() bool {
-	_, ok := self.value.(L)
+	_, ok := self.data.(L)
 	return ok
 }
 
 func (self Either[L, R]) IsRight() bool {
-	_, ok := self.value.(R)
+	_, ok := self.data.(R)
 	return ok
 }
