@@ -17,7 +17,7 @@ func (self *_iterator[T]) Length() uint{
 }
 
 func (self *_iterator[T]) Next() bool {
-	if self.next >= self.src.Length() {
+	if self.next >= self.Length() {
 		return false
 	}
 	self.next++

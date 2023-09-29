@@ -33,9 +33,11 @@ func NewDynArrayWith[T any](vs ...T) DynArray[T] {
 }
 
 func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[DynArray[T], T]) DynArray[T] {
-	self := NewDynArray[T]()
+	self := NewDynArrayWithLength[T](iter.Length())
+	var i uint
 	for iter.Next() {
-		self.PushBack(iter.Value())
+		self.Set(i, iter.Value())
+		i++
 	}
 	return self
 }
