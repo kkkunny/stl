@@ -2,7 +2,6 @@ package dynarray
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -54,23 +53,10 @@ func (self DynArray[T]) Equal(dst any) bool {
 		return false
 	}
 
-	var tmp T
-	if _, ok := any(tmp).(stlbasic.Comparable); ok {
-		for i, v := range *self.data {
-			if eqv, ok := any(v).(stlbasic.Comparable); ok {
-				if !eqv.Equal((*self.data)[i]) {
-					return false
-				}
-			}
+	for i, v := range *self.data {
+		if !stlbasic.Equal(v, (*da.data)[i]) {
+			return false
 		}
-	} else if tp := reflect.TypeOf(tmp); tp.Comparable() {
-		for i, v := range *self.data {
-			if !reflect.ValueOf(v).Equal(reflect.ValueOf((*self.data)[i])) {
-				return false
-			}
-		}
-	} else {
-		panic(fmt.Errorf("type `%s` cannot be compared", tp))
 	}
 	return true
 }

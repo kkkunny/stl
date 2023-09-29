@@ -13,7 +13,7 @@ type Clonable interface {
 // Clone 克隆
 func Clone[T any](v T) T {
 	if vv, ok := any(v).(Clonable); ok {
-		return vv.Clone()
+		return vv.Clone().(T)
 	} else {
 		vtype := reflect.TypeOf(v)
 		switch vtype.Kind() {
@@ -27,11 +27,9 @@ func Clone[T any](v T) T {
 			reflect.String,
 			reflect.Chan,
 			reflect.UnsafePointer,
+			reflect.Interface,
 			reflect.Pointer:
 			return v
-		case reflect.Interface:
-			vv := reflect.ValueOf(v)
-			return Clone(vv.Elem().Interface())
 		case reflect.Array:
 			vv := reflect.ValueOf(v)
 			length := vv.Len()
@@ -40,7 +38,7 @@ func Clone[T any](v T) T {
 				ne := Clone(vv.Index(i).Interface())
 				nvp.Elem().Index(i).Set(reflect.ValueOf(ne))
 			}
-			return nvp.Elem().Interface()
+			return nvp.Elem().Interface().(T)
 		case reflect.Slice:
 			vv := reflect.ValueOf(v)
 			et := vtype.Elem()
@@ -50,7 +48,7 @@ func Clone[T any](v T) T {
 				ne := Clone(vv.Index(i).Interface())
 				nv.Index(i).Set(reflect.ValueOf(ne))
 			}
-			return nv.Interface()
+			return nv.Interface().(T)
 		case reflect.Map:
 			vv := reflect.ValueOf(v)
 			nv := reflect.MakeMap(vtype)
@@ -60,7 +58,7 @@ func Clone[T any](v T) T {
 				ne := Clone(val.Interface())
 				nv.SetMapIndex(key, reflect.ValueOf(ne))
 			}
-			return nv.Interface()
+			return nv.Interface().(T)
 		case reflect.Struct:
 			vv := reflect.ValueOf(v)
 			length := vv.NumField()
@@ -69,7 +67,7 @@ func Clone[T any](v T) T {
 				nf := Clone(vv.Field(i).Interface())
 				nv.Elem().Field(i).Set(reflect.ValueOf(nf))
 			}
-			return nv.Elem().Interface()
+			return nv.Elem().Interface().(T)
 		default:
 			panic(fmt.Errorf("type `%s` cannot be cloned", vtype))
 		}
