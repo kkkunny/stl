@@ -93,3 +93,15 @@ func TestDynArray_Front(t *testing.T) {
 	v := NewDynArrayWith(1, 2, 3)
 	stltest.AssertEq(t, v.Front(), 1)
 }
+
+func TestDynArray_Clear(t *testing.T) {
+	v := NewDynArrayWith(1, 2, 3)
+	v.Clear()
+	stltest.AssertEq(t, int(v.Length()), 0)
+}
+
+func TestDynArray_Empty(t *testing.T) {
+	v := NewDynArrayWith(1, 2, 3)
+	v.Clear()
+	stltest.AssertEq(t, v.Empty(), true)
+}
