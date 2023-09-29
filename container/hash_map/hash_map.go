@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	dynarray "github.com/kkkunny/stl/container/dyn_array"
 	"github.com/kkkunny/stl/container/iterator"
 	"github.com/kkkunny/stl/container/pair"
 )
@@ -22,9 +23,11 @@ func NewHashMapWithCapacity[K comparable, V any](cap uint) HashMap[K, V] {
 	return HashMap[K, V]{data: make(map[K]V, cap)}
 }
 
-func NewDynArrayWith[K comparable, V any](vs ...any) HashMap[K, V] {
+func NewHashMapWith[K comparable, V any](vs ...any) HashMap[K, V] {
 	self := NewHashMapWithCapacity[K, V](uint(len(vs) / 2))
-	// TODO
+	for i := 0; i < len(vs); i += 2 {
+		self.Set(vs[i].(K), vs[i+1].(V))
+	}
 	return self
 }
 
@@ -53,7 +56,7 @@ func (self HashMap[K, V]) Equal(dst any) bool {
 
 	for k, v := range self.data {
 		dv, ok := hm.data[k]
-		if !ok{
+		if !ok {
 			return false
 		}
 		if !stlbasic.Equal(v, dv) {
@@ -119,4 +122,24 @@ func (self HashMap[K, V]) Empty() bool {
 
 func (self HashMap[K, V]) Iterator() iterator.Iterator[HashMap[K, V], pair.Pair[K, V]] {
 	return iterator.NewIterator[HashMap[K, V], pair.Pair[K, V]](_NewIterator[K, V](&self))
+}
+
+func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
+	da := dynarray.NewDynArrayWithCapacity[K](self.Length())
+	var i uint
+	self.Iterator().Foreach(func(v pair.Pair[K, V]) {
+		da.Set(i, v.First)
+		i++
+	})
+	return da
+}
+
+func (self HashMap[K, V]) Values() dynarray.DynArray[V] {
+	da := dynarray.NewDynArrayWithCapacity[V](self.Length())
+	var i uint
+	self.Iterator().Foreach(func(v pair.Pair[K, V]) {
+		da.Set(i, v.Second)
+		i++
+	})
+	return da
 }
