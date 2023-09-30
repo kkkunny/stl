@@ -1,145 +1,161 @@
 package hashmap
 
 import (
-	"fmt"
-	"strings"
+    "fmt"
+    "strings"
 
-	stlbasic "github.com/kkkunny/stl/basic"
-	dynarray "github.com/kkkunny/stl/container/dyn_array"
-	"github.com/kkkunny/stl/container/iterator"
-	"github.com/kkkunny/stl/container/pair"
+    stlbasic "github.com/kkkunny/stl/basic"
+    dynarray "github.com/kkkunny/stl/container/dyn_array"
+    "github.com/kkkunny/stl/container/iterator"
+    "github.com/kkkunny/stl/container/pair"
 )
 
 // HashMap 哈希表
-type HashMap[K comparable, V any] struct {
-	data map[K]V
+type HashMap[K, V any] struct {
+    keys   map[uint64]K
+    values map[uint64]V
 }
 
-func NewHashMap[K comparable, V any]() HashMap[K, V] {
-	return HashMap[K, V]{data: make(map[K]V)}
+func NewHashMap[K, V any]() HashMap[K, V] {
+    return HashMap[K, V]{
+        keys:   make(map[uint64]K),
+        values: make(map[uint64]V),
+    }
 }
 
-func NewHashMapWithCapacity[K comparable, V any](cap uint) HashMap[K, V] {
-	return HashMap[K, V]{data: make(map[K]V, cap)}
+func NewHashMapWithCapacity[K, V any](cap uint) HashMap[K, V] {
+    return HashMap[K, V]{
+        keys:   make(map[uint64]K, cap),
+        values: make(map[uint64]V, cap),
+    }
 }
 
-func NewHashMapWith[K comparable, V any](vs ...any) HashMap[K, V] {
-	self := NewHashMapWithCapacity[K, V](uint(len(vs) / 2))
-	for i := 0; i < len(vs); i += 2 {
-		self.Set(vs[i].(K), vs[i+1].(V))
-	}
-	return self
+func NewHashMapWith[K, V any](vs ...any) HashMap[K, V] {
+    self := NewHashMapWithCapacity[K, V](uint(len(vs) / 2))
+    for i := 0; i < len(vs); i += 2 {
+        self.Set(vs[i].(K), vs[i+1].(V))
+    }
+    return self
 }
 
 func (_ HashMap[K, V]) NewWithIterator(iter iterator.Iterator[HashMap[K, V], pair.Pair[K, V]]) HashMap[K, V] {
-	self := NewHashMapWithCapacity[K, V](iter.Length())
-	for iter.Next() {
-		item := iter.Value()
-		self.Set(item.First, item.Second)
-	}
-	return self
+    self := NewHashMapWithCapacity[K, V](iter.Length())
+    for iter.Next() {
+        item := iter.Value()
+        self.Set(item.First, item.Second)
+    }
+    return self
 }
 
 func (self HashMap[K, V]) Length() uint {
-	return uint(len(self.data))
+    return uint(len(self.keys))
 }
 
 func (self HashMap[K, V]) Equal(dst any) bool {
-	hm, ok := dst.(HashMap[K, V])
-	if !ok {
-		return false
-	}
+    hm, ok := dst.(HashMap[K, V])
+    if !ok {
+        return false
+    }
 
-	if self.Length() != hm.Length() {
-		return false
-	}
+    if self.Length() != hm.Length() {
+        return false
+    }
 
-	for k, v := range self.data {
-		dv, ok := hm.data[k]
-		if !ok {
-			return false
-		}
-		if !stlbasic.Equal(v, dv) {
-			return false
-		}
-	}
-	return true
+    for hash, v := range self.values {
+        dv, ok := hm.values[hash]
+        if !ok {
+            return false
+        }
+        if !stlbasic.Equal(v, dv) {
+            return false
+        }
+    }
+    return true
 }
 
 func (self HashMap[K, V]) Get(k K) V {
-	return self.data[k]
+    return self.values[stlbasic.Hash(k)]
 }
 
 func (self HashMap[K, V]) ContainKey(k K) bool {
-	_, ok := self.data[k]
-	return ok
+    _, ok := self.keys[stlbasic.Hash(k)]
+    return ok
 }
 
 func (self *HashMap[K, V]) Set(k K, v V) V {
-	pv := self.data[k]
-	self.data[k] = v
-	return pv
+    hash := stlbasic.Hash(k)
+    pv := self.values[hash]
+    self.keys[hash] = k
+    self.values[hash] = v
+    return pv
 }
 
 func (self *HashMap[K, V]) Remove(k K) V {
-	pv := self.data[k]
-	delete(self.data, k)
-	return pv
+    hash := stlbasic.Hash(k)
+    pv := self.values[hash]
+    delete(self.keys, hash)
+    delete(self.values, hash)
+    return pv
 }
 
 func (self HashMap[K, V]) String() string {
-	var buf strings.Builder
-	buf.WriteByte('{')
-	var i int
-	for k, v := range self.data {
-		buf.WriteString(fmt.Sprintf("%v", k))
-		buf.WriteString(": ")
-		buf.WriteString(fmt.Sprintf("%v", v))
-		if i < len(self.data)-1 {
-			buf.WriteString(", ")
-		}
-		i++
-	}
-	buf.WriteByte('}')
-	return buf.String()
+    var buf strings.Builder
+    buf.WriteByte('{')
+    var i int
+    for h, k := range self.keys {
+        v := self.values[h]
+        buf.WriteString(fmt.Sprintf("%v", k))
+        buf.WriteString(": ")
+        buf.WriteString(fmt.Sprintf("%v", v))
+        if i < len(self.keys)-1 {
+            buf.WriteString(", ")
+        }
+        i++
+    }
+    buf.WriteByte('}')
+    return buf.String()
 }
 
 func (self HashMap[K, V]) Clone() any {
-	hm := NewHashMapWithCapacity[K, V](self.Length())
-	for k, v := range self.data {
-		hm.Set(k, v)
-	}
-	return hm
+    hm := NewHashMapWithCapacity[K, V](self.Length())
+    for h, k := range self.keys {
+        hm.keys[h] = k
+    }
+    for h, v := range self.values {
+        hm.values[h] = v
+    }
+    return hm
 }
 
 func (self *HashMap[K, V]) Clear() {
-	self.data = make(map[K]V)
+    self.keys = make(map[uint64]K)
+    self.values = make(map[uint64]V)
 }
 
 func (self HashMap[K, V]) Empty() bool {
-	return self.Length() == 0
+    return self.Length() == 0
 }
 
 func (self HashMap[K, V]) Iterator() iterator.Iterator[HashMap[K, V], pair.Pair[K, V]] {
-	return iterator.NewIterator[HashMap[K, V], pair.Pair[K, V]](_NewIterator[K, V](&self))
+    return iterator.NewIterator[HashMap[K, V], pair.Pair[K, V]](_NewIterator[K, V](&self))
 }
 
 func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
-	da := dynarray.NewDynArrayWithCapacity[K](self.Length())
-	var i uint
-	self.Iterator().Foreach(func(v pair.Pair[K, V]) {
-		da.Set(i, v.First)
-		i++
-	})
-	return da
+    da := dynarray.NewDynArrayWithCapacity[K](self.Length())
+    var i uint
+    for _, k := range self.keys {
+        da.Set(i, k)
+        i++
+    }
+    return da
 }
 
 func (self HashMap[K, V]) Values() dynarray.DynArray[V] {
-	da := dynarray.NewDynArrayWithCapacity[V](self.Length())
-	var i uint
-	self.Iterator().Foreach(func(v pair.Pair[K, V]) {
-		da.Set(i, v.Second)
-		i++
-	})
-	return da
+    da := dynarray.NewDynArrayWithCapacity[V](self.Length())
+    var i uint
+    for _, v := range self.values {
+        da.Set(i, v)
+        i++
+    }
+    return da
 }
