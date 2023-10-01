@@ -1,19 +1,19 @@
 package stlbasic
 
 import (
-    "fmt"
-    "reflect"
+	"fmt"
+	"reflect"
 )
 
 // Cloneable 可克隆的
-type Cloneable interface {
-    Clone() any
+type Cloneable[Self any] interface {
+    Clone() Self
 }
 
 // Clone 克隆
 func Clone[T any](v T) T {
-    if vv, ok := any(v).(Cloneable); ok {
-        return vv.Clone().(T)
+    if vv, ok := any(v).(Cloneable[T]); ok {
+        return vv.Clone()
     } else {
         vtype := reflect.TypeOf(v)
         switch vtype.Kind() {

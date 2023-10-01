@@ -51,18 +51,13 @@ func (self HashMap[K, V]) Length() uint {
     return uint(len(self.keys))
 }
 
-func (self HashMap[K, V]) Equal(dst any) bool {
-    hm, ok := dst.(HashMap[K, V])
-    if !ok {
-        return false
-    }
-
-    if self.Length() != hm.Length() {
+func (self HashMap[K, V]) Equal(dst HashMap[K, V]) bool {
+    if self.Length() != dst.Length() {
         return false
     }
 
     for hash, v := range self.values {
-        dv, ok := hm.values[hash]
+        dv, ok := dst.values[hash]
         if !ok {
             return false
         }
@@ -116,7 +111,7 @@ func (self HashMap[K, V]) String() string {
     return buf.String()
 }
 
-func (self HashMap[K, V]) Clone() any {
+func (self HashMap[K, V]) Clone() HashMap[K, V] {
     hm := NewHashMapWithCapacity[K, V](self.Length())
     for h, k := range self.keys {
         hm.keys[h] = k
@@ -137,7 +132,7 @@ func (self HashMap[K, V]) Empty() bool {
 }
 
 func (self HashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
-    return iterator.NewIterator[HashMap[K, V], pair.Pair[K, V]](_NewIterator[K, V](&self))
+    return iterator.NewIterator[pair.Pair[K, V]](_NewIterator[K, V](&self))
 }
 
 func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {

@@ -6,17 +6,15 @@ import (
 )
 
 // Comparable 可比较的
-type Comparable interface {
-	Equal(dst any) bool
+type Comparable[Self any] interface {
+	Equal(dst Self) bool
 }
 
 // Equal 比较是否相等
 func Equal[T any](lv, rv T) bool {
-	if _, ok := any(lv).(Comparable); ok {
-		if eqlv, ok := any(lv).(Comparable); ok {
-			if !eqlv.Equal(rv) {
-				return false
-			}
+	if eqlv, ok := any(lv).(Comparable[T]); ok {
+		if !eqlv.Equal(rv) {
+			return false
 		}
 	} else {
 		vtype := reflect.TypeOf(lv)

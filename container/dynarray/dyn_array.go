@@ -50,22 +50,17 @@ func (self DynArray[T]) Capacity() uint {
 	return uint(cap(*self.data))
 }
 
-func (self DynArray[T]) Equal(dst any) bool {
-	da, ok := dst.(DynArray[T])
-	if !ok {
-		return false
-	}
-
-	if self.data == da.data {
+func (self DynArray[T]) Equal(dst DynArray[T]) bool {
+	if self.data == dst.data {
 		return true
 	}
 
-	if self.Length() != da.Length() || self.Capacity() != da.Capacity() {
+	if self.Length() != dst.Length() || self.Capacity() != dst.Capacity() {
 		return false
 	}
 
 	for i, v := range *self.data {
-		if !stlbasic.Equal(v, (*da.data)[i]) {
+		if !stlbasic.Equal(v, (*dst.data)[i]) {
 			return false
 		}
 	}
@@ -136,7 +131,7 @@ func (self DynArray[T]) Front() T {
 	return (*self.data)[0]
 }
 
-func (self DynArray[T]) Clone() any {
+func (self DynArray[T]) Clone() DynArray[T] {
 	return DynArray[T]{data: stlbasic.Clone(self.data)}
 }
 
@@ -149,5 +144,5 @@ func (self DynArray[T]) Empty() bool {
 }
 
 func (self DynArray[T]) Iterator() iterator.Iterator[T] {
-	return iterator.NewIterator[DynArray[T], T](_NewIterator[T](&self))
+	return iterator.NewIterator[T](_NewIterator[T](&self))
 }

@@ -41,12 +41,8 @@ func (self HashSet[T]) Length() uint {
     return self.data.Length()
 }
 
-func (self HashSet[T]) Equal(dst any) bool {
-    hs, ok := dst.(HashSet[T])
-    if !ok {
-        return false
-    }
-    return self.data.Equal(hs.data)
+func (self HashSet[T]) Equal(dst HashSet[T]) bool {
+    return self.data.Equal(dst.data)
 }
 
 func (self HashSet[T]) Push(v T) bool {
@@ -78,7 +74,7 @@ func (self HashSet[T]) String() string {
     return buf.String()
 }
 
-func (self HashSet[T]) Clone() any {
+func (self HashSet[T]) Clone() HashSet[T] {
     hs := NewHashSetWithCapacity[T](self.Length())
     for iter := self.Iterator(); iter.Next(); {
         hs.Push(iter.Value())
@@ -95,5 +91,5 @@ func (self HashSet[T]) Empty() bool {
 }
 
 func (self HashSet[T]) Iterator() iterator.Iterator[T] {
-    return iterator.NewIterator[HashSet[T], T](_NewIterator[T](&self))
+    return iterator.NewIterator[T](_NewIterator[T](&self))
 }

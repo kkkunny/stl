@@ -5,7 +5,7 @@ type Iterator[V any] struct {
 	_Iter[V]
 }
 
-func NewIterator[Ctr, V any](iter _Iter[V]) Iterator[V] {
+func NewIterator[V any](iter _Iter[V]) Iterator[V] {
 	return Iterator[V]{_Iter: iter}
 }
 
