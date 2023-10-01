@@ -5,12 +5,14 @@ type Iterator[V any] struct {
 	_Iter[V]
 }
 
-func NewIterator[V any](iter _Iter[V]) Iterator[V] {
+func NewIterator[V any, Iter _Iter[V]](iter Iter) Iterator[V] {
 	return Iterator[V]{_Iter: iter}
 }
 
-func (self Iterator[V]) Foreach(f func(v V)) {
+func (self Iterator[V]) Foreach(f func(v V) bool) {
 	for self.Next() {
-		f(self.Value())
+		if !f(self.Value()) {
+			break
+		}
 	}
 }
