@@ -105,3 +105,17 @@ func TestDynArray_Empty(t *testing.T) {
 	v.Clear()
 	stltest.AssertEq(t, v.Empty(), true)
 }
+
+func BenchmarkWrite_slice(b *testing.B){
+	var da []int
+	for i:=0; i<b.N; i++{
+		da = append(da, i)
+	}
+}
+
+func BenchmarkWrite_DynArray(b *testing.B){
+	da := NewDynArray[int]()
+	for i:=0; i<b.N; i++{
+		da.PushBack(i)
+	}
+}

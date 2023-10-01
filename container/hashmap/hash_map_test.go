@@ -1,6 +1,8 @@
 package hashmap
 
 import (
+	"math/rand"
+	"strconv"
 	"testing"
 
 	stltest "github.com/kkkunny/stl/test"
@@ -59,4 +61,42 @@ func TestHashMap_ContainKey(t *testing.T) {
 	stltest.AssertEq(t, v.ContainKey(1), false)
 	v.Set(1, 2)
 	stltest.AssertEq(t, v.ContainKey(1), true)
+}
+
+func BenchmarkWrite_map(b *testing.B) {
+	hm := make(map[string]int)
+	for i := 0; i < b.N; i++ {
+		hm[strconv.FormatInt(int64(i), 10)] = i
+	}
+}
+
+func BenchmarkWrite_HashMap(b *testing.B) {
+	hm := NewHashMap[string, int]()
+	for i := 0; i < b.N; i++ {
+		hm.Set(strconv.FormatInt(int64(i), 10), i)
+	}
+}
+
+func BenchmarkRead_map(b *testing.B) {
+	hm := make(map[string]int)
+	for i := 0; i < 10000; i++ {
+		hm[strconv.FormatInt(int64(i), 10)] = i
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		key := rand.Int63n(10000)
+		_ = hm[strconv.FormatInt(key, 10)]
+	}
+}
+
+func BenchmarkRead_HashMap(b *testing.B) {
+	hm := NewHashMap[string, int]()
+	for i := 0; i < 10000; i++ {
+		hm.Set(strconv.FormatInt(int64(i), 10), i)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		key := rand.Int63n(10000)
+		_ = hm.Get(strconv.FormatInt(key, 10))
+	}
 }

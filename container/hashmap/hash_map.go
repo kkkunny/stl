@@ -5,7 +5,7 @@ import (
     "strings"
 
     stlbasic "github.com/kkkunny/stl/basic"
-    dynarray "github.com/kkkunny/stl/container/dyn_array"
+    "github.com/kkkunny/stl/container/dynarray"
     "github.com/kkkunny/stl/container/iterator"
     "github.com/kkkunny/stl/container/pair"
 )
@@ -38,7 +38,7 @@ func NewHashMapWith[K, V any](vs ...any) HashMap[K, V] {
     return self
 }
 
-func (_ HashMap[K, V]) NewWithIterator(iter iterator.Iterator[HashMap[K, V], pair.Pair[K, V]]) HashMap[K, V] {
+func (_ HashMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) HashMap[K, V] {
     self := NewHashMapWithCapacity[K, V](iter.Length())
     for iter.Next() {
         item := iter.Value()
@@ -136,7 +136,7 @@ func (self HashMap[K, V]) Empty() bool {
     return self.Length() == 0
 }
 
-func (self HashMap[K, V]) Iterator() iterator.Iterator[HashMap[K, V], pair.Pair[K, V]] {
+func (self HashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
     return iterator.NewIterator[HashMap[K, V], pair.Pair[K, V]](_NewIterator[K, V](&self))
 }
 

@@ -4,7 +4,7 @@ import (
     "fmt"
     "strings"
 
-    hashmap "github.com/kkkunny/stl/container/hash_map"
+    "github.com/kkkunny/stl/container/hashmap"
     "github.com/kkkunny/stl/container/iterator"
 )
 
@@ -29,7 +29,7 @@ func NewHashSetWith[T any](vs ...T) HashSet[T] {
     return self
 }
 
-func (_ HashSet[T]) NewWithIterator(iter iterator.Iterator[HashSet[T], T]) HashSet[T] {
+func (_ HashSet[T]) NewWithIterator(iter iterator.Iterator[T]) HashSet[T] {
     self := NewHashSetWithCapacity[T](iter.Length())
     for iter.Next() {
         self.Push(iter.Value())
@@ -94,6 +94,6 @@ func (self HashSet[T]) Empty() bool {
     return self.data.Empty()
 }
 
-func (self HashSet[T]) Iterator() iterator.Iterator[HashSet[T], T] {
+func (self HashSet[T]) Iterator() iterator.Iterator[T] {
     return iterator.NewIterator[HashSet[T], T](_NewIterator[T](&self))
 }

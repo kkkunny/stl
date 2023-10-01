@@ -1,13 +1,12 @@
 package hashset
 
 import (
-    hashmap "github.com/kkkunny/stl/container/hash_map"
     "github.com/kkkunny/stl/container/iterator"
     "github.com/kkkunny/stl/container/pair"
 )
 
 type _iterator[T any] struct {
-    iter iterator.Iterator[hashmap.HashMap[T, struct{}], pair.Pair[T, struct{}]]
+    iter iterator.Iterator[pair.Pair[T, struct{}]]
 }
 
 func _NewIterator[T any](src *HashSet[T]) *_iterator[T] {

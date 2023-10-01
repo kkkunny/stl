@@ -13,6 +13,6 @@ type _Iter[T any] interface {
 
 // 迭代器容器
 type _IterContainer[Ctr, V any] interface {
-    NewWithIterator(iter Iterator[Ctr, V]) Ctr
-    Iterator() Iterator[Ctr, V]
+    NewWithIterator(iter Iterator[V]) Ctr
+    Iterator() Iterator[V]
 }

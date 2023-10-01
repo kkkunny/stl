@@ -32,7 +32,7 @@ func NewDynArrayWith[T any](vs ...T) DynArray[T] {
 	return DynArray[T]{data: &vs}
 }
 
-func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[DynArray[T], T]) DynArray[T] {
+func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[T]) DynArray[T] {
 	self := NewDynArrayWithLength[T](iter.Length())
 	var i uint
 	for iter.Next() {
@@ -148,6 +148,6 @@ func (self DynArray[T]) Empty() bool {
 	return self.Length() == 0
 }
 
-func (self DynArray[T]) Iterator() iterator.Iterator[DynArray[T], T] {
+func (self DynArray[T]) Iterator() iterator.Iterator[T] {
 	return iterator.NewIterator[DynArray[T], T](_NewIterator[T](&self))
 }
