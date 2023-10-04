@@ -149,7 +149,6 @@ func (self *BTree[T]) RemoveNode(node *BTreeNode[T])*BTreeNode[T]{
 			if self.root == node{
 				self.root = newNode
 			}
-			self.length--
 			node.Father, node.Left, node.Right = nil, nil, nil
 			return node
 		}
