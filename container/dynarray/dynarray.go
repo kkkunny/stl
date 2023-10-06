@@ -55,7 +55,7 @@ func (self DynArray[T]) Equal(dst DynArray[T]) bool {
 		return true
 	}
 
-	if self.Length() != dst.Length() || self.Capacity() != dst.Capacity() {
+	if self.Length() != dst.Length() {
 		return false
 	}
 

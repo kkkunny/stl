@@ -17,7 +17,7 @@ func (self _TreeSetItem[T]) Less(dst rbtree.Item) bool{
 	return stlbasic.Order(self.value, dst.(_TreeSetItem[T]).value) < 0
 }
 
-// TreeSet 哈希set
+// TreeSet 有序set
 type TreeSet[T any] struct {
 	tree rbtree.Rbtree
 }
