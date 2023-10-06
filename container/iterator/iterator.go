@@ -16,3 +16,14 @@ func (self Iterator[V]) Foreach(f func(v V) bool) {
 		}
 	}
 }
+
+func (self Iterator[V]) Reverse() Iterator[V] {
+	tmp := make([]V, self.Length())
+	i := self.Length() - 1
+	self.Foreach(func(v V) bool {
+		tmp[i] = v
+		i--
+		return true
+	})
+	return NewIterator(_NewSliceIterator(tmp...))
+}
