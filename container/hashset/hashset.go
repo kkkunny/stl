@@ -45,7 +45,7 @@ func (self HashSet[T]) Equal(dst HashSet[T]) bool {
     return self.data.Equal(dst.data)
 }
 
-func (self HashSet[T]) Push(v T) bool {
+func (self *HashSet[T]) Push(v T) bool {
     exist := self.Contain(v)
     self.data.Set(v, struct{}{})
     return !exist

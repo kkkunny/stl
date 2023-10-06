@@ -26,7 +26,7 @@ func _NewIterator[K, V any](src *TreeMap[K, V]) *_iterator[K, V] {
 	}
 }
 
-func (self *_iterator[K, V]) Length() uint {
+func (self _iterator[K, V]) Length() uint {
 	return uint(len(self.nodes))
 }
 

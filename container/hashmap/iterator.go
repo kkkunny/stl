@@ -22,7 +22,7 @@ func _NewIterator[K, V any](src *HashMap[K, V]) *_iterator[K, V] {
     }
 }
 
-func (self *_iterator[K, V]) Length() uint {
+func (self _iterator[K, V]) Length() uint {
     return self.src.Length()
 }
 

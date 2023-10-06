@@ -13,7 +13,7 @@ func _NewIterator[T any](src *HashSet[T]) *_iterator[T] {
     return &_iterator[T]{iter: src.data.Iterator()}
 }
 
-func (self *_iterator[T]) Length() uint {
+func (self _iterator[T]) Length() uint {
     return self.Length()
 }
 

@@ -12,7 +12,7 @@ func _NewIterator[T any](src *DynArray[T]) *_iterator[T] {
 	}
 }
 
-func (self *_iterator[T]) Length() uint{
+func (self _iterator[T]) Length() uint{
 	return self.src.Length()
 }
 
