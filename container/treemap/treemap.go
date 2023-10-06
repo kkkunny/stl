@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/HuKeping/rbtree"
 	stlbasic "github.com/kkkunny/stl/basic"
 	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/iterator"
 	"github.com/kkkunny/stl/container/pair"
-	"github.com/kkkunny/stl/container/tree/btree"
 )
 
 type _TreeMapEntry[K, V any] pair.Pair[K, V]
@@ -21,13 +21,17 @@ func (self _TreeMapEntry[K, V]) Order(dst _TreeMapEntry[K, V]) int{
     return stlbasic.Order(self.First, dst.First)
 }
 
+func (self *_TreeMapEntry[K, V]) Less(dst rbtree.Item) bool{
+	return self.Order(*dst.(*_TreeMapEntry[K, V])) < 0
+}
+
 // TreeMap 有序表
 type TreeMap[K, V any] struct {
-	tree btree.BTree[_TreeMapEntry[K, V]]
+	tree rbtree.Rbtree
 }
 
 func NewTreeMap[K, V any]() TreeMap[K, V] {
-	return TreeMap[K, V]{tree: btree.NewBTree[_TreeMapEntry[K, V]]()}
+	return TreeMap[K, V]{tree: *rbtree.New()}
 }
 
 func NewTreeMapWith[K, V any](vs ...any) TreeMap[K, V] {
@@ -41,14 +45,14 @@ func NewTreeMapWith[K, V any](vs ...any) TreeMap[K, V] {
 func (_ TreeMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) TreeMap[K, V] {
 	self := NewTreeMap[K, V]()
 	for iter.Next() {
-		item := iter.Value()
-		self.Set(item.First, item.Second)
+		entry := iter.Value()
+		self.Set(entry.First, entry.Second)
 	}
 	return self
 }
 
 func (self TreeMap[K, V]) Length() uint {
-	return self.tree.Length()
+	return self.tree.Len()
 }
 
 func (self TreeMap[K, V]) Equal(dst TreeMap[K, V]) bool {
@@ -75,37 +79,39 @@ func (self TreeMap[K, V]) Equal(dst TreeMap[K, V]) bool {
 }
 
 func (self TreeMap[K, V]) Get(k K) V {
-    node := self.tree.Find(_TreeMapEntry[K, V]{First: k})
-    if node == nil{
-        var v V
-        return v
-    }
-	return node.Value.Second
-}
-
-func (self TreeMap[K, V]) ContainKey(k K) bool {
-	return self.tree.Find(_TreeMapEntry[K, V]{First: k}) != nil
-}
-
-func (self *TreeMap[K, V]) Set(k K, v V) V {
-	preNode := self.tree.Find(_TreeMapEntry[K, V]{First: k})
-	self.tree.Push(_TreeMapEntry[K, V]{First: k, Second: v})
-	if preNode == nil{
+    item := self.tree.Get(&_TreeMapEntry[K, V]{First: k})
+	if item == nil{
 		var pv V
 		return pv
 	}
-	pv := preNode.Value.Second
-	preNode.Value.Second = v
+	return item.(*_TreeMapEntry[K, V]).Second
+}
+
+func (self TreeMap[K, V]) ContainKey(k K) bool {
+	return self.tree.Get(&_TreeMapEntry[K, V]{First: k}) != nil
+}
+
+func (self *TreeMap[K, V]) Set(k K, v V) V {
+	entry := &_TreeMapEntry[K, V]{First: k, Second: v}
+	item := self.tree.Get(entry)
+	if item == nil{
+		self.tree.Insert(entry)
+		var pv V
+		return pv
+	}
+	entry = item.(*_TreeMapEntry[K, V])
+	pv := entry.Second
+	entry.Second = v
 	return pv
 }
 
 func (self *TreeMap[K, V]) Remove(k K) V {
-	node := self.tree.Remove(_TreeMapEntry[K, V]{First: k})
-    if node == nil{
+	item := self.tree.Delete(&_TreeMapEntry[K, V]{First: k})
+    if item == nil{
         var v V
         return v
     }
-    return node.Value.Second
+    return item.(*_TreeMapEntry[K, V]).Second
 }
 
 func (self TreeMap[K, V]) String() string {
@@ -137,7 +143,7 @@ func (self TreeMap[K, V]) Clone() TreeMap[K, V] {
 }
 
 func (self *TreeMap[K, V]) Clear() {
-	self.tree = btree.NewBTree[_TreeMapEntry[K, V]]()
+	self.tree = *rbtree.New()
 }
 
 func (self TreeMap[K, V]) Empty() bool {
