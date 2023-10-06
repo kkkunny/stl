@@ -55,3 +55,17 @@ func TestTreeMap_ContainKey(t *testing.T) {
 	v.Set(1, 2)
 	stltest.AssertEq(t, v.ContainKey(1), true)
 }
+
+func TestTreeMap_Front(t *testing.T) {
+	v := NewTreeMapWith[int, int](1, 1, 2, 2, 3, 3)
+	key, value := v.Front()
+	stltest.AssertEq(t, key, 1)
+	stltest.AssertEq(t, value, 1)
+}
+
+func TestTreeMap_Back(t *testing.T) {
+	v := NewTreeMapWith[int, int](1, 1, 2, 2, 3, 3)
+	key, value := v.Back()
+	stltest.AssertEq(t, key, 3)
+	stltest.AssertEq(t, value, 3)
+}

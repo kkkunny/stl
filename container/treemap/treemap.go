@@ -175,3 +175,13 @@ func (self TreeMap[K, V]) Values() dynarray.DynArray[V] {
     })
 	return da
 }
+
+func (self TreeMap[K, V]) Back() (K, V) {
+	entry := self.tree.Max().(*_TreeMapEntry[K, V])
+	return entry.First, entry.Second
+}
+
+func (self TreeMap[K, V]) Front() (K, V) {
+	entry := self.tree.Min().(*_TreeMapEntry[K, V])
+	return entry.First, entry.Second
+}

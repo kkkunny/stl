@@ -116,3 +116,11 @@ func (self TreeSet[T]) Empty() bool {
 func (self TreeSet[T]) Iterator() iterator.Iterator[T] {
 	return iterator.NewIterator[T](_NewIterator[T](&self))
 }
+
+func (self TreeSet[T]) Back() T {
+	return self.tree.Max().(_TreeSetItem[T]).value
+}
+
+func (self TreeSet[T]) Front() T {
+	return self.tree.Min().(_TreeSetItem[T]).value
+}

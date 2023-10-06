@@ -46,3 +46,13 @@ func TestTreeSet_Contain(t *testing.T) {
 	v.Push(1)
 	stltest.AssertEq(t, v.Contain(1), true)
 }
+
+func TestTreeSet_Front(t *testing.T) {
+	v := NewTreeSetWith[int](1, 2, 3)
+	stltest.AssertEq(t, v.Front(), 1)
+}
+
+func TestTreeSet_Back(t *testing.T) {
+	v := NewTreeSetWith[int](1, 2, 3)
+	stltest.AssertEq(t, v.Back(), 3)
+}
