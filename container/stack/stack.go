@@ -28,7 +28,7 @@ func NewStackWith[T any](vs ...T) Stack[T] {
 }
 
 func (_ Stack[T]) NewWithIterator(iter iterator.Iterator[T]) Stack[T] {
-	// TODO: 先反转再插入
+	iter = iter.Reverse()
 	self := NewStackWithCapacity[T](iter.Length())
 	var i uint
 	for iter.Next() {
