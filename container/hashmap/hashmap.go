@@ -14,20 +14,20 @@ import (
 
 // HashMap 哈希表
 type HashMap[K, V any] struct {
-	data hashmap.Map[uint64, pair.Pair[K, V]]
+	data *hashmap.Map[uint64, pair.Pair[K, V]]
 }
 
 func NewHashMap[K, V any]() HashMap[K, V] {
 	var data hashmap.Map[uint64, pair.Pair[K, V]]
 	return HashMap[K, V]{
-		data: data,
+		data: &data,
 	}
 }
 
 func NewHashMapWithCapacity[K, V any](cap uint) HashMap[K, V] {
 	data := hashmap.New[uint64, pair.Pair[K, V]](int(cap))
 	return HashMap[K, V]{
-		data: *data,
+		data: data,
 	}
 }
 
@@ -106,12 +106,12 @@ func (self HashMap[K, V]) String() string {
 }
 
 func (self HashMap[K, V]) Clone() HashMap[K, V] {
-	return HashMap[K, V]{data: *self.data.Copy()}
+	return HashMap[K, V]{data: self.data.Copy()}
 }
 
 func (self *HashMap[K, V]) Clear() {
 	var data hashmap.Map[uint64, pair.Pair[K, V]]
-	self.data = data
+	self.data = &data
 }
 
 func (self HashMap[K, V]) Empty() bool {

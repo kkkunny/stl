@@ -5,25 +5,26 @@ import (
 	"strings"
 
 	"github.com/HuKeping/rbtree"
+
 	stlbasic "github.com/kkkunny/stl/basic"
 	"github.com/kkkunny/stl/container/iterator"
 )
 
-type _TreeSetItem[T any] struct{
-    value T
+type _TreeSetItem[T any] struct {
+	value T
 }
 
-func (self _TreeSetItem[T]) Less(dst rbtree.Item) bool{
+func (self _TreeSetItem[T]) Less(dst rbtree.Item) bool {
 	return stlbasic.Order(self.value, dst.(_TreeSetItem[T]).value) < 0
 }
 
 // TreeSet 有序set
 type TreeSet[T any] struct {
-	tree rbtree.Rbtree
+	tree *rbtree.Rbtree
 }
 
 func NewTreeSet[T any]() TreeSet[T] {
-	return TreeSet[T]{tree: *rbtree.New()}
+	return TreeSet[T]{tree: rbtree.New()}
 }
 
 func NewTreeSetWith[T any](vs ...T) TreeSet[T] {
@@ -47,30 +48,30 @@ func (self TreeSet[T]) Length() uint {
 }
 
 func (self TreeSet[T]) Equal(dst TreeSet[T]) bool {
-    if self.Length() != dst.Length() {
+	if self.Length() != dst.Length() {
 		return false
 	}
 
-    equal := true
-    dstIter := dst.Iterator()
-    self.Iterator().Foreach(func(v T) bool{
-        dstIter.Next()
-        dv := dstIter.Value()
+	equal := true
+	dstIter := dst.Iterator()
+	self.Iterator().Foreach(func(v T) bool {
+		dstIter.Next()
+		dv := dstIter.Value()
 
 		if !stlbasic.Equal(v, dv) {
-            equal = false
+			equal = false
 			return equal
 		}
-        return equal
-    })
+		return equal
+	})
 	return equal
 }
 
 func (self *TreeSet[T]) Push(v T) bool {
-	if self.Contain(v){
+	if self.Contain(v) {
 		return false
 	}
-    self.tree.Insert(_TreeSetItem[T]{value: v})
+	self.tree.Insert(_TreeSetItem[T]{value: v})
 	return true
 }
 
@@ -106,7 +107,7 @@ func (self TreeSet[T]) Clone() TreeSet[T] {
 }
 
 func (self *TreeSet[T]) Clear() {
-	self.tree = *rbtree.New()
+	self.tree = rbtree.New()
 }
 
 func (self TreeSet[T]) Empty() bool {
