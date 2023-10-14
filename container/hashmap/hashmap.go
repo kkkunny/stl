@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/tidwall/hashmap"
+
 	stlbasic "github.com/kkkunny/stl/basic"
 	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/iterator"
@@ -12,18 +14,20 @@ import (
 
 // HashMap 哈希表
 type HashMap[K, V any] struct {
-	data map[uint64]pair.Pair[K, V]
+	data hashmap.Map[uint64, pair.Pair[K, V]]
 }
 
 func NewHashMap[K, V any]() HashMap[K, V] {
+	var data hashmap.Map[uint64, pair.Pair[K, V]]
 	return HashMap[K, V]{
-		data: make(map[uint64]pair.Pair[K, V]),
+		data: data,
 	}
 }
 
 func NewHashMapWithCapacity[K, V any](cap uint) HashMap[K, V] {
+	data := hashmap.New[uint64, pair.Pair[K, V]](int(cap))
 	return HashMap[K, V]{
-		data: make(map[uint64]pair.Pair[K, V], cap),
+		data: *data,
 	}
 }
 
@@ -45,7 +49,7 @@ func (_ HashMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) 
 }
 
 func (self HashMap[K, V]) Length() uint {
-	return uint(len(self.data))
+	return uint(self.data.Len())
 }
 
 func (self HashMap[K, V]) Equal(dst HashMap[K, V]) bool {
@@ -53,12 +57,13 @@ func (self HashMap[K, V]) Equal(dst HashMap[K, V]) bool {
 		return false
 	}
 
-	for hash, pair1 := range self.data {
-		pair2, ok := dst.data[hash]
+	for _, hash := range self.data.Keys() {
+		p2, ok := dst.data.Get(hash)
 		if !ok {
 			return false
 		}
-		if !stlbasic.Equal(pair1.First, pair2.First) || !stlbasic.Equal(pair1.Second, pair2.Second) {
+		p1, _ := self.data.Get(hash)
+		if !stlbasic.Equal(p1.First, p2.First) || !stlbasic.Equal(p1.Second, p2.Second) {
 			return false
 		}
 	}
@@ -66,55 +71,51 @@ func (self HashMap[K, V]) Equal(dst HashMap[K, V]) bool {
 }
 
 func (self HashMap[K, V]) Get(k K) V {
-	return self.data[stlbasic.Hash(k)].Second
+	p, _ := self.data.Get(stlbasic.Hash(k))
+	return p.Second
 }
 
 func (self HashMap[K, V]) ContainKey(k K) bool {
-	_, ok := self.data[stlbasic.Hash(k)]
+	_, ok := self.data.Get(stlbasic.Hash(k))
 	return ok
 }
 
 func (self *HashMap[K, V]) Set(k K, v V) V {
-	hash := stlbasic.Hash(k)
-	ppair := self.data[hash]
-	self.data[hash] = pair.NewPair(k, v)
-	return ppair.Second
+	p, _ := self.data.Set(stlbasic.Hash(k), pair.NewPair(k, v))
+	return p.Second
 }
 
 func (self *HashMap[K, V]) Remove(k K) V {
-	hash := stlbasic.Hash(k)
-	pair := self.data[hash]
-	delete(self.data, hash)
-	return pair.Second
+	p, _ := self.data.Delete(stlbasic.Hash(k))
+	return p.Second
 }
 
 func (self HashMap[K, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
-	var i int
-	for _, pair := range self.data {
-		buf.WriteString(fmt.Sprintf("%v", pair.First))
+	for i, p := range self.data.Values() {
+		buf.WriteString(fmt.Sprintf("%v", p.First))
 		buf.WriteString(": ")
-		buf.WriteString(fmt.Sprintf("%v", pair.Second))
-		if i < len(self.data)-1 {
+		buf.WriteString(fmt.Sprintf("%v", p.Second))
+		if i < self.data.Len()-1 {
 			buf.WriteString(", ")
 		}
-		i++
 	}
 	buf.WriteByte('}')
 	return buf.String()
 }
 
 func (self HashMap[K, V]) Clone() HashMap[K, V] {
-	return HashMap[K, V]{data: stlbasic.Clone(self.data)}
+	return HashMap[K, V]{data: *self.data.Copy()}
 }
 
 func (self *HashMap[K, V]) Clear() {
-	self.data = make(map[uint64]pair.Pair[K, V])
+	var data hashmap.Map[uint64, pair.Pair[K, V]]
+	self.data = data
 }
 
 func (self HashMap[K, V]) Empty() bool {
-	return len(self.data) == 0
+	return self.data.Len() == 0
 }
 
 func (self HashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
@@ -124,8 +125,8 @@ func (self HashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
 func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
 	da := dynarray.NewDynArrayWithCapacity[K](self.Length())
 	var i uint
-	for _, pair := range self.data {
-		da.Set(i, pair.First)
+	for _, p := range self.data.Values() {
+		da.Set(i, p.First)
 		i++
 	}
 	return da
@@ -134,8 +135,8 @@ func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
 func (self HashMap[K, V]) Values() dynarray.DynArray[V] {
 	da := dynarray.NewDynArrayWithCapacity[V](self.Length())
 	var i uint
-	for _, pair := range self.data {
-		da.Set(i, pair.Second)
+	for _, p := range self.data.Values() {
+		da.Set(i, p.Second)
 		i++
 	}
 	return da
