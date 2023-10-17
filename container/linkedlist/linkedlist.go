@@ -99,6 +99,19 @@ func (self LinkedList[T]) String() string {
 	return buf.String()
 }
 
+func (self LinkedList[T]) Debug(prefix uint) string {
+	var buf strings.Builder
+	buf.WriteString("linkedlist{")
+	for cursor:=self.root; cursor!=nil; cursor=cursor.Next{
+		buf.WriteString(stlbasic.Debug(cursor.Value, prefix))
+		if cursor.Next != nil {
+			buf.WriteString(", ")
+		}
+	}
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self *LinkedList[T]) PopBack() T {
 	var v T
 	if self.root == self.tail{

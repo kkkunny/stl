@@ -105,6 +105,21 @@ func (self HashMap[K, V]) String() string {
 	return buf.String()
 }
 
+func (self HashMap[K, V]) Debug(prefix uint) string {
+	var buf strings.Builder
+	buf.WriteString("hashmap{")
+	for i, p := range self.data.Values() {
+		buf.WriteString(stlbasic.Debug(p.First, prefix))
+		buf.WriteString(": ")
+		buf.WriteString(stlbasic.Debug(p.Second, prefix))
+		if i < self.data.Len()-1 {
+			buf.WriteString(", ")
+		}
+	}
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self HashMap[K, V]) Clone() HashMap[K, V] {
 	return HashMap[K, V]{data: self.data.Copy()}
 }

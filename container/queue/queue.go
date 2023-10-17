@@ -85,6 +85,19 @@ func (self Queue[T]) String() string {
 	return buf.String()
 }
 
+func (self Queue[T]) Debug(preifx uint) string {
+	var buf strings.Builder
+	buf.WriteString("queue{")
+	for i, v := range *self.data {
+		buf.WriteString(stlbasic.Debug(v, preifx))
+		if i < len(*self.data)-1 {
+			buf.WriteString(", ")
+		}
+	}
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self Queue[T]) Peek() T {
 	return (*self.data)[0]
 }

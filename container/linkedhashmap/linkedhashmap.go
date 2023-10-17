@@ -120,6 +120,23 @@ func (self LinkedHashMap[K, V]) String() string {
 	return buf.String()
 }
 
+func (self LinkedHashMap[K, V]) Debug(prefix uint) string {
+	var buf strings.Builder
+	buf.WriteString("linkedhashmap{")
+	var i int
+	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next() {
+		buf.WriteString(stlbasic.Debug(cursor.Value.First, prefix))
+		buf.WriteString(": ")
+		buf.WriteString(stlbasic.Debug(cursor.Value.Second, prefix))
+		if cursor.Next() != nil {
+			buf.WriteString(", ")
+		}
+		i++
+	}
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self LinkedHashMap[K, V]) Clone() LinkedHashMap[K, V] {
 	hm := NewLinkedHashMapWithCapacity[K, V](self.Length())
 	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next(){

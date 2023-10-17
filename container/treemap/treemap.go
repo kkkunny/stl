@@ -134,6 +134,25 @@ func (self TreeMap[K, V]) String() string {
 	return buf.String()
 }
 
+func (self TreeMap[K, V]) Debug(prefix uint) string {
+	var buf strings.Builder
+	buf.WriteString("treemap{")
+	var i uint
+	iter := self.Iterator()
+	iter.Foreach(func(v pair.Pair[K, V]) bool {
+		buf.WriteString(stlbasic.Debug(v.First, prefix))
+		buf.WriteString(": ")
+		buf.WriteString(stlbasic.Debug(v.Second, prefix))
+		if i < iter.Length()-1 {
+			buf.WriteString(", ")
+		}
+		i++
+		return true
+	})
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self TreeMap[K, V]) Clone() TreeMap[K, V] {
 	tm := NewTreeMap[K, V]()
 	self.Iterator().Foreach(func(v pair.Pair[K, V]) bool {

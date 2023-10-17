@@ -98,6 +98,21 @@ func (self TreeSet[T]) String() string {
 	return buf.String()
 }
 
+func (self TreeSet[T]) Debug(prefix uint) string {
+	var buf strings.Builder
+	buf.WriteString("treeset{")
+	var i int
+	for iter := self.Iterator(); iter.Next(); {
+		buf.WriteString(stlbasic.Debug(iter.Value(), prefix))
+		if iter.HasNext() {
+			buf.WriteString(", ")
+		}
+		i++
+	}
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self TreeSet[T]) Clone() TreeSet[T] {
 	hs := NewTreeSet[T]()
 	for iter := self.Iterator(); iter.Next(); {

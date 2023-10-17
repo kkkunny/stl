@@ -111,6 +111,19 @@ func (self DynArray[T]) String() string {
 	return buf.String()
 }
 
+func (self DynArray[T]) Debug(prefix uint) string {
+	var buf strings.Builder
+	buf.WriteString("dynarray{")
+	for i, v := range *self.data {
+		buf.WriteString(stlbasic.Debug(v, prefix))
+		if i < len(*self.data)-1 {
+			buf.WriteString(", ")
+		}
+	}
+	buf.WriteByte('}')
+	return buf.String()
+}
+
 func (self *DynArray[T]) PopBack() T {
 	v := (*self.data)[len(*self.data)-1]
 	*self.data = (*self.data)[:len(*self.data)-1]

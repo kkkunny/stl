@@ -1,11 +1,12 @@
 package hashset
 
 import (
-    "fmt"
-    "strings"
+	"fmt"
+	"strings"
 
-    "github.com/kkkunny/stl/container/hashmap"
-    "github.com/kkkunny/stl/container/iterator"
+	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/container/hashmap"
+	"github.com/kkkunny/stl/container/iterator"
 )
 
 // HashSet 哈希set
@@ -65,6 +66,21 @@ func (self HashSet[T]) String() string {
     var i int
     for iter := self.Iterator(); iter.Next(); {
         buf.WriteString(fmt.Sprintf("%v", iter.Value()))
+        if iter.HasNext() {
+            buf.WriteString(", ")
+        }
+        i++
+    }
+    buf.WriteByte('}')
+    return buf.String()
+}
+
+func (self HashSet[T]) Debug(prefix uint) string {
+    var buf strings.Builder
+    buf.WriteString("hashset{")
+    var i int
+    for iter := self.Iterator(); iter.Next(); {
+        buf.WriteString(stlbasic.Debug(iter.Value(), prefix))
         if iter.HasNext() {
             buf.WriteString(", ")
         }
