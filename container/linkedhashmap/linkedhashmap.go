@@ -13,20 +13,20 @@ import (
 
 // LinkedHashMap 有序哈希表
 type LinkedHashMap[K, V any] struct {
-    list *list.List[pair.Pair[K, V]]
+	list *list.List[pair.Pair[K, V]]
 	data map[uint64]*list.Element[pair.Pair[K, V]]
 }
 
 func NewLinkedHashMap[K, V any]() LinkedHashMap[K, V] {
 	return LinkedHashMap[K, V]{
-		list:   list.New[pair.Pair[K, V]](),
+		list: list.New[pair.Pair[K, V]](),
 		data: make(map[uint64]*list.Element[pair.Pair[K, V]]),
 	}
 }
 
 func NewLinkedHashMapWithCapacity[K, V any](cap uint) LinkedHashMap[K, V] {
 	return LinkedHashMap[K, V]{
-		list:   list.New[pair.Pair[K, V]](),
+		list: list.New[pair.Pair[K, V]](),
 		data: make(map[uint64]*list.Element[pair.Pair[K, V]], cap),
 	}
 }
@@ -57,7 +57,7 @@ func (self LinkedHashMap[K, V]) Equal(dst LinkedHashMap[K, V]) bool {
 		return false
 	}
 
-	for c1, c2 :=self.list.Front(), dst.list.Front(); c1!=nil&&c2!=nil; c1, c2 = c1.Next(), c2.Next() {
+	for c1, c2 := self.list.Front(), dst.list.Front(); c1 != nil && c2 != nil; c1, c2 = c1.Next(), c2.Next() {
 		v1, v2 := c1.Value, c2.Value
 		if !stlbasic.Equal(v1.First, v2.First) || !stlbasic.Equal(v1.Second, v2.Second) {
 			return false
@@ -68,7 +68,7 @@ func (self LinkedHashMap[K, V]) Equal(dst LinkedHashMap[K, V]) bool {
 
 func (self LinkedHashMap[K, V]) Get(k K) V {
 	node := self.data[stlbasic.Hash(k)]
-	if node == nil{
+	if node == nil {
 		var v V
 		return v
 	}
@@ -81,7 +81,7 @@ func (self LinkedHashMap[K, V]) ContainKey(k K) bool {
 
 func (self *LinkedHashMap[K, V]) Set(k K, v V) V {
 	hash := stlbasic.Hash(k)
-	if node := self.data[hash]; node != nil{
+	if node := self.data[hash]; node != nil {
 		pv := node.Value.Second
 		node.Value = pair.Pair[K, V]{First: k, Second: v}
 		self.list.MoveToBack(node)
@@ -93,12 +93,12 @@ func (self *LinkedHashMap[K, V]) Set(k K, v V) V {
 }
 
 func (self *LinkedHashMap[K, V]) Remove(k K) V {
-    hash := stlbasic.Hash(k)
+	hash := stlbasic.Hash(k)
 	node := self.data[hash]
-    if node == nil{
-        var v V
-        return v
-    }
+	if node == nil {
+		var v V
+		return v
+	}
 	delete(self.data, hash)
 	return self.list.Remove(node).Second
 }
@@ -107,7 +107,7 @@ func (self LinkedHashMap[K, V]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('{')
 	var i int
-	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next() {
+	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		buf.WriteString(fmt.Sprintf("%v", cursor.Value.First))
 		buf.WriteString(": ")
 		buf.WriteString(fmt.Sprintf("%v", cursor.Value.Second))
@@ -124,7 +124,7 @@ func (self LinkedHashMap[K, V]) Debug(prefix uint) string {
 	var buf strings.Builder
 	buf.WriteString("linkedhashmap{")
 	var i int
-	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next() {
+	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		buf.WriteString(stlbasic.Debug(cursor.Value.First, prefix))
 		buf.WriteString(": ")
 		buf.WriteString(stlbasic.Debug(cursor.Value.Second, prefix))
@@ -139,7 +139,7 @@ func (self LinkedHashMap[K, V]) Debug(prefix uint) string {
 
 func (self LinkedHashMap[K, V]) Clone() LinkedHashMap[K, V] {
 	hm := NewLinkedHashMapWithCapacity[K, V](self.Length())
-	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next(){
+	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		hm.Set(cursor.Value.First, cursor.Value.Second)
 	}
 	return hm
@@ -159,9 +159,9 @@ func (self LinkedHashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
 }
 
 func (self LinkedHashMap[K, V]) Keys() dynarray.DynArray[K] {
-	da := dynarray.NewDynArrayWithCapacity[K](self.Length())
+	da := dynarray.NewDynArrayWithLength[K](self.Length())
 	var i uint
-	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next(){
+	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		da.Set(i, cursor.Value.First)
 		i++
 	}
@@ -169,9 +169,9 @@ func (self LinkedHashMap[K, V]) Keys() dynarray.DynArray[K] {
 }
 
 func (self LinkedHashMap[K, V]) Values() dynarray.DynArray[V] {
-	da := dynarray.NewDynArrayWithCapacity[V](self.Length())
+	da := dynarray.NewDynArrayWithLength[V](self.Length())
 	var i uint
-	for cursor:=self.list.Front(); cursor!=nil; cursor=cursor.Next(){
+	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		da.Set(i, cursor.Value.Second)
 		i++
 	}

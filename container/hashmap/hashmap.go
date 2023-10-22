@@ -138,7 +138,7 @@ func (self HashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
 }
 
 func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
-	da := dynarray.NewDynArrayWithCapacity[K](self.Length())
+	da := dynarray.NewDynArrayWithLength[K](self.Length())
 	var i uint
 	for _, p := range self.data.Values() {
 		da.Set(i, p.First)
@@ -148,7 +148,7 @@ func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
 }
 
 func (self HashMap[K, V]) Values() dynarray.DynArray[V] {
-	da := dynarray.NewDynArrayWithCapacity[V](self.Length())
+	da := dynarray.NewDynArrayWithLength[V](self.Length())
 	var i uint
 	for _, p := range self.data.Values() {
 		da.Set(i, p.Second)

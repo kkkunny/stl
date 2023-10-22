@@ -175,7 +175,7 @@ func (self TreeMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
 }
 
 func (self TreeMap[K, V]) Keys() dynarray.DynArray[K] {
-	da := dynarray.NewDynArrayWithCapacity[K](self.Length())
+	da := dynarray.NewDynArrayWithLength[K](self.Length())
 	var i uint
 	self.Iterator().Foreach(func(v pair.Pair[K, V]) bool {
 		da.Set(i, v.First)
@@ -186,7 +186,7 @@ func (self TreeMap[K, V]) Keys() dynarray.DynArray[K] {
 }
 
 func (self TreeMap[K, V]) Values() dynarray.DynArray[V] {
-	da := dynarray.NewDynArrayWithCapacity[V](self.Length())
+	da := dynarray.NewDynArrayWithLength[V](self.Length())
 	var i uint
 	self.Iterator().Foreach(func(v pair.Pair[K, V]) bool {
 		da.Set(i, v.Second)
