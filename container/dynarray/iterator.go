@@ -2,17 +2,12 @@ package dynarray
 
 import "github.com/kkkunny/stl/container/iterator"
 
-// AppendWithIterator 通过迭代器追加
-func (self *DynArray[T]) AppendWithIterator(iter iterator.Iterator[T]) {
-	self.init()
+func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+	var self DynArray[T]
 	for iter.Next() {
 		self.PushBack(iter.Value())
 	}
-}
-
-// Append 追加
-func (self *DynArray[T]) Append(ctr iterator.IteratorContainer[T]) {
-	self.AppendWithIterator(ctr.Iterator())
+	return self
 }
 
 // Iterator 迭代器

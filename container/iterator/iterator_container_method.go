@@ -8,8 +8,7 @@ func Foreach[T any](ctr IteratorContainer[T], f func(v T) bool) {
 // Collect 收集
 func Collect[V any, Ctr IteratorContainer[V]](iter Iterator[V]) Ctr {
 	var ctr Ctr
-	ctr.AppendWithIterator(iter)
-	return ctr
+	return ctr.NewWithIterator(iter).(Ctr)
 }
 
 // Map 映射
