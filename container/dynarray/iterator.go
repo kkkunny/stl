@@ -18,7 +18,7 @@ func (self *DynArray[T]) Append(ctr iterator.IteratorContainer[T]) {
 // Iterator 迭代器
 func (self DynArray[T]) Iterator() iterator.Iterator[T] {
 	self.init()
-	return iterator.NewIterator[T](_NewIterator[T](self.data))
+	return newIterator[T](self.data)
 }
 
 type _Iterator[T any] struct {
@@ -26,7 +26,7 @@ type _Iterator[T any] struct {
 	next uint
 }
 
-func _NewIterator[T any](data *[]T) *_Iterator[T] {
+func newIterator[T any](data *[]T) *_Iterator[T] {
 	return &_Iterator[T]{
 		data: data,
 		next: 0,

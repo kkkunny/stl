@@ -1,22 +1,22 @@
 package iterator
 
-type _SliceIterator[T any] struct {
+type sliceIterator[T any] struct {
 	src  *[]T
 	next int
 }
 
-func _NewSliceIterator[T any](src ...T) _Iter[T] {
-	return &_SliceIterator[T]{
+func newSliceIterator[T any](src ...T) Iterator[T] {
+	return &sliceIterator[T]{
 		src:  &src,
 		next: 0,
 	}
 }
 
-func (self *_SliceIterator[T]) Length() uint {
+func (self *sliceIterator[T]) Length() uint {
 	return uint(len(*self.src))
 }
 
-func (self *_SliceIterator[T]) Next() bool {
+func (self *sliceIterator[T]) Next() bool {
 	if self.next >= len(*self.src) {
 		return false
 	}
@@ -24,14 +24,14 @@ func (self *_SliceIterator[T]) Next() bool {
 	return true
 }
 
-func (self _SliceIterator[T]) HasNext() bool {
+func (self sliceIterator[T]) HasNext() bool {
 	return self.next < len(*self.src)
 }
 
-func (self _SliceIterator[T]) Value() T {
+func (self sliceIterator[T]) Value() T {
 	return (*self.src)[self.next-1]
 }
 
-func (self *_SliceIterator[T]) Reset() {
+func (self *sliceIterator[T]) Reset() {
 	self.next = 0
 }
