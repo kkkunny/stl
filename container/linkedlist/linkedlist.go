@@ -8,14 +8,14 @@ import (
 	"github.com/kkkunny/stl/container/iterator"
 )
 
-type _LinkedListNode[T any] struct{
+type _LinkedListNode[T any] struct {
 	Prev, Next *_LinkedListNode[T]
-	Value T
+	Value      T
 }
 
 // LinkedList 链表
 type LinkedList[T any] struct {
-	length uint
+	length     uint
 	root, tail *_LinkedListNode[T]
 }
 
@@ -25,7 +25,7 @@ func NewLinkedList[T any]() LinkedList[T] {
 
 func NewLinkedListWith[T any](vs ...T) LinkedList[T] {
 	self := NewLinkedList[T]()
-	for _, v := range vs{
+	for _, v := range vs {
 		self.PushBack(v)
 	}
 	return self
@@ -52,7 +52,7 @@ func (self LinkedList[T]) Equal(dst LinkedList[T]) bool {
 		return false
 	}
 
-	for c1, c2:=self.root, dst.root; c1!=nil&&c2!=nil; c1, c2=c1.Next, c2.Next {
+	for c1, c2 := self.root, dst.root; c1 != nil && c2 != nil; c1, c2 = c1.Next, c2.Next {
 		if !stlbasic.Equal(c1.Value, c2.Value) {
 			return false
 		}
@@ -62,10 +62,10 @@ func (self LinkedList[T]) Equal(dst LinkedList[T]) bool {
 
 func (self *LinkedList[T]) PushBack(v T) {
 	node := &_LinkedListNode[T]{Value: v}
-	if self.root == nil{
+	if self.root == nil {
 		self.root = node
 		self.tail = node
-	}else{
+	} else {
 		self.tail.Next = node
 		node.Prev = self.tail
 		self.tail = node
@@ -75,10 +75,10 @@ func (self *LinkedList[T]) PushBack(v T) {
 
 func (self *LinkedList[T]) PushFront(v T) {
 	node := &_LinkedListNode[T]{Value: v}
-	if self.root == nil{
+	if self.root == nil {
 		self.root = node
 		self.tail = node
-	}else{
+	} else {
 		self.root.Prev = node
 		node.Next = self.root
 		self.root = node
@@ -89,7 +89,7 @@ func (self *LinkedList[T]) PushFront(v T) {
 func (self LinkedList[T]) String() string {
 	var buf strings.Builder
 	buf.WriteByte('[')
-	for cursor:=self.root; cursor!=nil; cursor=cursor.Next{
+	for cursor := self.root; cursor != nil; cursor = cursor.Next {
 		buf.WriteString(fmt.Sprintf("%v", cursor.Value))
 		if cursor.Next != nil {
 			buf.WriteString(", ")
@@ -99,26 +99,13 @@ func (self LinkedList[T]) String() string {
 	return buf.String()
 }
 
-func (self LinkedList[T]) Debug(prefix uint) string {
-	var buf strings.Builder
-	buf.WriteString("linkedlist{")
-	for cursor:=self.root; cursor!=nil; cursor=cursor.Next{
-		buf.WriteString(stlbasic.Debug(cursor.Value, prefix))
-		if cursor.Next != nil {
-			buf.WriteString(", ")
-		}
-	}
-	buf.WriteByte('}')
-	return buf.String()
-}
-
 func (self *LinkedList[T]) PopBack() T {
 	var v T
-	if self.root == self.tail{
+	if self.root == self.tail {
 		v = self.root.Value
 		self.root = nil
 		self.tail = nil
-	}else{
+	} else {
 		v = self.tail.Value
 		self.tail.Prev.Next = nil
 		self.tail = self.tail.Prev
@@ -129,11 +116,11 @@ func (self *LinkedList[T]) PopBack() T {
 
 func (self *LinkedList[T]) PopFront() T {
 	var v T
-	if self.root == self.tail{
+	if self.root == self.tail {
 		v = self.root.Value
 		self.root = nil
 		self.tail = nil
-	}else{
+	} else {
 		v = self.root.Value
 		self.root.Next.Prev = nil
 		self.root = self.root.Next
@@ -152,7 +139,7 @@ func (self LinkedList[T]) Front() T {
 
 func (self LinkedList[T]) Clone() LinkedList[T] {
 	list := NewLinkedList[T]()
-	for cursor:=self.root; cursor!=nil; cursor=cursor.Next{
+	for cursor := self.root; cursor != nil; cursor = cursor.Next {
 		list.PushBack(cursor.Value)
 	}
 	return list

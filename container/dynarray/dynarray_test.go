@@ -7,7 +7,7 @@ import (
 )
 
 func TestNewDynArray(t *testing.T) {
-	v := NewDynArray[int]()
+	var v DynArray[int]
 	stltest.AssertEq(t, v.Length(), 0)
 	stltest.AssertEq(t, v.Capacity(), 0)
 }
@@ -106,16 +106,37 @@ func TestDynArray_Empty(t *testing.T) {
 	stltest.AssertEq(t, v.Empty(), true)
 }
 
-func BenchmarkWrite_slice(b *testing.B){
+func TestDynArray_Equal(t *testing.T) {
+	v := NewDynArrayWith(1, 2, 3)
+	v2 := v.Clone()
+	stltest.AssertEq(t, v.Equal(v2), true)
+	stltest.AssertEq(t, v.Equal(NewDynArrayWith(1, 3, 2)), false)
+}
+
+func TestDynArray_String(t *testing.T) {
+	v := NewDynArrayWith(1, 2, 3)
+	stltest.AssertEq(t, v.String(), "[1, 2, 3]")
+}
+
+func TestDynArray_Iterator(t *testing.T) {
+	v := NewDynArrayWith(1, 2, 3)
+	var i uint
+	for iter := v.Iterator(); iter.Next(); {
+		stltest.AssertEq(t, iter.Value(), v.Get(i))
+		i++
+	}
+}
+
+func BenchmarkWrite_slice(b *testing.B) {
 	var da []int
-	for i:=0; i<b.N; i++{
+	for i := 0; i < b.N; i++ {
 		da = append(da, i)
 	}
 }
 
-func BenchmarkWrite_DynArray(b *testing.B){
+func BenchmarkWrite_DynArray(b *testing.B) {
 	da := NewDynArray[int]()
-	for i:=0; i<b.N; i++{
+	for i := 0; i < b.N; i++ {
 		da.PushBack(i)
 	}
 }
