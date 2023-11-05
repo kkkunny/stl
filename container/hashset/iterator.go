@@ -1,34 +1,17 @@
 package hashset
 
 import (
-    "github.com/kkkunny/stl/container/iterator"
-    "github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/iterator"
 )
 
-type _iterator[T any] struct {
-    iter iterator.Iterator[pair.Pair[T, struct{}]]
+func (_ HashSet[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+	self := NewHashSetWithCapacity[T](iter.Length())
+	for iter.Next() {
+		self.Push(iter.Value())
+	}
+	return self
 }
 
-func _NewIterator[T any](src *HashSet[T]) *_iterator[T] {
-    return &_iterator[T]{iter: src.data.Iterator()}
-}
-
-func (self _iterator[T]) Length() uint {
-    return self.Length()
-}
-
-func (self *_iterator[T]) Next() bool {
-    return self.Next()
-}
-
-func (self _iterator[T]) HasNext() bool {
-    return self.HasNext()
-}
-
-func (self _iterator[T]) Value() T {
-    return self.iter.Value().First
-}
-
-func (self *_iterator[T]) Reset() {
-    self.iter.Reset()
+func (self HashSet[T]) Iterator() iterator.Iterator[T] {
+	return self.data.Keys().Iterator()
 }
