@@ -8,7 +8,7 @@ import (
 
 func TestDynArray_Capacity(t *testing.T) {
 	var v DynArray[int]
-	stltest.AssertEq(t, v.Capacity(), 0)
-	v = NewDynArrayWithCapacity[int](10)
-	stltest.AssertEq(t, v.Capacity(), 10)
+	stltest.AssertEq(t, v.Capacity(), initialCapacity)
+	v = NewDynArrayWithCapacity[int](20)
+	stltest.AssertEq(t, v.Capacity(), 20)
 }

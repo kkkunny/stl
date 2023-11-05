@@ -1,5 +1,7 @@
 package dynarray
 
+const initialCapacity uint = 5 // 初始容量
+
 // DynArray 动态数组
 type DynArray[T any] struct {
 	data *[]T
@@ -7,7 +9,7 @@ type DynArray[T any] struct {
 
 // NewDynArray 新建动态数组
 func NewDynArray[T any]() DynArray[T] {
-	return DynArray[T]{data: new([]T)}
+	return NewDynArrayWithCapacity[T](initialCapacity)
 }
 
 // NewDynArrayWithCapacity 新建指定容量的动态数组

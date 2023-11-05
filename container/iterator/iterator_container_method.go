@@ -35,3 +35,18 @@ func Any[T any](ctr IteratorContainer[T], f func(T) bool) bool {
 func Filter[T any, Ctr IteratorContainer[T]](ctr Ctr, f func(T) bool) Ctr {
 	return Collect[T, Ctr](IteratorFilter(ctr.Iterator(), f))
 }
+
+// ContainAll 包含所有
+func ContainAll[T any](ctr IteratorContainer[T], v ...T) bool {
+	return IteratorContainAll(ctr.Iterator(), v...)
+}
+
+// ContainAny 包含任意
+func ContainAny[T any](ctr IteratorContainer[T], v ...T) bool {
+	return IteratorContainAny(ctr.Iterator(), v...)
+}
+
+// Contain 包含
+func Contain[T any](ctr IteratorContainer[T], v T) bool {
+	return IteratorContain(ctr.Iterator(), v)
+}

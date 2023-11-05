@@ -1,5 +1,7 @@
 package iterator
 
+import stlbasic "github.com/kkkunny/stl/basic"
+
 // IteratorForeach 遍历
 func IteratorForeach[T any](iter Iterator[T], f func(v T) bool) {
 	for iter.Next() {
@@ -61,4 +63,35 @@ func IteratorFilter[T any](iter Iterator[T], f func(T) bool) Iterator[T] {
 		return true
 	})
 	return newSliceIterator[T](slice...)
+}
+
+// IteratorContainAll 包含所有
+func IteratorContainAll[T any](iter Iterator[T], v ...T) bool {
+loop:
+	for iter.Next() {
+		for _, vv := range v {
+			if stlbasic.Equal(iter.Value(), vv) {
+				continue loop
+			}
+		}
+		return false
+	}
+	return true
+}
+
+// IteratorContainAny 包含任意
+func IteratorContainAny[T any](iter Iterator[T], v ...T) bool {
+	for iter.Next() {
+		for _, vv := range v {
+			if stlbasic.Equal(iter.Value(), vv) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// IteratorContain 包含
+func IteratorContain[T any](iter Iterator[T], v T) bool {
+	return IteratorContainAny(iter, v)
 }

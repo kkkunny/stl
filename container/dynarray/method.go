@@ -1,11 +1,17 @@
 package dynarray
 
+import (
+	"math/rand"
+	"time"
+)
+
 // 初始化
 func (self *DynArray[T]) init() {
 	if self.data != nil {
 		return
 	}
-	self.data = new([]T)
+	data := make([]T, 0, initialCapacity)
+	self.data = &data
 }
 
 // Get 获取元素
@@ -86,8 +92,8 @@ func (self DynArray[T]) Front() T {
 
 // Clear 清空
 func (self *DynArray[T]) Clear() {
+	self.data = nil
 	self.init()
-	*self.data = make([]T, 0)
 }
 
 // Empty 是否为空
@@ -109,4 +115,13 @@ func (self *DynArray[T]) Append(dst DynArray[T]) {
 func (self DynArray[T]) ToSlice() []T {
 	self.init()
 	return *self.data
+}
+
+// Shuffle 打乱顺序
+func (self *DynArray[T]) Shuffle() {
+	self.init()
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(*self.data), func(i, j int) {
+		(*self.data)[i], (*self.data)[j] = (*self.data)[j], (*self.data)[i]
+	})
 }

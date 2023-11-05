@@ -3,9 +3,11 @@ package dynarray
 import "github.com/kkkunny/stl/container/iterator"
 
 func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[T]) any {
-	var self DynArray[T]
+	self := NewDynArrayWithLength[T](iter.Length())
+	var i int
 	for iter.Next() {
-		self.PushBack(iter.Value())
+		(*self.data)[i] = iter.Value()
+		i++
 	}
 	return self
 }
