@@ -6,7 +6,7 @@ import (
 )
 
 func (self LinkedHashMap[K, V]) String() string {
-	// TODO: 优化
+	self.init()
 	var buf strings.Builder
 	buf.WriteString("LinkedHashMap{")
 	var i int

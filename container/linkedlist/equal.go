@@ -6,9 +6,7 @@ import stlbasic "github.com/kkkunny/stl/basic"
 func (self LinkedList[T]) Equal(dst LinkedList[T]) bool {
 	if self.root == dst.root {
 		return true
-	}
-
-	if self.Length() != dst.Length() {
+	} else if self.Length() != dst.Length() {
 		return false
 	}
 

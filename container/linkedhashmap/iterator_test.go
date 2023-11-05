@@ -1,4 +1,4 @@
-package hashmap
+package linkedhashmap
 
 import (
 	"testing"
@@ -8,9 +8,9 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestHashMap_Iterator(t *testing.T) {
-	v1 := NewHashMapWith[int, int](1, 1, 2, 2)
-	v2 := iterator.Map[pair.Pair[int, int], pair.Pair[int, int], HashMap[int, int]](v1, func(v pair.Pair[int, int]) pair.Pair[int, int] {
+func TestLinkedHashMap_Iterator(t *testing.T) {
+	v1 := NewLinkedHashMapWith[int, int](1, 1, 2, 2)
+	v2 := iterator.Map[pair.Pair[int, int], pair.Pair[int, int], LinkedHashMap[int, int]](v1, func(v pair.Pair[int, int]) pair.Pair[int, int] {
 		return pair.NewPair(v.First-1, v.Second-1)
 	})
 	var i int

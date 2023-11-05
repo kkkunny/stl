@@ -15,5 +15,6 @@ func (_ HashMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) 
 }
 
 func (self HashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
+	self.init()
 	return self.KeyValues().Iterator()
 }
