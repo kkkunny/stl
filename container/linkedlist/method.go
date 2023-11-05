@@ -73,3 +73,21 @@ func (self *LinkedList[T]) Clear() {
 func (self LinkedList[T]) Empty() bool {
 	return self.length == 0
 }
+
+// Append 拼接
+func (self *LinkedList[T]) Append(dst LinkedList[T]) {
+	for cursor := dst.root; cursor != nil; cursor = cursor.Next {
+		self.PushBack(cursor.Value)
+	}
+}
+
+// ToSlice 转成切片
+func (self LinkedList[T]) ToSlice() []T {
+	res := make([]T, self.length)
+	var i int
+	for cursor := self.root; cursor != nil; cursor = cursor.Next {
+		res[i] = cursor.Value
+		i++
+	}
+	return res
+}

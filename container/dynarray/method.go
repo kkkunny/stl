@@ -95,3 +95,18 @@ func (self DynArray[T]) Empty() bool {
 	self.init()
 	return self.Length() == 0
 }
+
+// Append 拼接
+func (self *DynArray[T]) Append(dst DynArray[T]) {
+	if dst.data == nil {
+		return
+	}
+	self.init()
+	*self.data = append(*self.data, *dst.data...)
+}
+
+// ToSlice 转成切片
+func (self DynArray[T]) ToSlice() []T {
+	self.init()
+	return *self.data
+}
