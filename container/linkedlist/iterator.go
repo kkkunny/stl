@@ -1,43 +1,58 @@
 package linkedlist
 
-type _iterator[T any] struct {
-	src  *LinkedList[T]
-	cursor *_LinkedListNode[T]
+import "github.com/kkkunny/stl/container/iterator"
+
+func (_ LinkedList[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+	self := NewLinkedList[T]()
+	for iter.Next() {
+		self.PushBack(iter.Value())
+	}
+	return self
 }
 
-func _NewIterator[T any](src *LinkedList[T]) *_iterator[T] {
-	return &_iterator[T]{
-		src:  src,
+// Iterator 迭代器
+func (self LinkedList[T]) Iterator() iterator.Iterator[T] {
+	return newIterator[T](&self)
+}
+
+type _Iterator[T any] struct {
+	src    *LinkedList[T]
+	cursor *node[T]
+}
+
+func newIterator[T any](src *LinkedList[T]) *_Iterator[T] {
+	return &_Iterator[T]{
+		src:    src,
 		cursor: nil,
 	}
 }
 
-func (self _iterator[T]) Length() uint {
+func (self _Iterator[T]) Length() uint {
 	return self.src.Length()
 }
 
-func (self *_iterator[T]) Next() bool {
-	if self.cursor == nil{
+func (self *_Iterator[T]) Next() bool {
+	if self.cursor == nil {
 		self.cursor = self.src.root
 		return self.cursor != nil
-	}else{
+	} else {
 		self.cursor = self.cursor.Next
 		return self.cursor != nil
 	}
 }
 
-func (self _iterator[T]) HasNext() bool {
-	if self.cursor == nil{
+func (self _Iterator[T]) HasNext() bool {
+	if self.cursor == nil {
 		return !self.src.Empty()
-	}else{
+	} else {
 		return self.cursor.Next != nil
 	}
 }
 
-func (self _iterator[T]) Value() T {
+func (self _Iterator[T]) Value() T {
 	return self.cursor.Value
 }
 
-func (self *_iterator[T]) Reset() {
+func (self *_Iterator[T]) Reset() {
 	self.cursor = nil
 }
