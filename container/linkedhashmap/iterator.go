@@ -1,51 +1,19 @@
 package linkedhashmap
 
 import (
+	"github.com/kkkunny/stl/container/iterator"
 	"github.com/kkkunny/stl/container/pair"
-	"github.com/kkkunny/stl/internal/list"
 )
 
-type _iterator[K, V any] struct {
-	src  *LinkedHashMap[K, V]
-	node *list.Element[pair.Pair[K, V]]
-}
-
-func _NewIterator[K, V any](src *LinkedHashMap[K, V]) *_iterator[K, V] {
-	return &_iterator[K, V]{
-		src:  src,
-		node: nil,
+func (_ LinkedHashMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) any {
+	self := NewLinkedHashMapWithCapacity[K, V](iter.Length())
+	for iter.Next() {
+		item := iter.Value()
+		self.Set(item.First, item.Second)
 	}
+	return self
 }
 
-func (self _iterator[K, V]) Length() uint {
-	return self.src.Length()
-}
-
-func (self *_iterator[K, V]) Next() bool {
-	if self.node == nil{
-		self.node = self.src.list.Front()
-		return self.node != nil
-	}else{
-		if self.node.Next() == nil {
-			return false
-		}
-		self.node = self.node.Next()
-		return true
-	}
-}
-
-func (self _iterator[K, V]) HasNext() bool {
-	if self.node == nil{
-		return self.Length() != 0
-	}else{
-		return self.node.Next() != nil
-	}
-}
-
-func (self _iterator[K, V]) Value() pair.Pair[K, V] {
-	return self.node.Value
-}
-
-func (self *_iterator[K, V]) Reset() {
-	self.node = nil
+func (self LinkedHashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
+	return self.KeyValues().Iterator()
 }
