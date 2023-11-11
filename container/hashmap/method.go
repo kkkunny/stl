@@ -155,10 +155,9 @@ func (self *HashMap[K, V]) Remove(k K, defaultValue ...V) V {
 			nextBKT = &(*self.buckets)[0]
 		}
 
-		if !nextBKT.Used {
+		if !nextBKT.Used || self.getDistance(nextBKT.Hash, index) == 0 {
+			bkt.Used = false
 			break
-		} else if self.getDistance(nextBKT.Hash, index) == 0 {
-			*bkt = bucket[K, V]{}
 		} else {
 			*bkt = *nextBKT
 		}
