@@ -2,8 +2,8 @@ package stlbasic
 
 import (
 	"fmt"
+	"math/cmplx"
 	"reflect"
-	"unsafe"
 )
 
 // Orderable 可排序的
@@ -17,141 +17,61 @@ func Order[T any](lv, rv T) int {
 	if eqlv, ok := any(lv).(Orderable[T]); ok {
 		return eqlv.Order(rv)
 	} else {
+		lvv, rvv := reflect.ValueOf(lv), reflect.ValueOf(rv)
 		vtype := reflect.TypeOf(lv)
 		switch vtype.Kind() {
-		case reflect.Int:
-			lvv, rvv := any(lv).(int), any(rv).(int)
-			if lvv < rvv{
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			lv, rv := lvv.Int(), rvv.Int()
+			if lv < rv {
 				return -1
-			}else if lvv == rvv{
+			} else if lv == rv {
 				return 0
-			}else{
+			} else {
 				return 1
 			}
-		case reflect.Int8:
-			lvv, rvv := any(lv).(int8), any(rv).(int8)
-			if lvv < rvv{
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+			lv, rv := lvv.Uint(), rvv.Uint()
+			if lv < rv {
 				return -1
-			}else if lvv == rvv{
+			} else if lv == rv {
 				return 0
-			}else{
+			} else {
 				return 1
 			}
-		case reflect.Int16:
-			lvv, rvv := any(lv).(int16), any(rv).(int16)
-			if lvv < rvv{
+		case reflect.Float32, reflect.Float64:
+			lv, rv := lvv.Float(), rvv.Float()
+			if lv < rv {
 				return -1
-			}else if lvv == rvv{
+			} else if lv == rv {
 				return 0
-			}else{
+			} else {
 				return 1
 			}
-		case reflect.Int32:
-			lvv, rvv := any(lv).(int32), any(rv).(int32)
-			if lvv < rvv{
+		case reflect.Complex64, reflect.Complex128:
+			lv, rv := cmplx.Abs(lvv.Complex()), cmplx.Abs(rvv.Complex())
+			if lv < rv {
 				return -1
-			}else if lvv == rvv{
+			} else if lv == rv {
 				return 0
-			}else{
-				return 1
-			}
-		case reflect.Int64:
-			lvv, rvv := any(lv).(int64), any(rv).(int64)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Uint:
-			lvv, rvv := any(lv).(uint), any(rv).(uint)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Uint8:
-			lvv, rvv := any(lv).(uint8), any(rv).(uint8)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Uint16:
-			lvv, rvv := any(lv).(uint16), any(rv).(uint16)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Uint32:
-			lvv, rvv := any(lv).(uint32), any(rv).(uint32)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Uint64:
-			lvv, rvv := any(lv).(uint64), any(rv).(uint64)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Uintptr:
-			lvv, rvv := any(lv).(uintptr), any(rv).(uintptr)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Float32:
-			lvv, rvv := any(lv).(float32), any(rv).(float32)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
-				return 1
-			}
-		case reflect.Float64:
-			lvv, rvv := any(lv).(float64), any(rv).(float64)
-			if lvv < rvv{
-				return -1
-			}else if lvv == rvv{
-				return 0
-			}else{
+			} else {
 				return 1
 			}
 		case reflect.String:
-			lvv, rvv := any(lv).(string), any(rv).(string)
-			if lvv < rvv{
+			lv, rv := lvv.String(), rvv.String()
+			if lv < rv {
 				return -1
-			}else if lvv == rvv{
+			} else if lv == rv {
 				return 0
-			}else{
+			} else {
 				return 1
 			}
 		case reflect.UnsafePointer:
-			lvv, rvv := uintptr(*(*unsafe.Pointer)(unsafe.Pointer(&lv))), uintptr(*(*unsafe.Pointer)(unsafe.Pointer(&rv)))
-			if lvv < rvv{
+			lv, rv := uintptr(lvv.UnsafePointer()), uintptr(rvv.UnsafePointer())
+			if lv < rv {
 				return -1
-			}else if lvv == rvv{
+			} else if lv == rv {
 				return 0
-			}else{
+			} else {
 				return 1
 			}
 		default:
