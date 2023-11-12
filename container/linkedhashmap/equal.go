@@ -4,6 +4,8 @@ import stlbasic "github.com/kkkunny/stl/basic"
 
 func (self LinkedHashMap[K, V]) Equal(dst LinkedHashMap[K, V]) bool {
 	self.init()
+	dst.init()
+
 	if self.Length() != dst.Length() {
 		return false
 	} else if self.list == dst.list {
