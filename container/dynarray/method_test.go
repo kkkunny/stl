@@ -104,3 +104,8 @@ func TestDynArray_ToSlice(t *testing.T) {
 	v := NewDynArrayWith(1, 2, 3)
 	stltest.AssertEq(t, fmt.Sprintf("%v", v.ToSlice()), fmt.Sprintf("%v", []int{1, 2, 3}))
 }
+
+func TestDynArray_Slice(t *testing.T) {
+	v := NewDynArrayWith(1, 2, 3)
+	stltest.AssertEq(t, v, v.Slice(0, v.Length()-1))
+}

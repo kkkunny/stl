@@ -125,3 +125,11 @@ func (self *DynArray[T]) Shuffle() {
 		(*self.data)[i], (*self.data)[j] = (*self.data)[j], (*self.data)[i]
 	})
 }
+
+// Slice 切片 [b, e]
+func (self DynArray[T]) Slice(b, e uint) DynArray[T] {
+	self.init()
+
+	newData := (*self.data)[b : e+1]
+	return DynArray[T]{data: &newData}
+}
