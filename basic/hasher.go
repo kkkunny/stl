@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"reflect"
-	"unsafe"
 )
 
 // Hashable 可哈希的
@@ -25,31 +24,11 @@ func Hash[T any](v T) uint64 {
 			} else {
 				return 0
 			}
-		case reflect.Int:
-			return *(*uint64)(unsafe.Pointer(&v))
-		case reflect.Int8:
-			return uint64(*(*uint8)(unsafe.Pointer(&v)))
-		case reflect.Int16:
-			return uint64(*(*uint16)(unsafe.Pointer(&v)))
-		case reflect.Int32:
-			return uint64(*(*uint32)(unsafe.Pointer(&v)))
-		case reflect.Int64:
-			return *(*uint64)(unsafe.Pointer(&v))
-		case reflect.Uint:
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			return uint64(vv.Int())
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 			return vv.Uint()
-		case reflect.Uint8:
-			return vv.Uint()
-		case reflect.Uint16:
-			return vv.Uint()
-		case reflect.Uint32:
-			return vv.Uint()
-		case reflect.Uint64:
-			return vv.Uint()
-		case reflect.Uintptr:
-			return vv.Uint()
-		case reflect.Float32:
-			return uint64(math.Float32bits(float32(vv.Float())))
-		case reflect.Float64:
+		case reflect.Float32, reflect.Float64:
 			return math.Float64bits(vv.Float())
 		case reflect.String:
 			var hash uint64
@@ -57,13 +36,7 @@ func Hash[T any](v T) uint64 {
 				hash = 31*hash + uint64(b)
 			}
 			return hash
-		case reflect.Chan:
-			return uint64(vv.Pointer())
-		case reflect.UnsafePointer:
-			return uint64(vv.Pointer())
-		case reflect.Func:
-			return uint64(vv.Pointer())
-		case reflect.Pointer:
+		case reflect.Chan, reflect.UnsafePointer, reflect.Func, reflect.Pointer, reflect.Slice, reflect.Map:
 			return uint64(vv.Pointer())
 		case reflect.Array:
 			var hash uint64
