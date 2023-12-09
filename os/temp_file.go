@@ -17,7 +17,7 @@ const (
 )
 
 // RandomTempFilePath 随机一个缓存文件地址
-func RandomTempFilePath(prefix string) (string, error) {
+func RandomTempFilePath(prefix string) (FilePath, error) {
 	rander := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		var nameBuffer strings.Builder
@@ -32,7 +32,7 @@ func RandomTempFilePath(prefix string) (string, error) {
 		} else {
 			name = fmt.Sprintf("%s.tmp", nameBuffer.String())
 		}
-		path := filepath.Join(os.TempDir(), name)
+		path := NewFilePath(filepath.Join(os.TempDir(), name))
 		exist, err := Exist(path)
 		if err != nil {
 			return "", err
@@ -44,12 +44,12 @@ func RandomTempFilePath(prefix string) (string, error) {
 }
 
 // CreateTempFile 创建一个缓存文件
-func CreateTempFile(prefix string) (string, *os.File, error) {
+func CreateTempFile(prefix string) (FilePath, *os.File, error) {
 	path, err := RandomTempFilePath(prefix)
 	if err != nil {
 		return "", nil, err
 	}
-	file, err := os.Create(path)
+	file, err := os.Create(path.String())
 	if err != nil {
 		return "", nil, err
 	}
@@ -57,7 +57,7 @@ func CreateTempFile(prefix string) (string, *os.File, error) {
 }
 
 type TempFile struct {
-	path string
+	path FilePath
 	*os.File
 }
 
@@ -65,7 +65,7 @@ func (f *TempFile) Close() error {
 	if err := f.File.Close(); err != nil {
 		return err
 	}
-	return os.Remove(f.path)
+	return os.Remove(f.path.String())
 }
 
 // CreateTempFileWithCloser 创建一个带自动删除的缓存文件
