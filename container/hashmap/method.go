@@ -28,9 +28,9 @@ func (self *HashMap[K, V]) expand() {
 		return
 	}
 	newSelf := NewHashMapWithCapacity[K, V](uint(float64(self.Capacity()) * expandMultiple))
-	for _, bkt := range *self.buckets {
+	for iter := self.Iterator(); iter.Next(); {
 		// TODO: 优化
-		newSelf.Set(bkt.Key, bkt.Value)
+		newSelf.Set(iter.Value().First, iter.Value().Second)
 	}
 	*self = newSelf
 }
