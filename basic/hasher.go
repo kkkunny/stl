@@ -40,14 +40,12 @@ func Hash[T any](v T) uint64 {
 			return uint64(vv.Pointer())
 		case reflect.Array:
 			var hash uint64
-			vv := reflect.ValueOf(v)
 			for i := 0; i < vt.Len(); i++ {
 				hash = 31*hash + Hash(vv.Index(i).Interface())
 			}
 			return hash
 		case reflect.Struct:
 			var hash uint64
-			vv := reflect.ValueOf(v)
 			for i := 0; i < vv.NumField(); i++ {
 				hash = 31*hash + Hash(vv.Field(i).Interface())
 			}
