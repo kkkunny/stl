@@ -3,7 +3,7 @@ package linkedhashmap
 import (
 	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/pair"
-	"github.com/kkkunny/stl/internal/list"
+	"github.com/kkkunny/stl/list"
 )
 
 // 初始化

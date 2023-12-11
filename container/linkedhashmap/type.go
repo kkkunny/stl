@@ -3,7 +3,7 @@ package linkedhashmap
 import (
 	"github.com/kkkunny/stl/container/hashmap"
 	"github.com/kkkunny/stl/container/pair"
-	"github.com/kkkunny/stl/internal/list"
+	"github.com/kkkunny/stl/list"
 )
 
 // LinkedHashMap 插入顺序哈希表
