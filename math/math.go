@@ -18,18 +18,25 @@ func RoundTo[T stlbasic.Number](m, n T) T {
 // GetBitFromSignedInt 获取有符号整数指定位数的值（从右向左数）
 // eg. 5:00000101 pos=0 ret=1
 func GetBitFromSignedInt[T constraints.Signed](v T, pos uint64) bool {
-	if pos == uint64(unsafe.Sizeof(v))*8-1 {
+	if pos < uint64(unsafe.Sizeof(v))*8-1{
+		val := v & (1 << pos)
+		return val > 0
+	}else if pos == uint64(unsafe.Sizeof(v))*8-1 {
 		return v < 0
+	}else{
+		return false
 	}
-	val := v & (1 << pos)
-	return val > 0
 }
 
 // GetBitFromUnsignedInt 获取无符号整数指定位数的值（从右向左数）
 // eg. 5:00000101 pos=0 ret=1
 func GetBitFromUnsignedInt[T constraints.Unsigned](v T, pos uint64) bool {
-	val := v & (1 << pos)
-	return val > 0
+	if pos < uint64(unsafe.Sizeof(v))*8{
+		val := v & (1 << pos)
+		return val > 0
+	}else{
+		return false
+	}
 }
 
 // GetBitFromInt 获取整数指定位数的值（从右向左数）
