@@ -1,4 +1,4 @@
-package bits
+package stlbits
 
 import "golang.org/x/exp/constraints"
 
