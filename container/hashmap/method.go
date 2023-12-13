@@ -47,16 +47,16 @@ func (self *HashMap[K, V]) getDistance(hash uint64, curIndex uint) uint {
 }
 
 // 寻找桶
-func (self *HashMap[K, V]) findBucket(hash uint64, k K) *bucket[K, V] {
+func (self *HashMap[K, V]) findBucket(hash uint64, k K) (uint, *bucket[K, V]) {
 	index := uint(hash % uint64(self.Capacity()))
 	for {
 		bkt := &(*self.buckets)[index]
 		if !bkt.Used {
-			return nil
+			return 0, nil
 		} else if stlbasic.Equal(k, bkt.Key) {
-			return bkt
+			return index, bkt
 		} else if self.getDistance(hash, index) > self.getDistance(bkt.Hash, index) {
-			return nil
+			return 0, nil
 		}
 		if index == self.Capacity()-1 {
 			index = 0
@@ -114,7 +114,7 @@ func (self *HashMap[K, V]) Set(k K, v V) V {
 // Get 获取值
 func (self HashMap[K, V]) Get(k K, defaultValue ...V) V {
 	self.init()
-	bkt := self.findBucket(stlbasic.Hash(k), k)
+	_, bkt := self.findBucket(stlbasic.Hash(k), k)
 	if bkt == nil && len(defaultValue) > 0 {
 		return defaultValue[0]
 	} else if bkt == nil {
@@ -127,14 +127,15 @@ func (self HashMap[K, V]) Get(k K, defaultValue ...V) V {
 // ContainKey 是否包含键
 func (self HashMap[K, V]) ContainKey(k K) bool {
 	self.init()
-	return self.findBucket(stlbasic.Hash(k), k) != nil
+	_, bkt := self.findBucket(stlbasic.Hash(k), k)
+	return bkt != nil
 }
 
 // Remove 移除键值对
 func (self *HashMap[K, V]) Remove(k K, defaultValue ...V) V {
 	self.init()
 
-	bkt := self.findBucket(stlbasic.Hash(k), k)
+	index, bkt := self.findBucket(stlbasic.Hash(k), k)
 	if bkt == nil && len(defaultValue) > 0 {
 		return defaultValue[0]
 	} else if bkt == nil {
@@ -145,17 +146,12 @@ func (self *HashMap[K, V]) Remove(k K, defaultValue ...V) V {
 	prevValue := bkt.Value
 	self.length--
 
-	index := uint(bkt.Hash % uint64(self.Capacity()))
 	for {
 		bkt = &(*self.buckets)[index]
-		var nextBKT *bucket[K, V]
-		if index+1 < self.Capacity() {
-			nextBKT = &(*self.buckets)[index+1]
-		} else {
-			nextBKT = &(*self.buckets)[0]
-		}
+		nextIndex := stlbasic.Ternary(index+1 < self.Capacity(), index+1, 0)
+		nextBKT := &(*self.buckets)[nextIndex]
 
-		if !nextBKT.Used || self.getDistance(nextBKT.Hash, index) == 0 {
+		if !nextBKT.Used || self.getDistance(nextBKT.Hash, nextIndex) == 0 {
 			bkt.Used = false
 			break
 		} else {
