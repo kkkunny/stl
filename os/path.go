@@ -2,6 +2,7 @@ package stlos
 
 import (
 	"io/fs"
+	"os"
 	"path/filepath"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -12,6 +13,15 @@ type FilePath string
 
 func NewFilePath(path string) FilePath {
 	return FilePath(path)
+}
+
+// GetWorkDirectory 获取工作目录
+func GetWorkDirectory() (FilePath, error) {
+	fp, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	return FilePath(fp), nil
 }
 
 func (self FilePath) String() string {
@@ -38,8 +48,8 @@ func (self FilePath) Abs() (FilePath, error) {
 	return FilePath(fp), nil
 }
 
-func (self FilePath) Base() FilePath {
-	return FilePath(filepath.Base(string(self)))
+func (self FilePath) Base() string {
+	return filepath.Base(string(self))
 }
 
 func (self FilePath) Clean() FilePath {
@@ -84,7 +94,7 @@ func (self FilePath) Join(elem ...string) FilePath {
 }
 
 func (self FilePath) Rel(dst FilePath) (FilePath, error) {
-	fp, err := filepath.Rel(string(self), string(dst))
+	fp, err := filepath.Rel(string(dst), string(self))
 	if err != nil {
 		return "", err
 	}
