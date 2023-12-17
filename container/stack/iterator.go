@@ -1,6 +1,8 @@
 package stack
 
 import (
+	"slices"
+
 	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/iterator"
 )
@@ -11,5 +13,7 @@ func (self Stack[T]) NewWithIterator(iter iterator.Iterator[T]) any {
 
 // Iterator 迭代器
 func (self Stack[T]) Iterator() iterator.Iterator[T] {
-	return dynarray.DynArray[T](self).Iterator()
+	reverse := slices.Clone(dynarray.DynArray[T](self).ToSlice())
+	slices.Reverse(reverse)
+	return dynarray.NewDynArrayWith(reverse...).Iterator()
 }
