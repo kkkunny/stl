@@ -13,9 +13,7 @@ type Comparable[Self any] interface {
 // Equal 比较是否相等
 func Equal[T any](lv, rv T) bool {
 	if eqlv, ok := any(lv).(Comparable[T]); ok {
-		if !eqlv.Equal(rv) {
-			return false
-		}
+		return eqlv.Equal(rv)
 	} else {
 		vtype := reflect.TypeOf(lv)
 		if vtype.Comparable() {
@@ -24,5 +22,4 @@ func Equal[T any](lv, rv T) bool {
 			panic(fmt.Errorf("type `%s` cannot be compared", vtype))
 		}
 	}
-	return true
 }

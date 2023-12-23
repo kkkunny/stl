@@ -7,7 +7,7 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestDynArray_Iterator(t *testing.T) {
+func TestQueue_Iterator(t *testing.T) {
 	v1 := NewQueueWith[int](1, 2, 3)
 	v2 := iterator.Map[int, int, Queue[int]](v1, func(v int) int {
 		return v - 1

@@ -7,7 +7,7 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestDynArray_Iterator(t *testing.T) {
+func TestStack_Iterator(t *testing.T) {
 	v1 := NewStackWith[int](1, 2, 3)
 	v2 := iterator.Map[int, int, Stack[int]](v1, func(v int) int {
 		return v - 1

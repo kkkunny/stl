@@ -6,7 +6,7 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestDynArray_Equal(t *testing.T) {
+func TestStack_Equal(t *testing.T) {
 	v1 := NewStackWith[int](1, 2, 3)
 	v2 := NewStackWith[int](1, 2, 3)
 	v3 := NewStackWith[int](3, 2, 1)

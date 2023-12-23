@@ -29,11 +29,6 @@ func (self Queue[T]) Empty() bool {
 	return dynarray.DynArray[T](self).Empty()
 }
 
-// Append 拼接
-func (self *Queue[T]) Append(dst Queue[T]) {
-	(*dynarray.DynArray[T])(self).Append(dynarray.DynArray[T](dst))
-}
-
 // ToSlice 转成切片
 func (self Queue[T]) ToSlice() []T {
 	return dynarray.DynArray[T](self).ToSlice()

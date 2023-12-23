@@ -6,7 +6,7 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestDynArray_Equal(t *testing.T) {
+func TestQueue_Equal(t *testing.T) {
 	v1 := NewQueueWith[int](1, 2, 3)
 	v2 := NewQueueWith[int](1, 2, 3)
 	v3 := NewQueueWith[int](3, 2, 1)

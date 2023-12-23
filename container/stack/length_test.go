@@ -6,7 +6,7 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestDynArray_Length(t *testing.T) {
+func TestStack_Length(t *testing.T) {
 	v := NewStackWith[int](1, 2, 3)
 	stltest.AssertEq(t, v.Length(), 3)
 }
