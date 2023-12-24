@@ -2,7 +2,10 @@ package dynarray
 
 import (
 	"math/rand"
+	"slices"
 	"time"
+
+	stlbasic "github.com/kkkunny/stl/basic"
 )
 
 // 初始化
@@ -132,4 +135,16 @@ func (self DynArray[T]) Slice(b, e uint) DynArray[T] {
 
 	newData := (*self.data)[b : e+1]
 	return DynArray[T]{data: &newData}
+}
+
+// Sort 排序
+func (self *DynArray[T]) Sort(reverse ...bool) {
+	self.init()
+	slices.SortFunc(*self.data, func(l, r T) int {
+		if len(reverse) > 0 && reverse[0] {
+			return stlbasic.Order(r, l)
+		} else {
+			return stlbasic.Order(l, r)
+		}
+	})
 }

@@ -1,6 +1,10 @@
 package stlslices
 
-import stlbasic "github.com/kkkunny/stl/basic"
+import (
+	"slices"
+
+	stlbasic "github.com/kkkunny/stl/basic"
+)
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
 	res := make([]F, len(slice))
@@ -72,4 +76,16 @@ func ContainAny[T any, TS ~[]T](slice TS, v ...T) bool {
 
 func Contain[T any, TS ~[]T](slice TS, v T) bool {
 	return ContainAny(slice, v)
+}
+
+func Sort[T any, TS ~[]T](slice TS, reverse ...bool) TS {
+	slice = slices.Clone(slice)
+	slices.SortFunc(slice, func(l, r T) int {
+		if len(reverse) > 0 && reverse[0] {
+			return stlbasic.Order(r, l)
+		} else {
+			return stlbasic.Order(l, r)
+		}
+	})
+	return slice
 }
