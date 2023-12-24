@@ -1,4 +1,4 @@
-package stack
+package heap
 
 import (
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -16,5 +16,7 @@ func (self Heap[T]) NewWithIterator(iter iterator.Iterator[T]) any {
 // Iterator 迭代器
 func (self Heap[T]) Iterator() iterator.Iterator[T] {
 	self.init()
-	return self.data.Iterator()
+	data := self.data.Clone()
+	data.Sort(self.reverse)
+	return data.Iterator()
 }

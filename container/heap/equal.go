@@ -1,4 +1,4 @@
-package stack
+package heap
 
 // Equal 比较相等 O(3N+2log(N))
 func (self Heap[T]) Equal(dst Heap[T]) bool {

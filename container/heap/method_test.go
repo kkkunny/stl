@@ -1,4 +1,4 @@
-package stack
+package heap
 
 import (
 	"testing"
@@ -34,4 +34,17 @@ func TestHeap_Reverse(t *testing.T) {
 	h := NewMinHeapWith(3, 2, 1)
 	h.Reverse()
 	stltest.AssertEq(t, h, NewMaxHeapWith(3, 2, 1))
+}
+
+func TestHeap_Clear(t *testing.T) {
+	h := NewMinHeapWith(3, 2, 1)
+	h.Clear()
+	stltest.AssertEq(t, h.Length(), 0)
+}
+
+func TestHeap_Empty(t *testing.T) {
+	h := NewMinHeapWith(3, 2, 1)
+	stltest.AssertEq(t, h.Empty(), false)
+	h.Clear()
+	stltest.AssertEq(t, h.Empty(), true)
 }

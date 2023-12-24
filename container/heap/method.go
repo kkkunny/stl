@@ -1,4 +1,4 @@
-package stack
+package heap
 
 import (
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -82,4 +82,14 @@ func (self *Heap[T]) Reverse() {
 	self.init()
 	self.reverse = !self.reverse
 	self.fix(self.Length() - 1)
+}
+
+// Clear 清空
+func (self *Heap[T]) Clear() {
+	self.data = nil
+}
+
+// Empty 是否为空
+func (self Heap[T]) Empty() bool {
+	return self.data == nil || self.data.Empty()
 }

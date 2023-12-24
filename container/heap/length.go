@@ -1,4 +1,4 @@
-package stack
+package heap
 
 // Length 长度
 func (self Heap[T]) Length() uint {
