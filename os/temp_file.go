@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
 	stlbasic "github.com/kkkunny/stl/basic"
 )
+
+// TempDir 缓存目录地址
+func TempDir() FilePath {
+	return FilePath(os.TempDir())
+}
 
 const (
 	// 随机名字长度
@@ -32,7 +36,7 @@ func RandomTempFilePath(prefix string) (FilePath, error) {
 		} else {
 			name = fmt.Sprintf("%s.tmp", nameBuffer.String())
 		}
-		path := NewFilePath(filepath.Join(os.TempDir(), name))
+		path := TempDir().Join(name)
 		exist, err := Exist(path)
 		if err != nil {
 			return "", err
