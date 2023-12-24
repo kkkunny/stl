@@ -20,3 +20,7 @@ func NewHashSetWith[T any](vs ...T) HashSet[T] {
 	}
 	return self
 }
+
+func (self HashSet[T]) Default() HashSet[T] {
+	return NewHashSet[T]()
+}

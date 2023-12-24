@@ -1,6 +1,8 @@
 package queue
 
-import "github.com/kkkunny/stl/container/dynarray"
+import (
+	"github.com/kkkunny/stl/container/dynarray"
+)
 
 // Queue 队列
 type Queue[T any] dynarray.DynArray[T]
@@ -13,4 +15,8 @@ func NewQueue[T any]() Queue[T] {
 // NewQueueWith 新建指定元素的队列
 func NewQueueWith[T any](vs ...T) Queue[T] {
 	return Queue[T](dynarray.NewDynArrayWith[T](vs...))
+}
+
+func (self Queue[T]) Default() Queue[T] {
+	return NewQueue[T]()
 }

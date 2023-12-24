@@ -44,3 +44,7 @@ func NewMaxHeapWith[T any](vs ...T) Heap[T] {
 	}
 	return h
 }
+
+func (self Heap[T]) Default() Heap[T] {
+	return NewMinHeap[T]()
+}

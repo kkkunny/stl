@@ -33,3 +33,7 @@ func NewHashMapWith[K, V any](vs ...any) HashMap[K, V] {
 	}
 	return self
 }
+
+func (self HashMap[K, V]) Default() HashMap[K, V] {
+	return NewHashMap[K, V]()
+}

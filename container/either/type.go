@@ -1,5 +1,7 @@
 package either
 
+import stlbasic "github.com/kkkunny/stl/basic"
+
 type Either[L, R any] struct {
 	left *bool
 	data any
@@ -19,4 +21,8 @@ func Right[L, R any](v R) Either[L, R] {
 		left: &left,
 		data: v,
 	}
+}
+
+func (self Either[L, R]) Default() Either[L, R] {
+	return Left[L, R](stlbasic.Default[L]())
 }

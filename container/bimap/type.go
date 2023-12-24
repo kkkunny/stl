@@ -29,3 +29,7 @@ func NewBiMapWith[K, V any](vs ...any) BiMap[K, V] {
 	}
 	return self
 }
+
+func (self BiMap[K, V]) Default() BiMap[K, V] {
+	return NewBiMap[K, V]()
+}

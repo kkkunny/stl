@@ -14,3 +14,7 @@ func NewStack[T any]() Stack[T] {
 func NewStackWith[T any](vs ...T) Stack[T] {
 	return Stack[T](dynarray.NewDynArrayWith[T](vs...))
 }
+
+func (self Stack[T]) Default() Stack[T] {
+	return NewStack[T]()
+}

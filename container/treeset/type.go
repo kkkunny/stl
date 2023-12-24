@@ -18,3 +18,7 @@ func NewTreeSetWith[T any](vs ...T) TreeSet[T] {
 	}
 	return self
 }
+
+func (self TreeSet[T]) Default() TreeSet[T] {
+	return NewTreeSet[T]()
+}

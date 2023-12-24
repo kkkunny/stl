@@ -28,3 +28,7 @@ func NewDynArrayWithLength[T any](l uint) DynArray[T] {
 func NewDynArrayWith[T any](vs ...T) DynArray[T] {
 	return DynArray[T]{data: &vs}
 }
+
+func (self DynArray[T]) Default() DynArray[T] {
+	return NewDynArray[T]()
+}

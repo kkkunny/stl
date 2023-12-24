@@ -22,3 +22,7 @@ func NewLinkedHashSetWith[T any](vs ...T) LinkedHashSet[T] {
 	}
 	return self
 }
+
+func (self LinkedHashSet[T]) Default() LinkedHashSet[T] {
+	return NewLinkedHashSet[T]()
+}

@@ -37,3 +37,7 @@ func NewTreeMapWith[K, V any](vs ...any) TreeMap[K, V] {
 	}
 	return self
 }
+
+func (self TreeMap[K, V]) Default() TreeMap[K, V] {
+	return NewTreeMap[K, V]()
+}

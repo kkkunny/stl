@@ -33,3 +33,7 @@ func NewLinkedHashMapWith[K, V any](vs ...any) LinkedHashMap[K, V] {
 	}
 	return self
 }
+
+func (self LinkedHashMap[K, V]) Default() LinkedHashMap[K, V] {
+	return NewLinkedHashMap[K, V]()
+}

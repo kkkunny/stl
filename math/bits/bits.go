@@ -149,3 +149,7 @@ func (self Bits) UnsignedInteger() uint64 {
 func (self Bits) Not() {
 
 }
+
+func (self Bits) Default() Bits {
+	return make(Bits, 0)
+}
