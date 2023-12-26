@@ -1,8 +1,8 @@
 package linkedlist
 
-import "github.com/kkkunny/stl/container/iterator"
+import stliter "github.com/kkkunny/stl/container/iter"
 
-func (_ LinkedList[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+func (_ LinkedList[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 	self := NewLinkedList[T]()
 	for iter.Next() {
 		self.PushBack(iter.Value())
@@ -11,7 +11,7 @@ func (_ LinkedList[T]) NewWithIterator(iter iterator.Iterator[T]) any {
 }
 
 // Iterator 迭代器
-func (self LinkedList[T]) Iterator() iterator.Iterator[T] {
+func (self LinkedList[T]) Iterator() stliter.Iterator[T] {
 	return newIterator[T](&self)
 }
 

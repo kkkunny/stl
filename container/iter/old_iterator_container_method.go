@@ -1,4 +1,4 @@
-package iterator
+package stliter
 
 // Foreach 遍历
 func Foreach[T any](ctr IteratorContainer[T], f func(v T) bool) {

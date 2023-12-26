@@ -1,4 +1,4 @@
-package iterator
+package stliter
 
 import stlbasic "github.com/kkkunny/stl/basic"
 

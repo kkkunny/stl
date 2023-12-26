@@ -2,13 +2,13 @@ package queue
 
 import (
 	stack "github.com/kkkunny/stl/container/heap"
-	"github.com/kkkunny/stl/container/iterator"
+	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 )
 
-func (self PriorityQueue[T]) NewWithIterator(iter iterator.Iterator[pair.Pair[uint64, T]]) any {
+func (self PriorityQueue[T]) NewWithIterator(iter stliter.Iterator[pair.Pair[uint64, T]]) any {
 	pq := NewPriorityQueue[T]()
-	iterator.IteratorForeach(iter, func(v pair.Pair[uint64, T]) bool {
+	iter.IteratorForeach(iter, func(v pair.Pair[uint64, T]) bool {
 		pq.Push(v.First, v.Second)
 		return true
 	})
@@ -16,8 +16,8 @@ func (self PriorityQueue[T]) NewWithIterator(iter iterator.Iterator[pair.Pair[ui
 }
 
 // Iterator 迭代器
-func (self PriorityQueue[T]) Iterator() iterator.Iterator[pair.Pair[uint64, T]] {
-	return iterator.IteratorMap(stack.Heap[node[T]](self).Iterator(), func(v node[T]) pair.Pair[uint64, T] {
+func (self PriorityQueue[T]) Iterator() stliter.Iterator[pair.Pair[uint64, T]] {
+	return stliter.IteratorMap(stack.Heap[node[T]](self).Iterator(), func(v node[T]) pair.Pair[uint64, T] {
 		return pair.NewPair(v.priority, v.value)
 	})
 }

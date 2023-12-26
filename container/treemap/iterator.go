@@ -1,11 +1,11 @@
 package treemap
 
 import (
-	"github.com/kkkunny/stl/container/iterator"
+	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 )
 
-func (_ TreeMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) any {
+func (_ TreeMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {
 	self := NewTreeMap[K, V]()
 	for iter.Next() {
 		node := iter.Value()
@@ -14,7 +14,7 @@ func (_ TreeMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) 
 	return self
 }
 
-func (self TreeMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
+func (self TreeMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
 	self.init()
 	return self.KeyValues().Iterator()
 }

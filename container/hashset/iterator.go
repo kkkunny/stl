@@ -2,10 +2,10 @@ package hashset
 
 import (
 	"github.com/kkkunny/stl/container/hashmap"
-	"github.com/kkkunny/stl/container/iterator"
+	stliter "github.com/kkkunny/stl/container/iter"
 )
 
-func (_ HashSet[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+func (_ HashSet[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 	self := NewHashSetWithCapacity[T](iter.Length())
 	for iter.Next() {
 		self.Add(iter.Value())
@@ -13,6 +13,6 @@ func (_ HashSet[T]) NewWithIterator(iter iterator.Iterator[T]) any {
 	return self
 }
 
-func (self HashSet[T]) Iterator() iterator.Iterator[T] {
+func (self HashSet[T]) Iterator() stliter.Iterator[T] {
 	return hashmap.HashMap[T, struct{}](self).Keys().Iterator()
 }

@@ -1,11 +1,11 @@
 package linkedhashmap
 
 import (
-	"github.com/kkkunny/stl/container/iterator"
+	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 )
 
-func (_ LinkedHashMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) any {
+func (_ LinkedHashMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {
 	self := NewLinkedHashMapWithCapacity[K, V](iter.Length())
 	for iter.Next() {
 		item := iter.Value()
@@ -14,7 +14,7 @@ func (_ LinkedHashMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K,
 	return self
 }
 
-func (self LinkedHashMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
+func (self LinkedHashMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
 	self.init()
 	return self.KeyValues().Iterator()
 }

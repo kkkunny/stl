@@ -1,11 +1,11 @@
 package bimap
 
 import (
-	"github.com/kkkunny/stl/container/iterator"
+	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 )
 
-func (_ BiMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) any {
+func (_ BiMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {
 	self := NewBiMapWithCapacity[K, V](iter.Length())
 	for iter.Next() {
 		item := iter.Value()
@@ -14,6 +14,6 @@ func (_ BiMap[K, V]) NewWithIterator(iter iterator.Iterator[pair.Pair[K, V]]) an
 	return self
 }
 
-func (self BiMap[K, V]) Iterator() iterator.Iterator[pair.Pair[K, V]] {
+func (self BiMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
 	return self.KeyValues().Iterator()
 }

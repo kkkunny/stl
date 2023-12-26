@@ -1,4 +1,4 @@
-package iterator
+package stliter
 
 type sliceIterator[T any] struct {
 	src  *[]T

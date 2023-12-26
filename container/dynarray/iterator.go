@@ -1,8 +1,8 @@
 package dynarray
 
-import "github.com/kkkunny/stl/container/iterator"
+import stliter "github.com/kkkunny/stl/container/iter"
 
-func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+func (_ DynArray[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 	self := NewDynArrayWithLength[T](iter.Length())
 	var i int
 	for iter.Next() {
@@ -13,7 +13,7 @@ func (_ DynArray[T]) NewWithIterator(iter iterator.Iterator[T]) any {
 }
 
 // Iterator 迭代器
-func (self DynArray[T]) Iterator() iterator.Iterator[T] {
+func (self DynArray[T]) Iterator() stliter.Iterator[T] {
 	self.init()
 	return newIterator[T](self.data)
 }

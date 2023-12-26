@@ -1,4 +1,4 @@
-package iterator
+package stliter
 
 // IteratorContainer 迭代器容器
 type IteratorContainer[T any] interface {

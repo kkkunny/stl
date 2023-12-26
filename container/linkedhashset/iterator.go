@@ -1,11 +1,11 @@
 package linkedhashset
 
 import (
-	"github.com/kkkunny/stl/container/iterator"
+	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/linkedhashmap"
 )
 
-func (_ LinkedHashSet[T]) NewWithIterator(iter iterator.Iterator[T]) any {
+func (_ LinkedHashSet[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 	self := NewLinkedHashSetWithCapacity[T](iter.Length())
 	for iter.Next() {
 		self.Add(iter.Value())
@@ -13,6 +13,6 @@ func (_ LinkedHashSet[T]) NewWithIterator(iter iterator.Iterator[T]) any {
 	return self
 }
 
-func (self LinkedHashSet[T]) Iterator() iterator.Iterator[T] {
+func (self LinkedHashSet[T]) Iterator() stliter.Iterator[T] {
 	return linkedhashmap.LinkedHashMap[T, struct{}](self).Keys().Iterator()
 }

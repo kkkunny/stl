@@ -3,7 +3,6 @@ package hashmap
 import (
 	"testing"
 
-	"github.com/kkkunny/stl/container/iterator"
 	"github.com/kkkunny/stl/container/pair"
 	stltest "github.com/kkkunny/stl/test"
 )
@@ -53,20 +52,20 @@ func TestHashMap_Empty(t *testing.T) {
 func TestHashMap_Keys(t *testing.T) {
 	hm := NewHashMapWith[int, int](1, 1, 2, 2)
 	keys := hm.Keys()
-	stltest.AssertEq(t, iterator.Contain[int](keys, 1), true)
-	stltest.AssertEq(t, iterator.Contain[int](keys, 3), false)
+	stltest.AssertEq(t, stliter.Contain[int](keys, 1), true)
+	stltest.AssertEq(t, stliter.Contain[int](keys, 3), false)
 }
 
 func TestHashMap_Values(t *testing.T) {
 	hm := NewHashMapWith[int, int](1, 1, 2, 2)
 	values := hm.Values()
-	stltest.AssertEq(t, iterator.Contain[int](values, 1), true)
-	stltest.AssertEq(t, iterator.Contain[int](values, 3), false)
+	stltest.AssertEq(t, stliter.Contain[int](values, 1), true)
+	stltest.AssertEq(t, stliter.Contain[int](values, 3), false)
 }
 
 func TestHashMap_KeyValues(t *testing.T) {
 	hm := NewHashMapWith[int, int](1, 1, 2, 2)
 	pairs := hm.KeyValues()
-	stltest.AssertEq(t, iterator.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 1)), true)
-	stltest.AssertEq(t, iterator.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 2)), false)
+	stltest.AssertEq(t, stliter.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 1)), true)
+	stltest.AssertEq(t, stliter.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 2)), false)
 }
