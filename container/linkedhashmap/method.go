@@ -2,6 +2,7 @@ package linkedhashmap
 
 import (
 	"github.com/kkkunny/stl/container/dynarray"
+	"github.com/kkkunny/stl/container/hashmap"
 	"github.com/kkkunny/stl/container/pair"
 	"github.com/kkkunny/stl/list"
 )
@@ -11,6 +12,7 @@ func (self *LinkedHashMap[K, V]) init() {
 	if self.list != nil {
 		return
 	}
+	self.kvs = hashmap.NewHashMap[K, *list.Element[pair.Pair[K, V]]]()
 	self.list = list.New[pair.Pair[K, V]]()
 }
 
@@ -18,13 +20,13 @@ func (self *LinkedHashMap[K, V]) init() {
 func (self *LinkedHashMap[K, V]) Set(k K, v V) V {
 	self.init()
 
-	if node := self.HashMap.Get(k); node != nil {
+	if node := self.kvs.Get(k); node != nil {
 		pv := node.Value.Second
 		node.Value = pair.Pair[K, V]{First: k, Second: v}
 		self.list.MoveToBack(node)
 		return pv
 	}
-	self.HashMap.Set(k, self.list.PushBack(pair.Pair[K, V]{First: k, Second: v}))
+	self.kvs.Set(k, self.list.PushBack(pair.Pair[K, V]{First: k, Second: v}))
 	var pv V
 	return pv
 }
@@ -33,7 +35,7 @@ func (self *LinkedHashMap[K, V]) Set(k K, v V) V {
 func (self LinkedHashMap[K, V]) Get(k K, defaultValue ...V) V {
 	self.init()
 
-	node := self.HashMap.Get(k)
+	node := self.kvs.Get(k)
 	if node == nil && len(defaultValue) > 0 {
 		return defaultValue[0]
 	} else if node == nil {
@@ -46,14 +48,14 @@ func (self LinkedHashMap[K, V]) Get(k K, defaultValue ...V) V {
 // ContainKey 是否包含键
 func (self LinkedHashMap[K, V]) ContainKey(k K) bool {
 	self.init()
-	return self.HashMap.ContainKey(k)
+	return self.kvs.ContainKey(k)
 }
 
 // Remove 移除键值对
 func (self *LinkedHashMap[K, V]) Remove(k K, defaultValue ...V) V {
 	self.init()
 
-	node := self.HashMap.Remove(k)
+	node := self.kvs.Remove(k)
 	if node == nil && len(defaultValue) > 0 {
 		return defaultValue[0]
 	} else if node == nil {
@@ -66,7 +68,7 @@ func (self *LinkedHashMap[K, V]) Remove(k K, defaultValue ...V) V {
 // Clear 清空
 func (self *LinkedHashMap[K, V]) Clear() {
 	self.list = nil
-	self.HashMap.Clear()
+	self.kvs.Clear()
 	self.init()
 }
 

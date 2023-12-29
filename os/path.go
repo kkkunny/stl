@@ -64,8 +64,8 @@ func (self FilePath) Dir() FilePath {
 	return FilePath(filepath.Dir(string(self)))
 }
 
-func (self FilePath) Ext() FilePath {
-	return FilePath(filepath.Ext(string(self)))
+func (self FilePath) Ext() string {
+	return filepath.Ext(string(self))
 }
 
 func (self FilePath) EvalSymlinks() (FilePath, error) {

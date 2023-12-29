@@ -8,7 +8,7 @@ import (
 
 func (self PriorityQueue[T]) NewWithIterator(iter stliter.Iterator[pair.Pair[uint64, T]]) any {
 	pq := NewPriorityQueue[T]()
-	iter.IteratorForeach(iter, func(v pair.Pair[uint64, T]) bool {
+	stliter.IteratorForeach(iter, func(v pair.Pair[uint64, T]) bool {
 		pq.Push(v.First, v.Second)
 		return true
 	})

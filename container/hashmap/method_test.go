@@ -3,6 +3,7 @@ package hashmap
 import (
 	"testing"
 
+	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 	stltest "github.com/kkkunny/stl/test"
 )

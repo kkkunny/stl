@@ -8,20 +8,20 @@ import (
 
 // LinkedHashMap 插入顺序哈希表
 type LinkedHashMap[K, V any] struct {
-	hashmap.HashMap[K, *list.Element[pair.Pair[K, V]]]
+	kvs hashmap.HashMap[K, *list.Element[pair.Pair[K, V]]]
 	list *list.List[pair.Pair[K, V]]
 }
 
 func NewLinkedHashMap[K, V any]() LinkedHashMap[K, V] {
 	return LinkedHashMap[K, V]{
-		HashMap: hashmap.NewHashMap[K, *list.Element[pair.Pair[K, V]]](),
+		kvs: hashmap.NewHashMap[K, *list.Element[pair.Pair[K, V]]](),
 		list:    list.New[pair.Pair[K, V]](),
 	}
 }
 
 func NewLinkedHashMapWithCapacity[K, V any](cap uint) LinkedHashMap[K, V] {
 	return LinkedHashMap[K, V]{
-		HashMap: hashmap.NewHashMapWithCapacity[K, *list.Element[pair.Pair[K, V]]](cap),
+		kvs: hashmap.NewHashMapWithCapacity[K, *list.Element[pair.Pair[K, V]]](cap),
 		list:    list.New[pair.Pair[K, V]](),
 	}
 }
