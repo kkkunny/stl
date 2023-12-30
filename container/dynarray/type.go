@@ -20,7 +20,12 @@ func NewDynArrayWithCapacity[T any](cap uint) DynArray[T] {
 
 // NewDynArrayWithLength 新建指定长度的动态数组
 func NewDynArrayWithLength[T any](l uint) DynArray[T] {
-	data := make([]T, l)
+	var data []T
+	if l < initialCapacity {
+		data = make([]T, l, initialCapacity)
+	} else {
+		data = make([]T, l)
+	}
 	return DynArray[T]{data: &data}
 }
 

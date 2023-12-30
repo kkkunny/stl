@@ -22,7 +22,12 @@ func NewHashMapWithCapacity[K, V any](cap uint) HashMap[K, V] {
 	if cap == 0 {
 		cap = 1
 	}
-	buckets := make([]bucket[K, V], cap)
+	var buckets []bucket[K, V]
+	if cap < initialBucketCapacity {
+		buckets = make([]bucket[K, V], initialBucketCapacity)
+	} else {
+		buckets = make([]bucket[K, V], cap)
+	}
 	return HashMap[K, V]{buckets: &buckets}
 }
 
