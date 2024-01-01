@@ -89,3 +89,9 @@ func Sort[T any, TS ~[]T](slice TS, reverse ...bool) TS {
 	})
 	return slice
 }
+
+func As[T any, TS ~[]T, F any, FS ~[]F](slice TS) FS {
+	return Map(slice, func(_ int, e T) F {
+		return any(e).(F)
+	})
+}
