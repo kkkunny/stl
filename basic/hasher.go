@@ -43,11 +43,17 @@ func reflectHash[T any](v T) uint64 {
 			hash = 31*hash + uint64(b)
 		}
 		return hash
-	case reflect.Chan, reflect.UnsafePointer, reflect.Func, reflect.Pointer, reflect.Slice, reflect.Map:
+	case reflect.Chan, reflect.UnsafePointer, reflect.Func, reflect.Pointer, reflect.Map:
 		return uint64(vv.Pointer())
 	case reflect.Array:
 		var hash uint64
-		for i := 0; i < vt.Len(); i++ {
+		for i := 0; i < vv.Len(); i++ {
+			hash = 31*hash + Hash(vv.Index(i).Interface())
+		}
+		return hash
+	case reflect.Slice:
+		var hash uint64
+		for i := 0; i < vv.Len(); i++ {
 			hash = 31*hash + Hash(vv.Index(i).Interface())
 		}
 		return hash
