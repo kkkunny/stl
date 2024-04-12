@@ -12,7 +12,9 @@ import (
 
 	"github.com/gookit/color"
 
+	stlbasic "github.com/kkkunny/stl/basic"
 	stlerror "github.com/kkkunny/stl/error"
+	stlos "github.com/kkkunny/stl/os"
 )
 
 // LogLevel 日志等级
@@ -24,6 +26,7 @@ const (
 	LogLevelWarn                    // warn
 	LogLevelKeyword                 // keyword
 	LogLevelError                   // error
+	LogLevelPanic                   // panic
 )
 
 var logLevelStringMap = [...]string{
@@ -32,22 +35,25 @@ var logLevelStringMap = [...]string{
 	LogLevelWarn:    "   WARN  ",
 	LogLevelKeyword: " KEYWORD ",
 	LogLevelError:   "  ERROR  ",
+	LogLevelPanic:   "  PANIC  ",
 }
 
 var logLevelColorMap = [...]color.Color{
 	LogLevelDebug:   color.Blue,
 	LogLevelInfo:    color.Green,
 	LogLevelWarn:    color.Yellow,
-	LogLevelError:   color.Red,
-	LogLevelKeyword: color.Magenta,
+	LogLevelKeyword: color.Cyan,
+	LogLevelError:   color.Magenta,
+	LogLevelPanic:   color.Red,
 }
 
 var logLevelStyleMap = [...]color.Style{
 	LogLevelDebug:   color.New(color.OpBold, color.White, color.BgBlue),
 	LogLevelInfo:    color.New(color.OpBold, color.White, color.BgGreen),
 	LogLevelWarn:    color.New(color.OpBold, color.White, color.BgYellow),
-	LogLevelError:   color.New(color.OpBold, color.White, color.BgRed),
-	LogLevelKeyword: color.New(color.OpBold, color.White, color.BgMagenta),
+	LogLevelKeyword: color.New(color.OpBold, color.White, color.BgCyan),
+	LogLevelError:   color.New(color.OpBold, color.White, color.BgMagenta),
+	LogLevelPanic:   color.New(color.OpBold, color.White, color.BgRed),
 }
 
 // Logger 日志管理器
@@ -84,6 +90,13 @@ func (self *Logger) NewGroup(name string) *Logger {
 	}
 }
 
+func (self *Logger) Group() string {
+	if len(self.routes) == 0 {
+		return ""
+	}
+	return self.routes[len(self.routes)-1]
+}
+
 // 输出
 func (self *Logger) output(level LogLevel, pos string, msg string) error {
 	var routesBuf strings.Builder
@@ -92,33 +105,33 @@ func (self *Logger) output(level LogLevel, pos string, msg string) error {
 		routesBuf.WriteString(r)
 	}
 
-	timeStr := time.Now().Format("2006-01-02 15:04:05")
+	timeStr := time.Now().Format(time.DateTime)
 	var s string
 	writer := self.writer.Writer()
 	if writer == os.Stdout || writer == os.Stderr {
 		suffix := fmt.Sprintf(
-			"| %s | %s%s | %s",
+			"| %s%s | %s | %s",
 			timeStr,
-			pos,
 			routesBuf.String(),
+			pos,
 			msg,
 		)
 		suffix = logLevelColorMap[level].Text(suffix)
 		s = logLevelStyleMap[level].Sprintf(logLevelStringMap[level]) + suffix
 	} else {
 		s = fmt.Sprintf(
-			"%s| %s | %s%s | %s",
+			"%s | %s%s | %s | %s",
 			logLevelStringMap[level],
 			timeStr,
-			pos,
 			routesBuf.String(),
+			pos,
 			msg,
 		)
 	}
 	return self.writer.Output(0, s)
 }
 
-func (self *Logger) outputByStack(level LogLevel, skip uint, msg string) error {
+func (self *Logger) outputWithPos(level LogLevel, skip uint, msg string) error {
 	_, file, line, _ := runtime.Caller(int(skip + 1))
 	return self.output(level, fmt.Sprintf("%s:%d", file, line), msg)
 }
@@ -128,31 +141,22 @@ func (self *Logger) print(level LogLevel, skip uint, a any) error {
 	if self.level > level {
 		return nil
 	}
-	return self.outputByStack(level, skip+1, fmt.Sprintf("%v", a))
+	return self.outputWithPos(level, skip+1, fmt.Sprintf("%v", a))
 }
 
-// 格式化打印
-func (self *Logger) printf(level LogLevel, skip uint, f string, a ...any) error {
-	return self.print(level, skip+1, fmt.Sprintf(f, a...))
-}
-
-// 打印异常
-func (self *Logger) printError(level LogLevel, skip uint, err error) error {
-	var logerr stlerror.Error
-	if errors.As(err, &logerr) {
-		return self.printLogError(level, logerr)
-	} else {
-		return self.print(level, skip+1, err.Error())
-	}
-}
-
-// 打印带栈异常
-func (self *Logger) printLogError(level LogLevel, err stlerror.Error) error {
+// 带栈打印
+func (self *Logger) printWithStack(level LogLevel, skip uint, a any) error {
 	if self.level > level {
 		return nil
 	}
 
-	stacks := err.Stacks()
+	var stacks []runtime.Frame
+	var stlerr stlerror.Error
+	if err, ok := a.(error); ok && errors.As(err, &stlerr) {
+		stacks = stlerr.Stacks()
+	} else {
+		stacks = stlos.GetCallStacks(20, skip+2)
+	}
 
 	var stackBuffer strings.Builder
 	for i, s := range stacks {
@@ -161,82 +165,113 @@ func (self *Logger) printLogError(level LogLevel, err stlerror.Error) error {
 			stackBuffer.WriteByte('\n')
 		}
 	}
-
-	stack := stacks[len(stacks)-1]
-	return self.output(level, fmt.Sprintf("%s:%d", stack.File, stack.Line), fmt.Sprintf("%s\n%s", err.Error(), stackBuffer.String()))
+	return self.outputWithPos(level, skip+1, fmt.Sprintf("%v\n%s", a, stackBuffer.String()))
 }
 
-// Debug 输出Debug信息
-func (self *Logger) Debug(skip uint, a any) error {
+// 格式化打印
+func (self *Logger) printf(level LogLevel, skip uint, f string, a ...any) error {
+	return self.print(level, skip+1, fmt.Sprintf(f, a...))
+}
+
+// SDebug 输出Debug信息
+func (self *Logger) SDebug(skip uint, a any) error {
 	return self.print(LogLevelDebug, skip+1, a)
 }
 
-// Debugf 输出Debugf格式化信息
-func (self *Logger) Debugf(skip uint, f string, a ...any) error {
+// SDebugf 输出Debugf格式化信息
+func (self *Logger) SDebugf(skip uint, f string, a ...any) error {
 	return self.printf(LogLevelDebug, skip+1, f, a...)
 }
 
-// DebugError 输出Debug异常信息
-func (self *Logger) DebugError(skip uint, err error) error {
-	return self.printError(LogLevelDebug, skip+1, err)
+// SDebugStack 输出Debug异常信息
+func (self *Logger) SDebugStack(skip uint, a any) error {
+	return self.printWithStack(LogLevelDebug, skip+1, a)
 }
 
-// Info 输出Info信息
-func (self *Logger) Info(skip uint, a any) error {
+// SInfo 输出Info信息
+func (self *Logger) SInfo(skip uint, a any) error {
 	return self.print(LogLevelInfo, skip+1, a)
 }
 
-// Infof 输出Info格式化信息
-func (self *Logger) Infof(skip uint, f string, a ...any) error {
+// SInfof 输出Info格式化信息
+func (self *Logger) SInfof(skip uint, f string, a ...any) error {
 	return self.printf(LogLevelInfo, skip+1, f, a...)
 }
 
-// InfoError 输出Info异常信息
-func (self *Logger) InfoError(skip uint, err error) error {
-	return self.printError(LogLevelInfo, skip+1, err)
+// SInfoStack 输出Info异常信息
+func (self *Logger) SInfoStack(skip uint, a any) error {
+	return self.printWithStack(LogLevelInfo, skip+1, a)
 }
 
-// Warn 输出Warn信息
-func (self *Logger) Warn(skip uint, a any) error {
+// SWarn 输出Warn信息
+func (self *Logger) SWarn(skip uint, a any) error {
 	return self.print(LogLevelWarn, skip+1, a)
 }
 
-// Warnf 输出Warn格式化信息
-func (self *Logger) Warnf(skip uint, f string, a ...any) error {
+// SWarnf 输出Warn格式化信息
+func (self *Logger) SWarnf(skip uint, f string, a ...any) error {
 	return self.printf(LogLevelWarn, skip+1, f, a...)
 }
 
-// WarnError 输出Warn异常信息
-func (self *Logger) WarnError(skip uint, err error) error {
-	return self.printError(LogLevelWarn, skip+1, err)
+// SWarnStack 输出Warn异常信息
+func (self *Logger) SWarnStack(skip uint, a any) error {
+	return self.printWithStack(LogLevelWarn, skip+1, a)
 }
 
-// Error 输出Error信息
-func (self *Logger) Error(skip uint, a any) error {
-	return self.print(LogLevelError, skip+1, a)
-}
-
-// Errorf 输出Error格式化信息
-func (self *Logger) Errorf(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelError, skip+1, f, a...)
-}
-
-// ErrorError 输出Error异常信息
-func (self *Logger) ErrorError(skip uint, err error) error {
-	return self.printError(LogLevelError, skip+1, err)
-}
-
-// Keyword 输出Keyword信息
-func (self *Logger) Keyword(skip uint, a any) error {
+// SKeyword 输出Keyword信息
+func (self *Logger) SKeyword(skip uint, a any) error {
 	return self.print(LogLevelKeyword, skip+1, a)
 }
 
-// Keywordf 输出Keyword格式化信息
-func (self *Logger) Keywordf(skip uint, f string, a ...any) error {
+// SKeywordf 输出Keyword格式化信息
+func (self *Logger) SKeywordf(skip uint, f string, a ...any) error {
 	return self.printf(LogLevelKeyword, skip+1, f, a...)
 }
 
-// KeywordError 输出Keyword异常信息
-func (self *Logger) KeywordError(skip uint, err error) error {
-	return self.printError(LogLevelKeyword, skip+1, err)
+// SKeywordStack 输出Keyword异常信息
+func (self *Logger) SKeywordStack(skip uint, a any) error {
+	return self.printWithStack(LogLevelKeyword, skip+1, a)
 }
+
+// SError 输出Error信息
+func (self *Logger) SError(skip uint, a any) error {
+	return self.print(LogLevelError, skip+1, a)
+}
+
+// SErrorf 输出Error格式化信息
+func (self *Logger) SErrorf(skip uint, f string, a ...any) error {
+	return self.printf(LogLevelError, skip+1, f, a...)
+}
+
+// SErrorStack 输出Error异常信息
+func (self *Logger) SErrorStack(skip uint, a any) error {
+	return self.printWithStack(LogLevelError, skip+1, a)
+}
+
+// SPanic 输出Panic信息
+func (self *Logger) SPanic(skip uint, a any) error {
+	return self.print(LogLevelPanic, skip+1, a)
+}
+
+// SPanicf 输出Panic格式化信息
+func (self *Logger) SPanicf(skip uint, f string, a ...any) error {
+	return self.printf(LogLevelPanic, skip+1, f, a...)
+}
+
+// SPanicStack 输出Panic异常信息
+func (self *Logger) SPanicStack(skip uint, a any) error {
+	return self.printWithStack(LogLevelPanic, skip+1, a)
+}
+
+func (self *Logger) Debug(a any)                 { stlbasic.Ignore(self.SDebug(1, a)) }
+func (self *Logger) Debugf(f string, a ...any)   { stlbasic.Ignore(self.SDebugf(1, f, a...)) }
+func (self *Logger) Info(a any)                  { stlbasic.Ignore(self.SInfo(1, a)) }
+func (self *Logger) Infof(f string, a ...any)    { stlbasic.Ignore(self.SInfof(1, f, a...)) }
+func (self *Logger) Warn(a any)                  { stlbasic.Ignore(self.SWarn(1, a)) }
+func (self *Logger) Warnf(f string, a ...any)    { stlbasic.Ignore(self.SWarnf(1, f, a...)) }
+func (self *Logger) Keyword(a any)               { stlbasic.Ignore(self.SKeyword(1, a)) }
+func (self *Logger) Keywordf(f string, a ...any) { stlbasic.Ignore(self.SKeywordf(1, f, a...)) }
+func (self *Logger) Error(a any)                 { stlbasic.Ignore(self.SErrorStack(1, a)) }
+func (self *Logger) Errorf(f string, a ...any)   { stlbasic.Ignore(self.SErrorf(1, f, a...)) }
+func (self *Logger) Panic(a any)                 { stlbasic.Ignore(self.SPanicStack(1, a)) }
+func (self *Logger) Panicf(f string, a ...any)   { stlbasic.Ignore(self.SPanicf(1, f, a...)) }

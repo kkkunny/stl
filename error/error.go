@@ -2,6 +2,8 @@ package stlerror
 
 import (
 	"runtime"
+
+	stlos "github.com/kkkunny/stl/os"
 )
 
 type _Error struct {
@@ -10,25 +12,8 @@ type _Error struct {
 }
 
 func _NewError(skip uint, err error) *_Error {
-	var reverseStacks []runtime.Frame
-	pcs := make([]uintptr, 20)
-
-	n := runtime.Callers(int(skip)+2, pcs)
-	frames := runtime.CallersFrames(pcs[:n-1])
-	for frame, exist := frames.Next(); exist; frame, exist = frames.Next() {
-		if !exist {
-			break
-		}
-		reverseStacks = append(reverseStacks, frame)
-	}
-
-	stacks := make([]runtime.Frame, len(reverseStacks))
-	for i, s := range reverseStacks {
-		stacks[len(reverseStacks)-i-1] = s
-	}
-
 	return &_Error{
-		stacks: stacks,
+		stacks: stlos.GetCallStacks(20, skip+2),
 		err:    err,
 	}
 }
