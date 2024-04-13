@@ -4,8 +4,9 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/samber/lo"
 	"golang.org/x/exp/constraints"
+
+	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
 // Bits 位列表
@@ -98,8 +99,8 @@ func (self Bits) Reduce() Bits {
 
 // Reverse 反码
 func (self Bits) Reverse() Bits {
-	return lo.Map(self, func(item Bit, _ int) Bit {
-		return item.Not()
+	return stlslices.Map(self, func(_ int, e Bit) Bit {
+		return e.Not()
 	})
 }
 

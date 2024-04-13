@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/container/treeset"
 )
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
@@ -94,4 +95,42 @@ func As[T any, TS ~[]T, F any, FS ~[]F](slice TS) FS {
 	return Map(slice, func(_ int, e T) F {
 		return any(e).(F)
 	})
+}
+
+func Diff[T any, TS ~[]T](l, r TS) TS {
+	lvs := treeset.NewTreeSetWith[T](l...)
+	rvs := treeset.NewTreeSetWith[T](r...)
+	res := make(TS, 0, len(l)+len(r))
+	for _, v := range l {
+		if !rvs.Contain(v) {
+			res = append(res, v)
+		}
+	}
+	for _, v := range r {
+		if !lvs.Contain(v) {
+			res = append(res, v)
+		}
+	}
+	return RemoveRepeat(res)
+}
+
+// Union 联合
+func Union[T any, TS ~[]T](l, r TS) TS {
+	return append(l, r...)
+}
+
+// Intersect 相交
+func Intersect[T any, TS ~[]T](l, r TS) TS {
+	vs := treeset.NewTreeSetWith[T](r...)
+	res := make(TS, 0, len(l)+len(r))
+	for _, v := range l {
+		if vs.Contain(v) {
+			res = append(res, v)
+		}
+	}
+	return RemoveRepeat(res)
+}
+
+func RemoveRepeat[T any, TS ~[]T](slice TS) TS {
+	return treeset.NewTreeSetWith[T](slice...).ToSlice().ToSlice()
 }
