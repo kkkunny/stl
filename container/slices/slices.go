@@ -4,7 +4,6 @@ import (
 	"slices"
 
 	stlbasic "github.com/kkkunny/stl/basic"
-	"github.com/kkkunny/stl/container/treeset"
 )
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
@@ -15,12 +14,36 @@ func Map[T, F any](slice []T, f func(i int, e T) F) []F {
 	return res
 }
 
+func MapError[T, F any](slice []T, f func(i int, e T) (F, error)) (res []F, err error) {
+	res = make([]F, len(slice))
+	for i, e := range slice {
+		res[i], err = f(i, e)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
 func FlatMap[T, F any](slice []T, f func(i int, e T) []F) []F {
 	res := make([]F, 0, len(slice))
 	for i, e := range slice {
 		res = append(res, f(i, e)...)
 	}
 	return res
+}
+
+func FlatMapError[T, F any](slice []T, f func(i int, e T) ([]F, error)) (res []F, err error) {
+	res = make([]F, 0, len(slice))
+	var es []F
+	for i, e := range slice {
+		es, err = f(i, e)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, es...)
+	}
+	return res, nil
 }
 
 func All[T any, TS ~[]T](slice TS, f func(i int, e T) bool) bool {
@@ -97,21 +120,24 @@ func As[T any, TS ~[]T, F any, FS ~[]F](slice TS) FS {
 	})
 }
 
+// DiffTo 返回l中r没有的值
+func DiffTo[T any, TS ~[]T](l, r TS) (res TS) {
+	res = make([]T, 0, len(l))
+loop:
+	for _, le := range l {
+		for _, re := range r {
+			if stlbasic.Equal(le, re) {
+				continue loop
+			}
+		}
+		res = append(res, le)
+	}
+	return res
+}
+
+// Diff 返回l和r中各在对方没有的值
 func Diff[T any, TS ~[]T](l, r TS) TS {
-	lvs := treeset.NewTreeSetWith[T](l...)
-	rvs := treeset.NewTreeSetWith[T](r...)
-	res := make(TS, 0, len(l)+len(r))
-	for _, v := range l {
-		if !rvs.Contain(v) {
-			res = append(res, v)
-		}
-	}
-	for _, v := range r {
-		if !lvs.Contain(v) {
-			res = append(res, v)
-		}
-	}
-	return RemoveRepeat(res)
+	return Union(DiffTo(l, r), DiffTo(r, l))
 }
 
 // Union 联合
@@ -119,18 +145,63 @@ func Union[T any, TS ~[]T](l, r TS) TS {
 	return append(l, r...)
 }
 
-// Intersect 相交
-func Intersect[T any, TS ~[]T](l, r TS) TS {
-	vs := treeset.NewTreeSetWith[T](r...)
-	res := make(TS, 0, len(l)+len(r))
-	for _, v := range l {
-		if vs.Contain(v) {
-			res = append(res, v)
-		}
-	}
-	return RemoveRepeat(res)
+// Intersect 返回l和r中各在对方有的值
+func Intersect[T any, TS ~[]T](l, r TS) (res TS) {
+	return DiffTo(l, DiffTo(l, r))
 }
 
-func RemoveRepeat[T any, TS ~[]T](slice TS) TS {
-	return treeset.NewTreeSetWith[T](slice...).ToSlice().ToSlice()
+func RemoveRepeat[T any, TS ~[]T](slice TS) (res TS) {
+	if len(slice) <= 1 {
+		return slice
+	}
+
+	conflictMap := make([]bool, len(slice))
+	res = make(TS, 0, len(slice))
+	for i, ie := range slice {
+		if conflictMap[i] {
+			continue
+		}
+		for j, je := range slice[i+1:] {
+			if !stlbasic.Equal(ie, je) {
+				continue
+			}
+			conflictMap[i+j+1] = true
+			if !conflictMap[i] {
+				conflictMap[i] = true
+				res = append(res, ie)
+			}
+		}
+		if !conflictMap[i] {
+			res = append(res, ie)
+		}
+	}
+	return res
+}
+
+func First[T any, TS ~[]T](slice TS, defaultValue ...T) (v T) {
+	if Empty(slice) {
+		return Last(defaultValue, v)
+	}
+	return slice[0]
+}
+
+func Last[T any, TS ~[]T](slice TS, defaultValue ...T) (v T) {
+	if Empty(slice) {
+		return Last(defaultValue, v)
+	}
+	return slice[len(slice)-1]
+}
+
+func Empty[T any, TS ~[]T](slice TS) bool {
+	return len(slice) == 0
+}
+
+// And 同Diff
+func And[T any, TS ~[]T](l, r TS) TS {
+	return Diff(l, r)
+}
+
+// Or 同Union+RemoveRepeat
+func Or[T any, TS ~[]T](l, r TS) TS {
+	return RemoveRepeat(Union(l, r))
 }

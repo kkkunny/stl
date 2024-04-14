@@ -8,3 +8,7 @@ func Reverse[K, V comparable, KV ~map[K]V, VK ~map[V]K](m KV) VK {
 	}
 	return res
 }
+
+func Empty[K comparable, V any, KV ~map[K]V](hmap KV) bool {
+	return len(hmap) == 0
+}
