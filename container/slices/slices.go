@@ -225,3 +225,8 @@ func ToMap[T any, TS ~[]T, K comparable, V any, KV ~map[K]V](slice TS, mapFn fun
 	}
 	return res
 }
+
+func Random[T any, TS ~[]T](slice TS) T {
+	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(slice))
+	return slice[index]
+}

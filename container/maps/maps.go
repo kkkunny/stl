@@ -1,5 +1,12 @@
 package stlmaps
 
+import (
+	"math/rand"
+	"time"
+
+	"golang.org/x/exp/maps"
+)
+
 // Reverse 反转键值对
 func Reverse[K, V comparable, KV ~map[K]V, VK ~map[V]K](m KV) VK {
 	res := make(map[V]K, len(m))
@@ -67,4 +74,10 @@ func ToSlice[K comparable, V any, KV ~map[K]V, T any, TS ~[]T](hmap KV, mapFn fu
 		i++
 	}
 	return res
+}
+
+func Random[K comparable, V any, KV ~map[K]V](hmap KV) (K, V) {
+	keys := maps.Keys(hmap)
+	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(keys))
+	return keys[index], hmap[keys[index]]
 }
