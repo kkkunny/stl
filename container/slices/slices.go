@@ -1,7 +1,9 @@
 package stlslices
 
 import (
+	"math/rand"
 	"slices"
+	"time"
 
 	stlbasic "github.com/kkkunny/stl/basic"
 )
@@ -204,4 +206,22 @@ func And[T any, TS ~[]T](l, r TS) TS {
 // Or 同Union+RemoveRepeat
 func Or[T any, TS ~[]T](l, r TS) TS {
 	return RemoveRepeat(Union(l, r))
+}
+
+func Shuffle[T any, TS ~[]T](slice TS) TS {
+	res := make(TS, len(slice))
+	copy(res, slice)
+	rand.New(rand.NewSource(time.Now().UnixNano())).Shuffle(len(slice), func(i, j int) {
+		res[i], res[j] = res[j], res[i]
+	})
+	return res
+}
+
+func ToMap[T any, TS ~[]T, K comparable, V any, KV ~map[K]V](slice TS, mapFn func(T) (K, V)) KV {
+	res := make(KV, len(slice))
+	for _, e := range slice {
+		k, v := mapFn(e)
+		res[k] = v
+	}
+	return res
 }
