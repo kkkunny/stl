@@ -6,7 +6,7 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestHashMap_Equal(t *testing.T) {
+func TestLinkedHashMap_Equal(t *testing.T) {
 	hm1 := NewLinkedHashMapWith[int, int](1, 1, 2, 2)
 	hm2 := NewLinkedHashMapWith[int, int](2, 2, 1, 1)
 	hm3 := NewLinkedHashMapWith[int, int](1, 2, 2, 1)

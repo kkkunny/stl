@@ -21,11 +21,12 @@ func Equal[T any](lv, rv T) bool {
 }
 
 func reflectEqual[T any](lv, rv T) bool {
-	vt := reflect.TypeOf(lv)
-	if vt.Comparable() {
-		return reflect.ValueOf(lv).Equal(reflect.ValueOf(rv))
-	} else if vt.Kind() == reflect.Slice {
-		lvobj, rvobj := reflect.ValueOf(lv), reflect.ValueOf(rv)
+	lvobj, rvobj := reflect.ValueOf(lv), reflect.ValueOf(rv)
+	vt := lvobj.Type()
+	switch {
+	case vt.Comparable():
+		return lvobj.Equal(rvobj)
+	case vt.Kind() == reflect.Slice:
 		if lvobj.Len() != rvobj.Len() {
 			return false
 		}
@@ -35,7 +36,7 @@ func reflectEqual[T any](lv, rv T) bool {
 			}
 		}
 		return true
-	} else {
+	default:
 		panic(fmt.Errorf("type `%s` cannot be compared", vt))
 	}
 }
