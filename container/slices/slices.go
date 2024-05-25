@@ -78,8 +78,8 @@ func Filter[T any, TS ~[]T](slice TS, f func(i int, e T) bool) TS {
 
 func ContainAll[T any, TS ~[]T](slice TS, v ...T) bool {
 loop:
-	for _, e := range slice {
-		for _, vv := range v {
+	for _, vv := range v {
+		for _, e := range slice {
 			if stlbasic.Equal(e, vv) {
 				continue loop
 			}
@@ -90,8 +90,8 @@ loop:
 }
 
 func ContainAny[T any, TS ~[]T](slice TS, v ...T) bool {
-	for _, e := range slice {
-		for _, vv := range v {
+	for _, vv := range v {
+		for _, e := range slice {
 			if stlbasic.Equal(e, vv) {
 				return true
 			}
