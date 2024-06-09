@@ -48,7 +48,7 @@ func FlatMapError[T, F any](slice []T, f func(i int, e T) ([]F, error)) (res []F
 	return res, nil
 }
 
-func All[T any, TS ~[]T](slice TS, f func(i int, e T) bool) bool {
+func All[T any](slice []T, f func(i int, e T) bool) bool {
 	for i, e := range slice {
 		if !f(i, e) {
 			return false
@@ -57,7 +57,7 @@ func All[T any, TS ~[]T](slice TS, f func(i int, e T) bool) bool {
 	return true
 }
 
-func Any[T any, TS ~[]T](slice TS, f func(i int, e T) bool) bool {
+func Any[T any](slice []T, f func(i int, e T) bool) bool {
 	for i, e := range slice {
 		if f(i, e) {
 			return true
@@ -66,8 +66,8 @@ func Any[T any, TS ~[]T](slice TS, f func(i int, e T) bool) bool {
 	return false
 }
 
-func Filter[T any, TS ~[]T](slice TS, f func(i int, e T) bool) TS {
-	res := make(TS, 0, len(slice))
+func Filter[T any](slice []T, f func(i int, e T) bool) []T {
+	res := make([]T, 0, len(slice))
 	for i, e := range slice {
 		if f(i, e) {
 			res = append(res, e)
@@ -76,7 +76,7 @@ func Filter[T any, TS ~[]T](slice TS, f func(i int, e T) bool) TS {
 	return res
 }
 
-func ContainAll[T any, TS ~[]T](slice TS, v ...T) bool {
+func ContainAll[T any](slice []T, v ...T) bool {
 loop:
 	for _, vv := range v {
 		for _, e := range slice {
@@ -89,7 +89,7 @@ loop:
 	return true
 }
 
-func ContainAny[T any, TS ~[]T](slice TS, v ...T) bool {
+func ContainAny[T any](slice []T, v ...T) bool {
 	for _, vv := range v {
 		for _, e := range slice {
 			if stlbasic.Equal(e, vv) {
@@ -100,11 +100,11 @@ func ContainAny[T any, TS ~[]T](slice TS, v ...T) bool {
 	return false
 }
 
-func Contain[T any, TS ~[]T](slice TS, v T) bool {
+func Contain[T any](slice []T, v T) bool {
 	return ContainAny(slice, v)
 }
 
-func Sort[T any, TS ~[]T](slice TS, reverse ...bool) TS {
+func Sort[T any](slice []T, reverse ...bool) []T {
 	slice = slices.Clone(slice)
 	slices.SortFunc(slice, func(l, r T) int {
 		if len(reverse) > 0 && reverse[0] {
@@ -116,14 +116,14 @@ func Sort[T any, TS ~[]T](slice TS, reverse ...bool) TS {
 	return slice
 }
 
-func As[T any, TS ~[]T, F any, FS ~[]F](slice TS) FS {
+func As[T any, F any](slice []T) []F {
 	return Map(slice, func(_ int, e T) F {
 		return any(e).(F)
 	})
 }
 
 // DiffTo 返回l中r没有的值
-func DiffTo[T any, TS ~[]T](l, r TS) (res TS) {
+func DiffTo[T any](l, r []T) (res []T) {
 	res = make([]T, 0, len(l))
 loop:
 	for _, le := range l {
@@ -138,27 +138,27 @@ loop:
 }
 
 // Diff 返回l和r中各在对方没有的值
-func Diff[T any, TS ~[]T](l, r TS) TS {
+func Diff[T any](l, r []T) []T {
 	return Union(DiffTo(l, r), DiffTo(r, l))
 }
 
 // Union 联合
-func Union[T any, TS ~[]T](l, r TS) TS {
+func Union[T any](l, r []T) []T {
 	return append(l, r...)
 }
 
 // Intersect 返回l和r中各在对方有的值
-func Intersect[T any, TS ~[]T](l, r TS) (res TS) {
+func Intersect[T any](l, r []T) (res []T) {
 	return DiffTo(l, DiffTo(l, r))
 }
 
-func RemoveRepeat[T any, TS ~[]T](slice TS) (res TS) {
+func RemoveRepeat[T any](slice []T) (res []T) {
 	if len(slice) <= 1 {
 		return slice
 	}
 
 	conflictMap := make([]bool, len(slice))
-	res = make(TS, 0, len(slice))
+	res = make([]T, 0, len(slice))
 	for i, ie := range slice {
 		if conflictMap[i] {
 			continue
@@ -180,36 +180,36 @@ func RemoveRepeat[T any, TS ~[]T](slice TS) (res TS) {
 	return res
 }
 
-func First[T any, TS ~[]T](slice TS, defaultValue ...T) (v T) {
+func First[T any](slice []T, defaultValue ...T) (v T) {
 	if Empty(slice) {
 		return Last(defaultValue, v)
 	}
 	return slice[0]
 }
 
-func Last[T any, TS ~[]T](slice TS, defaultValue ...T) (v T) {
+func Last[T any](slice []T, defaultValue ...T) (v T) {
 	if Empty(slice) {
 		return Last(defaultValue, v)
 	}
 	return slice[len(slice)-1]
 }
 
-func Empty[T any, TS ~[]T](slice TS) bool {
+func Empty[T any](slice []T) bool {
 	return len(slice) == 0
 }
 
 // And 同Diff
-func And[T any, TS ~[]T](l, r TS) TS {
+func And[T any](l, r []T) []T {
 	return Diff(l, r)
 }
 
 // Or 同Union+RemoveRepeat
-func Or[T any, TS ~[]T](l, r TS) TS {
+func Or[T any](l, r []T) []T {
 	return RemoveRepeat(Union(l, r))
 }
 
-func Shuffle[T any, TS ~[]T](slice TS) TS {
-	res := make(TS, len(slice))
+func Shuffle[T any](slice []T) []T {
+	res := make([]T, len(slice))
 	copy(res, slice)
 	rand.New(rand.NewSource(time.Now().UnixNano())).Shuffle(len(slice), func(i, j int) {
 		res[i], res[j] = res[j], res[i]
@@ -217,8 +217,8 @@ func Shuffle[T any, TS ~[]T](slice TS) TS {
 	return res
 }
 
-func ToMap[T any, TS ~[]T, K comparable, V any, KV ~map[K]V](slice TS, mapFn func(T) (K, V)) KV {
-	res := make(KV, len(slice))
+func ToMap[T any, K comparable, V any](slice []T, mapFn func(T) (K, V)) map[K]V {
+	res := make(map[K]V, len(slice))
 	for _, e := range slice {
 		k, v := mapFn(e)
 		res[k] = v
@@ -226,7 +226,7 @@ func ToMap[T any, TS ~[]T, K comparable, V any, KV ~map[K]V](slice TS, mapFn fun
 	return res
 }
 
-func Random[T any, TS ~[]T](slice TS) T {
+func Random[T any](slice []T) T {
 	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(slice))
 	return slice[index]
 }
