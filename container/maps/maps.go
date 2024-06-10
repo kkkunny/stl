@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"golang.org/x/exp/maps"
+
+	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
 // Reverse 反转键值对
@@ -80,4 +82,21 @@ func Random[K comparable, V any](hmap map[K]V) (K, V) {
 	keys := maps.Keys(hmap)
 	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(keys))
 	return keys[index], hmap[keys[index]]
+}
+
+func ContainKey[K comparable, V any](hmap map[K]V, key K) bool {
+	_, ok := hmap[key]
+	return ok
+}
+
+func ContainAnyKeys[K comparable, V any](hmap map[K]V, keys ...K) bool {
+	return stlslices.Any(keys, func(_ int, key K) bool {
+		return ContainKey(hmap, key)
+	})
+}
+
+func ContainAllKeys[K comparable, V any](hmap map[K]V, keys ...K) bool {
+	return stlslices.All(keys, func(_ int, key K) bool {
+		return ContainKey(hmap, key)
+	})
 }
