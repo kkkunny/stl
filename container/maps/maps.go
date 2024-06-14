@@ -100,3 +100,31 @@ func ContainAllKeys[K comparable, V any](hmap map[K]V, keys ...K) bool {
 		return ContainKey(hmap, key)
 	})
 }
+
+func Union[K comparable, V any](l, r map[K]V) map[K]V {
+	hmap := make(map[K]V, len(l)+len(r))
+	for k, v := range l {
+		hmap[k] = v
+	}
+	for k, v := range r {
+		hmap[k] = v
+	}
+	return hmap
+}
+
+// DiffKeyTo 返回l中r没有的KV
+func DiffKeyTo[K comparable, V any](l, r map[K]V) map[K]V {
+	res := make(map[K]V, len(l))
+	for lk, lv := range l {
+		if ContainKey(r, lk) {
+			continue
+		}
+		res[lk] = lv
+	}
+	return res
+}
+
+// DiffKey 返回l和r中各在对方没有的KV
+func DiffKey[K comparable, V any](l, r map[K]V) map[K]V {
+	return Union(DiffKeyTo(l, r), DiffKeyTo(r, l))
+}
