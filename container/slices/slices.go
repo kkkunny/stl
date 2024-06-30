@@ -66,10 +66,10 @@ func Any[T any](slice []T, f func(i int, e T) bool) bool {
 	return false
 }
 
-func Filter[T any](slice []T, f func(i int, e T) bool) []T {
+func Filter[T any](slice []T, filter func(i int, e T) bool) []T {
 	res := make([]T, 0, len(slice))
 	for i, e := range slice {
-		if f(i, e) {
+		if filter(i, e) {
 			res = append(res, e)
 		}
 	}
@@ -229,4 +229,14 @@ func ToMap[T any, K comparable, V any](slice []T, mapFn func(T) (K, V)) map[K]V 
 func Random[T any](slice []T) T {
 	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(slice))
 	return slice[index]
+}
+
+func FindFirst[T any](slice []T, filter func(i int, e T) bool, defaultValue ...T) (T, bool) {
+	slice = Filter(slice, filter)
+	return First(slice, defaultValue...), !Empty(slice)
+}
+
+func FindLast[T any](slice []T, filter func(i int, e T) bool, defaultValue ...T) (T, bool) {
+	slice = Filter(slice, filter)
+	return Last(slice, defaultValue...), !Empty(slice)
 }
