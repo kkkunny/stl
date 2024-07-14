@@ -19,7 +19,7 @@ const (
 	Gbit      = Mbit * 1000
 	Tbit      = Gbit * 1000
 	Pbit      = Tbit * 1000
-	Ebit      = Pbit * 1000
+	// Ebit      = Pbit * 1000
 )
 
 // 十进制 byte
@@ -29,27 +29,27 @@ const (
 	Gb      = Mb * 1000
 	Tb      = Gb * 1000
 	Pb      = Tb * 1000
-	Eb      = Pb * 1000
+	// Eb      = Pb * 1000
 )
 
 // 二进制 bit
 const (
-	Kibit Size = Bit * 1000
-	Mibit      = Kibit * 1000
-	Gibit      = Mibit * 1000
-	Tibit      = Gibit * 1000
-	Pibit      = Tibit * 1000
-	Eibit      = Pibit * 1000
+	Kibit Size = Bit * 1024
+	Mibit      = Kibit * 1024
+	Gibit      = Mibit * 1024
+	Tibit      = Gibit * 1024
+	Pibit      = Tibit * 1024
+	// Eibit      = Pibit * 1024
 )
 
 // 二进制 byte
 const (
-	Kib Size = Byte * 1000
-	Mib      = Kib * 1000
-	Gib      = Mib * 1000
-	Tib      = Gib * 1000
-	Pib      = Tib * 1000
-	Eib      = Pib * 1000
+	Kib Size = Byte * 1024
+	Mib      = Kib * 1024
+	Gib      = Mib * 1024
+	Tib      = Gib * 1024
+	Pib      = Tib * 1024
+	// Eib      = Pib * 1024
 )
 
 func (self Size) String() string {
@@ -57,9 +57,9 @@ func (self Size) String() string {
 	var more Size
 
 	switch {
-	case self/Eib > 0:
-		prefix = fmt.Sprintf("%d Eib", self/Eib)
-		more = self % Eib
+	// case self/Eib > 0:
+	// 	prefix = fmt.Sprintf("%d Eib", self/Eib)
+	// 	more = self % Eib
 	case self/Pib > 0:
 		prefix = fmt.Sprintf("%d Pib", self/Pib)
 		more = self % Pib
