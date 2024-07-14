@@ -128,3 +128,11 @@ func DiffKeyTo[K comparable, V any](l, r map[K]V) map[K]V {
 func DiffKey[K comparable, V any](l, r map[K]V) map[K]V {
 	return Union(DiffKeyTo(l, r), DiffKeyTo(r, l))
 }
+
+func Clone[K comparable, V any](hmap map[K]V) map[K]V {
+	newHMap := make(map[K]V, len(hmap))
+	for k, v := range hmap {
+		newHMap[k] = v
+	}
+	return newHMap
+}

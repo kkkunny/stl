@@ -240,3 +240,9 @@ func FindLast[T any](slice []T, filter func(i int, e T) bool, defaultValue ...T)
 	slice = Filter(slice, filter)
 	return Last(slice, defaultValue...), !Empty(slice)
 }
+
+func Clone[T any](slice []T) []T {
+	newSlice := make([]T, len(slice), cap(slice))
+	copy(newSlice, slice)
+	return newSlice
+}
