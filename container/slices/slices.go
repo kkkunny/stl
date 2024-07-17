@@ -246,3 +246,11 @@ func Clone[T any](slice []T) []T {
 	copy(newSlice, slice)
 	return newSlice
 }
+
+func Repeat[T any](v T, n int) []T {
+	slice := make([]T, n)
+	for i := 0; i < n; i++ {
+		slice[i] = v
+	}
+	return slice
+}
