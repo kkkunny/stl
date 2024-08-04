@@ -232,13 +232,23 @@ func Random[T any](slice []T) T {
 }
 
 func FindFirst[T any](slice []T, filter func(i int, e T) bool, defaultValue ...T) (T, bool) {
-	slice = Filter(slice, filter)
-	return First(slice, defaultValue...), !Empty(slice)
+	for i, e := range slice {
+		if filter(i, e) {
+			return e, true
+		}
+	}
+	return First(defaultValue), false
 }
 
 func FindLast[T any](slice []T, filter func(i int, e T) bool, defaultValue ...T) (T, bool) {
-	slice = Filter(slice, filter)
-	return Last(slice, defaultValue...), !Empty(slice)
+	if !Empty(slice) {
+		for i := len(slice) - 1; i >= 0; i-- {
+			if filter(i, slice[i]) {
+				return slice[i], true
+			}
+		}
+	}
+	return Last(defaultValue), false
 }
 
 func Clone[T any](slice []T) []T {
