@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"runtime"
+	"slices"
 	"strings"
 	"sync/atomic"
 	"time"
@@ -51,7 +52,7 @@ func New(w io.Writer, level Level) *Logger {
 
 	return &Logger{config: cfg, l: l, lvl: &lvl}
 }
-func (l *Logger) WithGroup(group string) *Logger {
+func (l *Logger) NewGroup(group string) *Logger {
 	var lvl atomic.Uint32
 	lvl.Store(uint32(l.GetLevel()))
 
@@ -96,6 +97,7 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 			}
 		}
 		if !stlslices.Empty(groups) {
+			slices.Reverse(groups)
 			msg = fmt.Sprintf("%s | %s", strings.Join(groups, " | "), msg)
 		}
 	}
@@ -158,7 +160,7 @@ func (l *Logger) commonOutputf(level Level, format string, a ...any) error {
 	a, cfg := spiltArgAndCfg(a, l.config)
 	return l.Output(fmt.Sprintf(format, a...), cfg.WithLevel(level).WithPositionSkip(2))
 }
-func (l *Logger) commonSmartOutputf(level Level, a any, cfgs ...config) error {
+func (l *Logger) commonSmartOutput(level Level, a any, cfgs ...config) error {
 	cfg := stlslices.Last(cfgs, l.config)
 	cfg = cfg.WithLevel(level).WithPositionSkip(2)
 	if level >= LevelPanic {
@@ -179,8 +181,8 @@ func (l *Logger) Debugln(a ...any) error { return l.commonOutputln(LevelDebug, a
 func (l *Logger) Debugf(format string, a ...any) error {
 	return l.commonOutputf(LevelDebug, format, a...)
 }
-func (l *Logger) SmartDebugf(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelDebug, a, cfgs...)
+func (l *Logger) SmartDebug(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelDebug, a, cfgs...)
 }
 
 func (l *Logger) Trace(a ...any) error   { return l.commonOutput(LevelTrace, a...) }
@@ -188,8 +190,8 @@ func (l *Logger) Traceln(a ...any) error { return l.commonOutputln(LevelTrace, a
 func (l *Logger) Tracef(format string, a ...any) error {
 	return l.commonOutputf(LevelTrace, format, a...)
 }
-func (l *Logger) SmartTracef(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelTrace, a, cfgs...)
+func (l *Logger) SmartTrace(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelTrace, a, cfgs...)
 }
 
 func (l *Logger) Info(a ...any) error   { return l.commonOutput(LevelInfo, a...) }
@@ -197,8 +199,8 @@ func (l *Logger) Infoln(a ...any) error { return l.commonOutputln(LevelInfo, a..
 func (l *Logger) Infof(format string, a ...any) error {
 	return l.commonOutputf(LevelInfo, format, a...)
 }
-func (l *Logger) SmartInfof(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelInfo, a, cfgs...)
+func (l *Logger) SmartInfo(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelInfo, a, cfgs...)
 }
 
 func (l *Logger) Warn(a ...any) error   { return l.commonOutput(LevelWarn, a...) }
@@ -206,8 +208,8 @@ func (l *Logger) Warnln(a ...any) error { return l.commonOutputln(LevelWarn, a..
 func (l *Logger) Warnf(format string, a ...any) error {
 	return l.commonOutputf(LevelWarn, format, a...)
 }
-func (l *Logger) SmartWarnf(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelWarn, a, cfgs...)
+func (l *Logger) SmartWarn(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelWarn, a, cfgs...)
 }
 
 func (l *Logger) Keyword(a ...any) error   { return l.commonOutput(LevelKeyword, a...) }
@@ -215,8 +217,8 @@ func (l *Logger) Keywordln(a ...any) error { return l.commonOutputln(LevelKeywor
 func (l *Logger) Keywordf(format string, a ...any) error {
 	return l.commonOutputf(LevelKeyword, format, a...)
 }
-func (l *Logger) SmartKeywordf(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelKeyword, a, cfgs...)
+func (l *Logger) SmartKeyword(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelKeyword, a, cfgs...)
 }
 
 func (l *Logger) Error(a ...any) error   { return l.commonOutput(LevelError, a...) }
@@ -224,8 +226,8 @@ func (l *Logger) Errorln(a ...any) error { return l.commonOutputln(LevelError, a
 func (l *Logger) Errorf(format string, a ...any) error {
 	return l.commonOutputf(LevelError, format, a...)
 }
-func (l *Logger) SmartErrorf(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelError, a, cfgs...)
+func (l *Logger) SmartError(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelError, a, cfgs...)
 }
 
 func (l *Logger) Panic(a ...any) error   { return l.commonOutput(LevelPanic, a...) }
@@ -233,6 +235,6 @@ func (l *Logger) Panicln(a ...any) error { return l.commonOutputln(LevelPanic, a
 func (l *Logger) Panicf(format string, a ...any) error {
 	return l.commonOutputf(LevelPanic, format, a...)
 }
-func (l *Logger) SmartPanicf(a any, cfgs ...config) error {
-	return l.commonSmartOutputf(LevelPanic, a, cfgs...)
+func (l *Logger) SmartPanic(a any, cfgs ...config) error {
+	return l.commonSmartOutput(LevelPanic, a, cfgs...)
 }

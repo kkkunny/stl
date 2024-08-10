@@ -54,6 +54,12 @@ func (cfg config) WithDisplayLevel() config {
 	return cfg
 }
 
+// WithNoDisplayLevel 禁止显示等级
+func (cfg config) WithNoDisplayLevel() config {
+	cfg.displayLevel = false
+	return cfg
+}
+
 // WithDisplayTime 显示时间
 func (cfg config) WithDisplayTime(format ...string) config {
 	cfg.displayTimeFormat = stlslices.Last(format, time.DateTime)
@@ -63,6 +69,12 @@ func (cfg config) WithDisplayTime(format ...string) config {
 // WithDisplayPosition 显示代码位置
 func (cfg config) WithDisplayPosition() config {
 	cfg.displayPos = true
+	return cfg
+}
+
+// WithNoDisplayPosition 禁止显示代码位置
+func (cfg config) WithNoDisplayPosition() config {
+	cfg.displayPos = false
 	return cfg
 }
 
@@ -78,9 +90,21 @@ func (cfg config) WithDisplayColor() config {
 	return cfg
 }
 
+// WithNoDisplayColor 禁止显示颜色
+func (cfg config) WithNoDisplayColor() config {
+	cfg.displayColor = false
+	return cfg
+}
+
 // WithDisplayStack 显示堆栈信息
 func (cfg config) WithDisplayStack() config {
 	cfg.displayStack = true
+	return cfg
+}
+
+// WithNoDisplayStack 禁止显示堆栈信息
+func (cfg config) WithNoDisplayStack() config {
+	cfg.displayStack = false
 	return cfg
 }
 
@@ -93,5 +117,11 @@ func (cfg config) WithStacks(stacks []runtime.Frame) config {
 // WithDisplayGroup 显示组信息
 func (cfg config) WithDisplayGroup() config {
 	cfg.displayGroup = true
+	return cfg
+}
+
+// WithNoDisplayGroup 禁止显示组信息
+func (cfg config) WithNoDisplayGroup() config {
+	cfg.displayGroup = false
 	return cfg
 }
