@@ -24,7 +24,7 @@ func wrap(err error) Error {
 	if errors.As(err, &e) {
 		return e
 	}
-	return _NewError(2, err)
+	return _NewError(1, err)
 }
 
 // ErrorWrap 封装异常

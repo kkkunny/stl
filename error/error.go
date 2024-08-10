@@ -13,7 +13,7 @@ type _Error struct {
 
 func _NewError(skip uint, err error) *_Error {
 	return &_Error{
-		stacks: stlos.GetCallStacks(20, skip+2),
+		stacks: stlos.GetCallStacks(100, skip+1),
 		err:    err,
 	}
 }

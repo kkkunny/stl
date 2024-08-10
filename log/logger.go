@@ -1,6 +1,7 @@
 package stllog
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -8,270 +9,230 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync/atomic"
 	"time"
 
-	"github.com/gookit/color"
-
-	stlbasic "github.com/kkkunny/stl/basic"
+	stlslices "github.com/kkkunny/stl/container/slices"
 	stlerror "github.com/kkkunny/stl/error"
 	stlos "github.com/kkkunny/stl/os"
 )
 
-// LogLevel 日志等级
-type LogLevel uint8
-
-const (
-	LogLevelDebug   LogLevel = iota // debug
-	LogLevelInfo                    // info
-	LogLevelWarn                    // warn
-	LogLevelKeyword                 // keyword
-	LogLevelError                   // error
-	LogLevelPanic                   // panic
-)
-
-var logLevelStringMap = [...]string{
-	LogLevelDebug:   "  DEBUG  ",
-	LogLevelInfo:    "   INFO  ",
-	LogLevelWarn:    "   WARN  ",
-	LogLevelKeyword: " KEYWORD ",
-	LogLevelError:   "  ERROR  ",
-	LogLevelPanic:   "  PANIC  ",
-}
-
-var logLevelColorMap = [...]color.Color{
-	LogLevelDebug:   color.Blue,
-	LogLevelInfo:    color.Green,
-	LogLevelWarn:    color.Yellow,
-	LogLevelKeyword: color.Cyan,
-	LogLevelError:   color.Magenta,
-	LogLevelPanic:   color.Red,
-}
-
-var logLevelStyleMap = [...]color.Style{
-	LogLevelDebug:   color.New(color.OpBold, color.White, color.BgBlue),
-	LogLevelInfo:    color.New(color.OpBold, color.White, color.BgGreen),
-	LogLevelWarn:    color.New(color.OpBold, color.White, color.BgYellow),
-	LogLevelKeyword: color.New(color.OpBold, color.White, color.BgCyan),
-	LogLevelError:   color.New(color.OpBold, color.White, color.BgMagenta),
-	LogLevelPanic:   color.New(color.OpBold, color.White, color.BgRed),
-}
-
-// Logger 日志管理器
 type Logger struct {
-	level  LogLevel
-	routes []string
-	writer *log.Logger
+	config
+
+	l   *log.Logger
+	lvl *atomic.Uint32
+
+	parent *Logger
+	group  string
 }
 
-// DefaultLogger 默认日志管理器
-func DefaultLogger(debug bool) *Logger {
+func Default(debug bool) *Logger {
+	var logger *Logger
 	if debug {
-		return NewLogger(LogLevelDebug, os.Stdout)
-	}
-	return NewLogger(LogLevelInfo, os.Stdout)
-}
-
-// NewLogger 新建日志管理器
-func NewLogger(level LogLevel, writer io.Writer) *Logger {
-	return &Logger{
-		level:  level,
-		writer: log.New(writer, "", 0),
-	}
-}
-
-func (self *Logger) NewGroup(name string) *Logger {
-	routes := make([]string, len(self.routes)+1)
-	copy(routes, self.routes)
-	routes[len(routes)-1] = name
-	return &Logger{
-		level:  self.level,
-		routes: routes,
-		writer: self.writer,
-	}
-}
-
-func (self *Logger) Group() string {
-	if len(self.routes) == 0 {
-		return ""
-	}
-	return self.routes[len(self.routes)-1]
-}
-
-// 输出
-func (self *Logger) output(level LogLevel, pos string, msg string) error {
-	var routesBuf strings.Builder
-	for _, r := range self.routes {
-		routesBuf.WriteString(" | ")
-		routesBuf.WriteString(r)
-	}
-
-	timeStr := time.Now().Format(time.DateTime)
-	var s string
-	writer := self.writer.Writer()
-	if writer == os.Stdout || writer == os.Stderr {
-		suffix := fmt.Sprintf(
-			"| %s%s | %s | %s",
-			timeStr,
-			routesBuf.String(),
-			pos,
-			msg,
-		)
-		suffix = logLevelColorMap[level].Text(suffix)
-		s = logLevelStyleMap[level].Sprintf(logLevelStringMap[level]) + suffix
+		logger = New(os.Stdout, LevelDebug)
 	} else {
-		s = fmt.Sprintf(
-			"%s | %s%s | %s | %s",
-			logLevelStringMap[level],
-			timeStr,
-			routesBuf.String(),
-			pos,
-			msg,
-		)
+		logger = New(os.Stdout, LevelInfo)
 	}
-	return self.writer.Output(0, s)
+	logger.SetDefaultConfig(logger.WithDisplayLevel().WithDisplayTime().WithDisplayPosition().WithDisplayColor().WithDisplayGroup())
+	return logger
 }
 
-func (self *Logger) outputWithPos(level LogLevel, skip uint, msg string) error {
-	_, file, line, _ := runtime.Caller(int(skip + 1))
-	return self.output(level, fmt.Sprintf("%s:%d", file, line), msg)
-}
-
-// 打印
-func (self *Logger) print(level LogLevel, skip uint, a any) error {
-	if self.level > level {
-		return nil
+func New(w io.Writer, level Level) *Logger {
+	cfg := config{
+		ctx:   context.Background(),
+		level: level,
 	}
-	return self.outputWithPos(level, skip+1, fmt.Sprintf("%v", a))
+
+	var lvl atomic.Uint32
+	lvl.Store(uint32(level))
+
+	l := log.New(w, "", log.Lmsgprefix)
+
+	return &Logger{config: cfg, l: l, lvl: &lvl}
+}
+func (l *Logger) WithGroup(group string) *Logger {
+	var lvl atomic.Uint32
+	lvl.Store(uint32(l.GetLevel()))
+
+	return &Logger{
+		config: l.config,
+		l:      log.New(l.l.Writer(), "", log.Lmsgprefix),
+		lvl:    &lvl,
+		parent: l,
+		group:  group,
+	}
 }
 
-// 带栈打印
-func (self *Logger) printWithStack(level LogLevel, skip uint, a any) error {
-	if self.level > level {
+func (l *Logger) SetDefaultConfig(cfg config) {
+	l.config = cfg
+}
+func (l *Logger) GetLevel() Level {
+	return Level(l.lvl.Load())
+}
+func (l *Logger) SetLevel(level Level) {
+	l.lvl.Store(uint32(level))
+}
+func (l *Logger) GetGroup() string {
+	return l.group
+}
+
+func (l *Logger) enable(lvl Level) bool {
+	return lvl >= l.GetLevel()
+}
+
+func (l *Logger) log(msg string, cfgs ...config) error {
+	cfg := stlslices.Last(cfgs)
+
+	if !l.enable(cfg.level) {
 		return nil
 	}
 
-	var stacks []runtime.Frame
-	var stlerr stlerror.Error
-	if err, ok := a.(error); ok && errors.As(err, &stlerr) {
-		stacks = stlerr.Stacks()
-	} else {
-		stacks = stlos.GetCallStacks(20, skip+2)
-	}
-
-	var stackBuffer strings.Builder
-	for i, s := range stacks {
-		stackBuffer.WriteString(fmt.Sprintf("\t%s:%d", s.File, s.Line))
-		if i < len(stacks)-1 {
-			stackBuffer.WriteByte('\n')
+	if cfg.displayGroup {
+		var groups []string
+		for cursorLog := l; cursorLog != nil; cursorLog = cursorLog.parent {
+			if cursorLog.group != "" {
+				groups = append(groups, cursorLog.group)
+			}
+		}
+		if !stlslices.Empty(groups) {
+			msg = fmt.Sprintf("%s | %s", strings.Join(groups, " | "), msg)
 		}
 	}
-	return self.outputWithPos(level, skip+1, fmt.Sprintf("%v\n%s", a, stackBuffer.String()))
+
+	if cfg.displayPos {
+		stack := stlos.GetCurrentCallStack(cfg.posSkip + 1)
+		msg = fmt.Sprintf("%s:%d | %s", stack.File, stack.Line, msg)
+	}
+
+	if cfg.displayTimeFormat != "" {
+		msg = fmt.Sprintf("%s | %s", time.Now().Format(cfg.displayTimeFormat), msg)
+	}
+
+	if cfg.displayStack {
+		var stacks []runtime.Frame
+		if stlslices.Empty(cfg.stacks) {
+			stacks = stlos.GetCallStacks(100, cfg.posSkip+1)
+		} else {
+			stacks = cfg.stacks
+		}
+		stackStrs := stlslices.Map(stacks, func(_ int, stack runtime.Frame) string {
+			return fmt.Sprintf("\t%s:%d", stack.File, stack.Line)
+		})
+		msg = fmt.Sprintf("%s\n%s", msg, strings.Join(stackStrs, "\n"))
+	}
+
+	if cfg.displayLevel {
+		level := cfg.level.AlignString()
+		if cfg.displayColor && writerIsTerminal(l.l.Writer()) {
+			level = cfg.level.Style().Sprintf(level)
+			msg = cfg.level.MsgColor().Sprintf("| %s", msg)
+		}
+		msg = level + msg
+	}
+
+	return l.l.Output(0, msg)
 }
 
-// 格式化打印
-func (self *Logger) printf(level LogLevel, skip uint, f string, a ...any) error {
-	return self.print(level, skip+1, fmt.Sprintf(f, a...))
+func (l *Logger) Output(msg string, cfgs ...config) error {
+	return l.log(msg, stlslices.Last(cfgs, l.config).WithPositionSkip(1))
+}
+func (l *Logger) Print(a ...any) error {
+	a, cfg := spiltArgAndCfg(a, l.config)
+	return l.log(fmt.Sprint(a...), cfg.WithPositionSkip(1))
+}
+func (l *Logger) Println(a ...any) error {
+	a, cfg := spiltArgAndCfg(a, l.config)
+	return l.log(fmt.Sprintln(a...), cfg.WithPositionSkip(1))
 }
 
-// SDebug 输出Debug信息
-func (self *Logger) SDebug(skip uint, a any) error {
-	return self.print(LogLevelDebug, skip+1, a)
+func (l *Logger) commonOutput(level Level, a ...any) error {
+	a, cfg := spiltArgAndCfg(a, l.config)
+	return l.Output(fmt.Sprint(a...), cfg.WithLevel(level).WithPositionSkip(2))
+}
+func (l *Logger) commonOutputln(level Level, a ...any) error {
+	a, cfg := spiltArgAndCfg(a, l.config)
+	return l.Output(fmt.Sprintln(a...), cfg.WithLevel(level).WithPositionSkip(2))
+}
+func (l *Logger) commonOutputf(level Level, format string, a ...any) error {
+	a, cfg := spiltArgAndCfg(a, l.config)
+	return l.Output(fmt.Sprintf(format, a...), cfg.WithLevel(level).WithPositionSkip(2))
+}
+func (l *Logger) commonSmartOutputf(level Level, a any, cfgs ...config) error {
+	cfg := stlslices.Last(cfgs, l.config)
+	cfg = cfg.WithLevel(level).WithPositionSkip(2)
+	if level >= LevelPanic {
+		cfg = cfg.WithDisplayStack()
+	}
+	if err, ok := a.(error); ok {
+		cfg = cfg.WithDisplayStack()
+		var stlerr stlerror.Error
+		if errors.As(err, &stlerr) {
+			cfg = cfg.WithStacks(stlerr.Stacks())
+		}
+	}
+	return l.Output(fmt.Sprint(a), cfg)
 }
 
-// SDebugf 输出Debugf格式化信息
-func (self *Logger) SDebugf(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelDebug, skip+1, f, a...)
+func (l *Logger) Debug(a ...any) error   { return l.commonOutput(LevelDebug, a...) }
+func (l *Logger) Debugln(a ...any) error { return l.commonOutputln(LevelDebug, a...) }
+func (l *Logger) Debugf(format string, a ...any) error {
+	return l.commonOutputf(LevelDebug, format, a...)
+}
+func (l *Logger) SmartDebugf(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelDebug, a, cfgs...)
 }
 
-// SDebugStack 输出Debug异常信息
-func (self *Logger) SDebugStack(skip uint, a any) error {
-	return self.printWithStack(LogLevelDebug, skip+1, a)
+func (l *Logger) Trace(a ...any) error   { return l.commonOutput(LevelTrace, a...) }
+func (l *Logger) Traceln(a ...any) error { return l.commonOutputln(LevelTrace, a...) }
+func (l *Logger) Tracef(format string, a ...any) error {
+	return l.commonOutputf(LevelTrace, format, a...)
+}
+func (l *Logger) SmartTracef(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelTrace, a, cfgs...)
 }
 
-// SInfo 输出Info信息
-func (self *Logger) SInfo(skip uint, a any) error {
-	return self.print(LogLevelInfo, skip+1, a)
+func (l *Logger) Info(a ...any) error   { return l.commonOutput(LevelInfo, a...) }
+func (l *Logger) Infoln(a ...any) error { return l.commonOutputln(LevelInfo, a...) }
+func (l *Logger) Infof(format string, a ...any) error {
+	return l.commonOutputf(LevelInfo, format, a...)
+}
+func (l *Logger) SmartInfof(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelInfo, a, cfgs...)
 }
 
-// SInfof 输出Info格式化信息
-func (self *Logger) SInfof(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelInfo, skip+1, f, a...)
+func (l *Logger) Warn(a ...any) error   { return l.commonOutput(LevelWarn, a...) }
+func (l *Logger) Warnln(a ...any) error { return l.commonOutputln(LevelWarn, a...) }
+func (l *Logger) Warnf(format string, a ...any) error {
+	return l.commonOutputf(LevelWarn, format, a...)
+}
+func (l *Logger) SmartWarnf(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelWarn, a, cfgs...)
 }
 
-// SInfoStack 输出Info异常信息
-func (self *Logger) SInfoStack(skip uint, a any) error {
-	return self.printWithStack(LogLevelInfo, skip+1, a)
+func (l *Logger) Keyword(a ...any) error   { return l.commonOutput(LevelKeyword, a...) }
+func (l *Logger) Keywordln(a ...any) error { return l.commonOutputln(LevelKeyword, a...) }
+func (l *Logger) Keywordf(format string, a ...any) error {
+	return l.commonOutputf(LevelKeyword, format, a...)
+}
+func (l *Logger) SmartKeywordf(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelKeyword, a, cfgs...)
 }
 
-// SWarn 输出Warn信息
-func (self *Logger) SWarn(skip uint, a any) error {
-	return self.print(LogLevelWarn, skip+1, a)
+func (l *Logger) Error(a ...any) error   { return l.commonOutput(LevelError, a...) }
+func (l *Logger) Errorln(a ...any) error { return l.commonOutputln(LevelError, a...) }
+func (l *Logger) Errorf(format string, a ...any) error {
+	return l.commonOutputf(LevelError, format, a...)
+}
+func (l *Logger) SmartErrorf(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelError, a, cfgs...)
 }
 
-// SWarnf 输出Warn格式化信息
-func (self *Logger) SWarnf(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelWarn, skip+1, f, a...)
+func (l *Logger) Panic(a ...any) error   { return l.commonOutput(LevelPanic, a...) }
+func (l *Logger) Panicln(a ...any) error { return l.commonOutputln(LevelPanic, a...) }
+func (l *Logger) Panicf(format string, a ...any) error {
+	return l.commonOutputf(LevelPanic, format, a...)
 }
-
-// SWarnStack 输出Warn异常信息
-func (self *Logger) SWarnStack(skip uint, a any) error {
-	return self.printWithStack(LogLevelWarn, skip+1, a)
+func (l *Logger) SmartPanicf(a any, cfgs ...config) error {
+	return l.commonSmartOutputf(LevelPanic, a, cfgs...)
 }
-
-// SKeyword 输出Keyword信息
-func (self *Logger) SKeyword(skip uint, a any) error {
-	return self.print(LogLevelKeyword, skip+1, a)
-}
-
-// SKeywordf 输出Keyword格式化信息
-func (self *Logger) SKeywordf(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelKeyword, skip+1, f, a...)
-}
-
-// SKeywordStack 输出Keyword异常信息
-func (self *Logger) SKeywordStack(skip uint, a any) error {
-	return self.printWithStack(LogLevelKeyword, skip+1, a)
-}
-
-// SError 输出Error信息
-func (self *Logger) SError(skip uint, a any) error {
-	return self.print(LogLevelError, skip+1, a)
-}
-
-// SErrorf 输出Error格式化信息
-func (self *Logger) SErrorf(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelError, skip+1, f, a...)
-}
-
-// SErrorStack 输出Error异常信息
-func (self *Logger) SErrorStack(skip uint, a any) error {
-	return self.printWithStack(LogLevelError, skip+1, a)
-}
-
-// SPanic 输出Panic信息
-func (self *Logger) SPanic(skip uint, a any) error {
-	return self.print(LogLevelPanic, skip+1, a)
-}
-
-// SPanicf 输出Panic格式化信息
-func (self *Logger) SPanicf(skip uint, f string, a ...any) error {
-	return self.printf(LogLevelPanic, skip+1, f, a...)
-}
-
-// SPanicStack 输出Panic异常信息
-func (self *Logger) SPanicStack(skip uint, a any) error {
-	return self.printWithStack(LogLevelPanic, skip+1, a)
-}
-
-func (self *Logger) Debug(a any)                 { stlbasic.Ignore(self.SDebug(1, a)) }
-func (self *Logger) Debugf(f string, a ...any)   { stlbasic.Ignore(self.SDebugf(1, f, a...)) }
-func (self *Logger) Info(a any)                  { stlbasic.Ignore(self.SInfo(1, a)) }
-func (self *Logger) Infof(f string, a ...any)    { stlbasic.Ignore(self.SInfof(1, f, a...)) }
-func (self *Logger) Warn(a any)                  { stlbasic.Ignore(self.SWarn(1, a)) }
-func (self *Logger) Warnf(f string, a ...any)    { stlbasic.Ignore(self.SWarnf(1, f, a...)) }
-func (self *Logger) Keyword(a any)               { stlbasic.Ignore(self.SKeyword(1, a)) }
-func (self *Logger) Keywordf(f string, a ...any) { stlbasic.Ignore(self.SKeywordf(1, f, a...)) }
-func (self *Logger) Error(a any)                 { stlbasic.Ignore(self.SErrorStack(1, a)) }
-func (self *Logger) Errorf(f string, a ...any)   { stlbasic.Ignore(self.SErrorf(1, f, a...)) }
-func (self *Logger) Panic(a any)                 { stlbasic.Ignore(self.SPanicStack(1, a)) }
-func (self *Logger) Panicf(f string, a ...any)   { stlbasic.Ignore(self.SPanicf(1, f, a...)) }
