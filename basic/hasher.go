@@ -2,6 +2,8 @@ package stlbasic
 
 import (
 	"fmt"
+	"hash"
+	"hash/fnv"
 	"math"
 	"reflect"
 )
@@ -17,53 +19,91 @@ func Hash[T any](v T) uint64 {
 	case Hashable:
 		return vv.Hash()
 	default:
-		return reflectHash(v)
+		h := fnv.New64a()
+		reflectHash(reflect.ValueOf(v), h)
+		return h.Sum64()
 	}
 }
 
-func reflectHash[T any](v T) uint64 {
-	vv, vt := reflect.ValueOf(v), reflect.TypeOf(v)
-
-	switch vt.Kind() {
+func reflectHash(v reflect.Value, h hash.Hash64) {
+	switch vt := v.Type(); vt.Kind() {
 	case reflect.Bool:
-		if vv.Bool() {
-			return 1
-		} else {
-			return 0
-		}
+		_, _ = h.Write([]byte{boolToBytes(v.Bool())})
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return uint64(vv.Int())
+		_, _ = h.Write(int64ToBytes(v.Int()))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return vv.Uint()
+		_, _ = h.Write(uint64ToBytes(v.Uint()))
 	case reflect.Float32, reflect.Float64:
-		return math.Float64bits(vv.Float())
+		_, _ = h.Write(float64ToBytes(v.Float()))
+	case reflect.Complex64, reflect.Complex128:
+		_, _ = h.Write(complex128ToBytes(v.Complex()))
 	case reflect.String:
-		var hash uint64
-		for _, b := range vv.String() {
-			hash = 31*hash + uint64(b)
-		}
-		return hash
-	case reflect.Chan, reflect.UnsafePointer, reflect.Func, reflect.Pointer, reflect.Map:
-		return uint64(vv.Pointer())
+		_, _ = h.Write([]byte(v.String()))
+	// case reflect.Slice:
+	// 	if v.IsNil() {
+	// 		return
+	// 	}
+	// 	fallthrough
 	case reflect.Array:
-		var hash uint64
-		for i := 0; i < vv.Len(); i++ {
-			hash = 31*hash + Hash(vv.Index(i).Interface())
+		for i := 0; i < v.Len(); i++ {
+			reflectHash(v.Index(i), h)
 		}
-		return hash
-	case reflect.Slice:
-		var hash uint64
-		for i := 0; i < vv.Len(); i++ {
-			hash = 31*hash + Hash(vv.Index(i).Interface())
+	case reflect.Chan, reflect.Func, reflect.UnsafePointer, reflect.Pointer, reflect.Map, reflect.Slice:
+		_, _ = h.Write(pointerToBytes(v.Pointer()))
+	case reflect.Interface:
+		if v.IsNil() {
+			return
 		}
-		return hash
+		reflectHash(v.Elem(), h)
+	// case reflect.Map:
+	// 	if v.IsNil() {
+	// 		return
+	// 	}
+	// 	keys := v.MapKeys()
+	// 	for _, k := range keys {
+	// 		reflectHash(k, h)
+	// 		reflectHash(v.MapIndex(k), h)
+	// 	}
 	case reflect.Struct:
-		var hash uint64
-		for i := 0; i < vv.NumField(); i++ {
-			hash = 31*hash + Hash(vv.Field(i).Interface())
+		for i := 0; i < v.NumField(); i++ {
+			reflectHash(v.Field(i), h)
 		}
-		return hash
 	default:
 		panic(fmt.Errorf("type `%s` cannot get hash", vt))
 	}
+}
+
+func boolToBytes(b bool) byte {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func int64ToBytes(i int64) []byte {
+	return []byte{
+		byte(i >> 56), byte(i >> 48), byte(i >> 40), byte(i >> 32),
+		byte(i >> 24), byte(i >> 16), byte(i >> 8), byte(i),
+	}
+}
+
+func uint64ToBytes(i uint64) []byte {
+	return []byte{
+		byte(i >> 56), byte(i >> 48), byte(i >> 40), byte(i >> 32),
+		byte(i >> 24), byte(i >> 16), byte(i >> 8), byte(i),
+	}
+}
+
+func float64ToBytes(f float64) []byte {
+	return uint64ToBytes(math.Float64bits(f))
+}
+
+func complex128ToBytes(c complex128) []byte {
+	r := float64ToBytes(real(c))
+	i := float64ToBytes(imag(c))
+	return append(r, i...)
+}
+
+func pointerToBytes(p uintptr) []byte {
+	return uint64ToBytes(uint64(p))
 }
