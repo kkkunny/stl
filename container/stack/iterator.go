@@ -1,7 +1,7 @@
 package stack
 
 import (
-	"slices"
+	"golang.org/x/exp/slices"
 
 	"github.com/kkkunny/stl/container/dynarray"
 	stliter "github.com/kkkunny/stl/container/iter"

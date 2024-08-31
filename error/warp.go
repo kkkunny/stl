@@ -3,17 +3,9 @@ package stlerror
 import (
 	"errors"
 	"fmt"
-	"runtime"
-)
 
-// Error 异常
-type Error interface {
-	error
-	fmt.Stringer
-	Frame() runtime.Frame
-	Stacks() []runtime.Frame
-	Unwrap() error
-}
+	stlos "github.com/kkkunny/stl/os"
+)
 
 // 封装
 func wrap(err error) Error {
@@ -22,9 +14,15 @@ func wrap(err error) Error {
 	}
 	var e Error
 	if errors.As(err, &e) {
-		return e
+		return &_Error{
+			stacks: e.Stacks(),
+			err:    err,
+		}
 	}
-	return _NewError(1, err)
+	return &_Error{
+		stacks: stlos.GetCallStacks(20, 1),
+		err:    err,
+	}
 }
 
 // ErrorWrap 封装异常
@@ -49,5 +47,8 @@ func ErrorWith3[T, E, F any](v1 T, v2 E, v3 F, err error) (T, E, F, Error) {
 
 // Errorf 新建异常
 func Errorf(f string, a ...any) Error {
-	return _NewError(1, fmt.Errorf(f, a...))
+	return &_Error{
+		stacks: stlos.GetCallStacks(20, 1),
+		err:    fmt.Errorf(f, a...),
+	}
 }

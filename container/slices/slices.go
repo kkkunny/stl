@@ -2,8 +2,9 @@ package stlslices
 
 import (
 	"math/rand"
-	"slices"
 	"time"
+
+	"golang.org/x/exp/slices"
 
 	stlbasic "github.com/kkkunny/stl/basic"
 )

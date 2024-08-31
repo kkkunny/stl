@@ -8,10 +8,11 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"slices"
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"golang.org/x/exp/slices"
 
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stlerror "github.com/kkkunny/stl/error"

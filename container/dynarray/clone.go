@@ -1,6 +1,6 @@
 package dynarray
 
-import "slices"
+import "golang.org/x/exp/slices"
 
 // Clone 克隆
 func (self DynArray[T]) Clone() DynArray[T] {
