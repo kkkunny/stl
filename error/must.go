@@ -1,4 +1,4 @@
-package stlerror
+package stlerr
 
 // Must 处理异常
 func Must(err error) {

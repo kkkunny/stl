@@ -2,8 +2,9 @@ package stllog
 
 import (
 	"context"
-	"runtime"
 	"time"
+
+	"github.com/pkg/errors"
 
 	stlslices "github.com/kkkunny/stl/container/slices"
 )
@@ -19,7 +20,7 @@ type config struct {
 	displayColor      bool
 	displayStack      bool
 	displayGroup      bool
-	stacks            []runtime.Frame
+	stacks            errors.StackTrace
 }
 
 func spiltArgAndCfg(a []any, defaultCfg config) ([]any, config) {
@@ -109,7 +110,7 @@ func (cfg config) WithNoDisplayStack() config {
 }
 
 // WithStacks 堆栈信息
-func (cfg config) WithStacks(stacks []runtime.Frame) config {
+func (cfg config) WithStacks(stacks errors.StackTrace) config {
 	cfg.stacks = stacks
 	return cfg
 }

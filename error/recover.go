@@ -1,8 +1,8 @@
-package stlerror
+package stlerr
 
 import "fmt"
 
-func RecoverTo(ptr *Error) {
+func RecoverTo(ptr *error) {
 	errObj := recover()
 	if errObj == nil {
 		return

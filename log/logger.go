@@ -2,20 +2,20 @@ package stllog
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"log"
 	"os"
-	"runtime"
 	"strings"
 	"sync/atomic"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"golang.org/x/exp/slices"
 
 	stlslices "github.com/kkkunny/stl/container/slices"
-	stlerror "github.com/kkkunny/stl/error"
+	stlerr "github.com/kkkunny/stl/error"
 	stlos "github.com/kkkunny/stl/os"
 )
 
@@ -113,14 +113,17 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 	}
 
 	if cfg.displayStack {
-		var stacks []runtime.Frame
+		var stacks errors.StackTrace
 		if stlslices.Empty(cfg.stacks) {
-			stacks = stlos.GetCallStacks(100, cfg.posSkip+1)
+			stacks = stlerr.CurrentStackTrace()[cfg.posSkip+1:]
 		} else {
 			stacks = cfg.stacks
 		}
-		stackStrs := stlslices.Map(stacks, func(_ int, stack runtime.Frame) string {
-			return fmt.Sprintf("\t%s:%d", stack.File, stack.Line)
+		stackStrs := stlslices.Map(stacks, func(_ int, f errors.Frame) string {
+			file := fmt.Sprintf("%+s", f)
+			file = file[strings.LastIndex(file, "\n\t")+1:]
+			line := fmt.Sprintf("%d", f)
+			return fmt.Sprintf("\t%s:%s", file, line)
 		})
 		msg = fmt.Sprintf("%s\n%s", msg, strings.Join(stackStrs, "\n"))
 	}
@@ -151,91 +154,57 @@ func (l *Logger) Println(a ...any) error {
 
 func (l *Logger) commonOutput(level Level, a ...any) error {
 	a, cfg := spiltArgAndCfg(a, l.config)
+	if len(a) == 1 {
+		cfg = cfg.WithLevel(level).WithPositionSkip(2)
+		if level >= LevelPanic {
+			cfg = cfg.WithDisplayStack()
+		}
+		if err, ok := a[0].(error); ok {
+			cfg = cfg.WithDisplayStack()
+			if err, ok := errors.Cause(err).(stlerr.StackTracer); ok {
+				cfg = cfg.WithStacks(err.StackTrace())
+			}
+		}
+		return l.Output(fmt.Sprint(a[0]), cfg)
+	}
 	return l.Output(fmt.Sprint(a...), cfg.WithLevel(level).WithPositionSkip(2))
-}
-func (l *Logger) commonOutputln(level Level, a ...any) error {
-	a, cfg := spiltArgAndCfg(a, l.config)
-	return l.Output(fmt.Sprintln(a...), cfg.WithLevel(level).WithPositionSkip(2))
 }
 func (l *Logger) commonOutputf(level Level, format string, a ...any) error {
 	a, cfg := spiltArgAndCfg(a, l.config)
 	return l.Output(fmt.Sprintf(format, a...), cfg.WithLevel(level).WithPositionSkip(2))
 }
-func (l *Logger) commonSmartOutput(level Level, a any, cfgs ...config) error {
-	cfg := stlslices.Last(cfgs, l.config)
-	cfg = cfg.WithLevel(level).WithPositionSkip(2)
-	if level >= LevelPanic {
-		cfg = cfg.WithDisplayStack()
-	}
-	if err, ok := a.(error); ok {
-		cfg = cfg.WithDisplayStack()
-		var stlerr stlerror.Error
-		if errors.As(err, &stlerr) {
-			cfg = cfg.WithStacks(stlerr.Stacks())
-		}
-	}
-	return l.Output(fmt.Sprint(a), cfg)
-}
 
-func (l *Logger) Debug(a ...any) error   { return l.commonOutput(LevelDebug, a...) }
-func (l *Logger) Debugln(a ...any) error { return l.commonOutputln(LevelDebug, a...) }
+func (l *Logger) Debug(a ...any) error { return l.commonOutput(LevelDebug, a...) }
 func (l *Logger) Debugf(format string, a ...any) error {
 	return l.commonOutputf(LevelDebug, format, a...)
 }
-func (l *Logger) SmartDebug(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelDebug, a, cfgs...)
-}
 
-func (l *Logger) Trace(a ...any) error   { return l.commonOutput(LevelTrace, a...) }
-func (l *Logger) Traceln(a ...any) error { return l.commonOutputln(LevelTrace, a...) }
+func (l *Logger) Trace(a ...any) error { return l.commonOutput(LevelTrace, a...) }
 func (l *Logger) Tracef(format string, a ...any) error {
 	return l.commonOutputf(LevelTrace, format, a...)
 }
-func (l *Logger) SmartTrace(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelTrace, a, cfgs...)
-}
 
-func (l *Logger) Info(a ...any) error   { return l.commonOutput(LevelInfo, a...) }
-func (l *Logger) Infoln(a ...any) error { return l.commonOutputln(LevelInfo, a...) }
+func (l *Logger) Info(a ...any) error { return l.commonOutput(LevelInfo, a...) }
 func (l *Logger) Infof(format string, a ...any) error {
 	return l.commonOutputf(LevelInfo, format, a...)
 }
-func (l *Logger) SmartInfo(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelInfo, a, cfgs...)
-}
 
-func (l *Logger) Warn(a ...any) error   { return l.commonOutput(LevelWarn, a...) }
-func (l *Logger) Warnln(a ...any) error { return l.commonOutputln(LevelWarn, a...) }
+func (l *Logger) Warn(a ...any) error { return l.commonOutput(LevelWarn, a...) }
 func (l *Logger) Warnf(format string, a ...any) error {
 	return l.commonOutputf(LevelWarn, format, a...)
 }
-func (l *Logger) SmartWarn(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelWarn, a, cfgs...)
-}
 
-func (l *Logger) Keyword(a ...any) error   { return l.commonOutput(LevelKeyword, a...) }
-func (l *Logger) Keywordln(a ...any) error { return l.commonOutputln(LevelKeyword, a...) }
+func (l *Logger) Keyword(a ...any) error { return l.commonOutput(LevelKeyword, a...) }
 func (l *Logger) Keywordf(format string, a ...any) error {
 	return l.commonOutputf(LevelKeyword, format, a...)
 }
-func (l *Logger) SmartKeyword(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelKeyword, a, cfgs...)
-}
 
-func (l *Logger) Error(a ...any) error   { return l.commonOutput(LevelError, a...) }
-func (l *Logger) Errorln(a ...any) error { return l.commonOutputln(LevelError, a...) }
+func (l *Logger) Error(a ...any) error { return l.commonOutput(LevelError, a...) }
 func (l *Logger) Errorf(format string, a ...any) error {
 	return l.commonOutputf(LevelError, format, a...)
 }
-func (l *Logger) SmartError(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelError, a, cfgs...)
-}
 
-func (l *Logger) Panic(a ...any) error   { return l.commonOutput(LevelPanic, a...) }
-func (l *Logger) Panicln(a ...any) error { return l.commonOutputln(LevelPanic, a...) }
+func (l *Logger) Panic(a ...any) error { return l.commonOutput(LevelPanic, a...) }
 func (l *Logger) Panicf(format string, a ...any) error {
 	return l.commonOutputf(LevelPanic, format, a...)
-}
-func (l *Logger) SmartPanic(a any, cfgs ...config) error {
-	return l.commonSmartOutput(LevelPanic, a, cfgs...)
 }

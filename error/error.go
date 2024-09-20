@@ -1,22 +1,22 @@
-package stlerror
+package stlerr
 
 import (
-	"fmt"
-	"runtime"
+	"github.com/pkg/errors"
 )
 
-// Error 异常
-type Error interface {
+type StackTracer interface {
+	StackTrace() errors.StackTrace
+}
+
+type errorWithStack interface {
 	error
-	fmt.Stringer
-	Frame() runtime.Frame
-	Stacks() []runtime.Frame
+	StackTrace() errors.StackTrace
 	Unwrap() error
 }
 
 type _Error struct {
-	stacks []runtime.Frame
-	err    error
+	err   error
+	stack errors.StackTrace
 }
 
 func (e _Error) Error() string {
@@ -27,17 +27,10 @@ func (e _Error) String() string {
 	return e.err.Error()
 }
 
-// Stacks 获取栈帧信息
-func (e _Error) Stacks() []runtime.Frame {
-	return e.stacks
+func (e _Error) StackTrace() errors.StackTrace {
+	return e.stack
 }
 
-// Frame 获取栈帧信息
-func (e _Error) Frame() runtime.Frame {
-	return e.stacks[0]
-}
-
-// Unwrap 解除封装
 func (e _Error) Unwrap() error {
 	return e.err
 }
