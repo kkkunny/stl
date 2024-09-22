@@ -115,7 +115,7 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 	if cfg.displayStack {
 		var stacks errors.StackTrace
 		if stlslices.Empty(cfg.stacks) {
-			stacks = stlerr.CurrentStackTrace()[cfg.posSkip+1:]
+			stacks = stlos.GetErrorTrace(cfg.posSkip + 1)
 		} else {
 			stacks = cfg.stacks
 		}

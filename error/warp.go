@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
+
+	stlos "github.com/kkkunny/stl/os"
 )
 
 // 封装
@@ -19,7 +21,7 @@ func wrap(err error) errorWithStack {
 	}
 	return &_Error{
 		err:   err,
-		stack: CurrentStackTrace()[2:],
+		stack: stlos.GetErrorTrace(2),
 	}
 }
 
@@ -47,6 +49,6 @@ func ErrorWith3[T, E, F any](v1 T, v2 E, v3 F, err error) (T, E, F, error) {
 func Errorf(f string, a ...any) error {
 	return &_Error{
 		err:   fmt.Errorf(f, a...),
-		stack: CurrentStackTrace()[1:],
+		stack: stlos.GetErrorTrace(1),
 	}
 }
