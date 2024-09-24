@@ -2,27 +2,26 @@ package stlerr
 
 import (
 	"fmt"
+	"runtime"
 
-	"github.com/pkg/errors"
-
+	stlslices "github.com/kkkunny/stl/container/slices"
 	stlos "github.com/kkkunny/stl/os"
 )
 
 // 封装
-func wrap(err error) errorWithStack {
+func wrap(err error) error {
 	if err == nil {
 		return nil
 	}
-	if e, ok := errors.Cause(err).(StackTracer); ok {
-		return &_Error{
-			stack: e.StackTrace(),
-			err:   err,
-		}
+
+	stacks := GetErrorStackFrames(err)
+	if len(stacks) == 0 {
+		stacks = stlslices.Map(stlos.GetCallStacks(32, 2), func(_ int, f runtime.Frame) stlos.Frame {
+			return stlos.NewRuntimeFrame(f)
+		})
 	}
-	return &_Error{
-		err:   err,
-		stack: stlos.GetErrorTrace(2),
-	}
+
+	return WithStack(err, stacks)
 }
 
 // ErrorWrap 封装异常
@@ -47,8 +46,7 @@ func ErrorWith3[T, E, F any](v1 T, v2 E, v3 F, err error) (T, E, F, error) {
 
 // Errorf 新建异常
 func Errorf(f string, a ...any) error {
-	return &_Error{
-		err:   fmt.Errorf(f, a...),
-		stack: stlos.GetErrorTrace(1),
-	}
+	return WithStack(fmt.Errorf(f, a...), stlslices.Map(stlos.GetCallStacks(32, 1), func(_ int, f runtime.Frame) stlos.Frame {
+		return stlos.NewRuntimeFrame(f)
+	}))
 }

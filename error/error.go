@@ -1,22 +1,23 @@
 package stlerr
 
 import (
-	"github.com/pkg/errors"
+	stlos "github.com/kkkunny/stl/os"
 )
 
-type StackTracer interface {
-	StackTrace() errors.StackTrace
-}
-
-type errorWithStack interface {
-	error
-	StackTrace() errors.StackTrace
-	Unwrap() error
+type StackError interface {
+	StackFrames() []stlos.Frame
 }
 
 type _Error struct {
 	err   error
-	stack errors.StackTrace
+	stack []stlos.Frame
+}
+
+func WithStack(err error, frames []stlos.Frame) error {
+	return &_Error{
+		err:   err,
+		stack: frames,
+	}
 }
 
 func (e _Error) Error() string {
@@ -27,7 +28,7 @@ func (e _Error) String() string {
 	return e.err.Error()
 }
 
-func (e _Error) StackTrace() errors.StackTrace {
+func (e _Error) StackFrames() []stlos.Frame {
 	return e.stack
 }
 

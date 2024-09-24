@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/pkg/errors"
-
 	stlslices "github.com/kkkunny/stl/container/slices"
+	stlos "github.com/kkkunny/stl/os"
 )
 
 type config struct {
@@ -20,7 +19,7 @@ type config struct {
 	displayColor      bool
 	displayStack      bool
 	displayGroup      bool
-	stacks            errors.StackTrace
+	frames            []stlos.Frame
 }
 
 func spiltArgAndCfg(a []any, defaultCfg config) ([]any, config) {
@@ -109,9 +108,9 @@ func (cfg config) WithNoDisplayStack() config {
 	return cfg
 }
 
-// WithStacks 堆栈信息
-func (cfg config) WithStacks(stacks errors.StackTrace) config {
-	cfg.stacks = stacks
+// WithStackFrames 堆栈信息
+func (cfg config) WithStackFrames(frames []stlos.Frame) config {
+	cfg.frames = frames
 	return cfg
 }
 

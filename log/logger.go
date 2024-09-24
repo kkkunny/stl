@@ -6,11 +6,10 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"sync/atomic"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"golang.org/x/exp/slices"
 
@@ -113,17 +112,16 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 	}
 
 	if cfg.displayStack {
-		var stacks errors.StackTrace
-		if stlslices.Empty(cfg.stacks) {
-			stacks = stlos.GetErrorTrace(cfg.posSkip + 1)
+		var frames []stlos.Frame
+		if stlslices.Empty(cfg.frames) {
+			frames = stlslices.Map(stlos.GetCallStacks(32, cfg.posSkip+1), func(_ int, f runtime.Frame) stlos.Frame {
+				return stlos.NewRuntimeFrame(f)
+			})
 		} else {
-			stacks = cfg.stacks
+			frames = cfg.frames
 		}
-		stackStrs := stlslices.Map(stacks, func(_ int, f errors.Frame) string {
-			file := fmt.Sprintf("%+s", f)
-			file = file[strings.LastIndex(file, "\n\t")+1:]
-			line := fmt.Sprintf("%d", f)
-			return fmt.Sprintf("\t%s:%s", file, line)
+		stackStrs := stlslices.Map(frames, func(_ int, f stlos.Frame) string {
+			return fmt.Sprintf("\t%s:%d", f.File(), f.Line())
 		})
 		msg = fmt.Sprintf("%s\n%s", msg, strings.Join(stackStrs, "\n"))
 	}
@@ -161,8 +159,8 @@ func (l *Logger) commonOutput(level Level, a ...any) error {
 		}
 		if err, ok := a[0].(error); ok {
 			cfg = cfg.WithDisplayStack()
-			if err, ok := errors.Cause(err).(stlerr.StackTracer); ok {
-				cfg = cfg.WithStacks(err.StackTrace())
+			if frames := stlerr.GetErrorStackFrames(err); len(frames) != 0 {
+				cfg = cfg.WithStackFrames(frames)
 			}
 		}
 		return l.Output(fmt.Sprint(a[0]), cfg)
