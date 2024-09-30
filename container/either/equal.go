@@ -1,7 +1,7 @@
 package either
 
 import (
-	stlbasic "github.com/kkkunny/stl/basic"
+	stlbasic "github.com/kkkunny/stl/cmp"
 	"github.com/kkkunny/stl/container/pair"
 )
 

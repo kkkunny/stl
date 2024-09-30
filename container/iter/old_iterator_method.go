@@ -1,6 +1,8 @@
 package stliter
 
-import stlbasic "github.com/kkkunny/stl/basic"
+import (
+	stlbasic "github.com/kkkunny/stl/cmp"
+)
 
 // IteratorForeach 遍历
 func IteratorForeach[T any](iter Iterator[T], f func(v T) bool) {

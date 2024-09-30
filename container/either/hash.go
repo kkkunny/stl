@@ -1,6 +1,8 @@
 package either
 
-import stlbasic "github.com/kkkunny/stl/basic"
+import (
+	stlbasic "github.com/kkkunny/stl/hash"
+)
 
 func (self Either[L, R]) Hash() uint64 {
 	self.init()

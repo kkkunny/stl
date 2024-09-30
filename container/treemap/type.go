@@ -4,13 +4,14 @@ import (
 	"github.com/HuKeping/rbtree"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/cmp"
 	"github.com/kkkunny/stl/container/pair"
 )
 
 type entry[K, V any] pair.Pair[K, V]
 
 func (self entry[K, V]) Equal(dst entry[K, V]) bool {
-	return stlbasic.Equal(self.First, dst.First)
+	return stlcmp.Equal(self.First, dst.First)
 }
 
 func (self entry[K, V]) Order(dst entry[K, V]) int {

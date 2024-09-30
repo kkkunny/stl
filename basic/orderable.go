@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"math/cmplx"
 	"reflect"
+
+	"github.com/kkkunny/stl/cmp"
 )
 
 // Orderable 可排序的
 type Orderable[Self any] interface {
-	Comparable[Self]
+	stlcmp.Comparable[Self]
 	Order(dst Self) int
 }
 

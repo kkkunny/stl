@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	stlbasic "github.com/kkkunny/stl/basic"
+	stlbasic "github.com/kkkunny/stl/hash"
 )
 
 // FilePath 文件路径

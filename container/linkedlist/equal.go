@@ -1,6 +1,8 @@
 package linkedlist
 
-import stlbasic "github.com/kkkunny/stl/basic"
+import (
+	stlbasic "github.com/kkkunny/stl/cmp"
+)
 
 // Equal 比较相等
 func (self LinkedList[T]) Equal(dst LinkedList[T]) bool {

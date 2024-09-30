@@ -7,6 +7,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/cmp"
 )
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
@@ -81,7 +82,7 @@ func ContainAll[T any](slice []T, v ...T) bool {
 loop:
 	for _, vv := range v {
 		for _, e := range slice {
-			if stlbasic.Equal(e, vv) {
+			if stlcmp.Equal(e, vv) {
 				continue loop
 			}
 		}
@@ -93,7 +94,7 @@ loop:
 func ContainAny[T any](slice []T, v ...T) bool {
 	for _, vv := range v {
 		for _, e := range slice {
-			if stlbasic.Equal(e, vv) {
+			if stlcmp.Equal(e, vv) {
 				return true
 			}
 		}
@@ -129,7 +130,7 @@ func DiffTo[T any](l, r []T) (res []T) {
 loop:
 	for _, le := range l {
 		for _, re := range r {
-			if stlbasic.Equal(le, re) {
+			if stlcmp.Equal(le, re) {
 				continue loop
 			}
 		}
@@ -165,7 +166,7 @@ func RemoveRepeat[T any](slice []T) (res []T) {
 			continue
 		}
 		for j, je := range slice[i+1:] {
-			if !stlbasic.Equal(ie, je) {
+			if !stlcmp.Equal(ie, je) {
 				continue
 			}
 			conflictMap[i+j+1] = true
@@ -273,7 +274,7 @@ func Equal[T any](l, r []T) bool {
 	}
 	for i, lv := range l {
 		rv := r[i]
-		if !stlbasic.Equal(lv, rv) {
+		if !stlcmp.Equal(lv, rv) {
 			return false
 		}
 	}
