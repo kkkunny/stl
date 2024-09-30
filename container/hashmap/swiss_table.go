@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dolthub/swiss"
+	"github.com/kkkunny/swiss"
 
 	stlbasic "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"

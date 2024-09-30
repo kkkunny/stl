@@ -1,7 +1,7 @@
 package stlhash
 
 import (
-	"github.com/dolthub/maphash"
+	"github.com/kkkunny/maphash"
 )
 
 // Hashable 可哈希的

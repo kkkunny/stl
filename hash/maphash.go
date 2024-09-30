@@ -1,6 +1,6 @@
 package stlhash
 
-import "github.com/dolthub/maphash"
+import "github.com/kkkunny/maphash"
 
 func GetMapHashFunc[T comparable]() func(v T) uint64 {
 	hasher := maphash.NewHasher[T]()

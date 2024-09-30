@@ -1,12 +1,17 @@
 github.com/HuKeping/rbtree v1.0.1 h1:u14dQbBeFlc8PAnyyaKmY6BLnjgR2Eq/VWE2pB20hZc=
 github.com/HuKeping/rbtree v1.0.1/go.mod h1:2BStWbEvbyeaetkzQ+piwA6EGTmTgX7tal0dLYprQ0w=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/kkkunny/maphash v0.1.0/go.mod h1:gkg4Ch4CdCDu5h6PMriVLawB7koZ+5ijb9puGMV50a4=
 github.com/dolthub/swiss v0.2.1 h1:gs2osYs5SJkAaH5/ggVJqXQxRXtWshF6uE0lgR/Y3Gw=
 github.com/dolthub/swiss v0.2.1/go.mod h1:8AhKZZ1HK7g18j7v7k6c5cYIGEZJcPn0ARsai8cUrh0=
 github.com/gookit/color v1.5.4 h1:FZmqs7XOyGgCAxmWyPslpiok1k05wmY3SJTytgvYFs0=
 github.com/gookit/color v1.5.4/go.mod h1:pZJOeOS8DM43rXbp4AZo1n9zCU2qjpcRko0b6/QJi9w=
 github.com/kkkunny/maphash v0.0.0-20240930111612-2ef315120374 h1:4wO6tS/JgP9IF0TbMvy47edLwPUpHoO0AFHcBim/gKE=
 github.com/kkkunny/maphash v0.0.0-20240930111612-2ef315120374/go.mod h1:gkg4Ch4CdCDu5h6PMriVLawB7koZ+5ijb9puGMV50a4=
+github.com/kkkunny/maphash v0.0.0-20240930153939-d983313dfa42 h1:6Zl8gDsokI5PLm3QA2/U+bX9t3nGlUL0lKoeplLSgdI=
+github.com/kkkunny/maphash v0.0.0-20240930153939-d983313dfa42/go.mod h1:NZ7xS0DNYhr201BpEW4HK+aLpoCV47OBCq47C25LLtk=
+github.com/kkkunny/swiss v0.0.0-20240930154237-41a03804fd4f h1:niQ7knPaxPP3nsCTPJVAErDJDxkeNTfaClJ8VzeCxuE=
+github.com/kkkunny/swiss v0.0.0-20240930154237-41a03804fd4f/go.mod h1:jZCApXJmUhSPYnlTEcAZOXVruRxgCA3GgqMtjA1/QqE=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/mitchellh/go-homedir v1.1.0 h1:lukF9ziXFxDFPkA1vsr5zpc1XuPDn/wFntq5mG+4E0Y=
