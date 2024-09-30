@@ -14,5 +14,5 @@ func (_ TreeSet[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 }
 
 func (self TreeSet[T]) Iterator() stliter.Iterator[T] {
-	return treemap.TreeMap[T, struct{}](self).Keys().Iterator()
+	return stliter.NewSliceIterator(treemap.TreeMap[T, struct{}](self).Keys()...)
 }

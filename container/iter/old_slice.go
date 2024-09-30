@@ -5,7 +5,7 @@ type sliceIterator[T any] struct {
 	next int
 }
 
-func newSliceIterator[T any](src ...T) Iterator[T] {
+func NewSliceIterator[T any](src ...T) Iterator[T] {
 	return &sliceIterator[T]{
 		src:  &src,
 		next: 0,

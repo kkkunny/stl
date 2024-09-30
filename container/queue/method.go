@@ -1,35 +1,38 @@
 package queue
 
 import (
-	"github.com/kkkunny/stl/container/dynarray"
+	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
 // Push 入队
 func (self *Queue[T]) Push(v T, vs ...T) {
-	(*dynarray.DynArray[T])(self).PushBack(v, vs...)
+	*self = append(*self, v)
+	*self = append(*self, vs...)
 }
 
 // Pop 出队
 func (self *Queue[T]) Pop() T {
-	return (*dynarray.DynArray[T])(self).PopFront()
+	v := stlslices.First(*self)
+	*self = (*self)[1:]
+	return v
 }
 
 // Peek 头元素
 func (self Queue[T]) Peek() T {
-	return dynarray.DynArray[T](self).Front()
+	return stlslices.First(self)
 }
 
 // Clear 清空
 func (self *Queue[T]) Clear() {
-	(*dynarray.DynArray[T])(self).Clear()
+	*self = make([]T, 0)
 }
 
 // Empty 是否为空
 func (self Queue[T]) Empty() bool {
-	return dynarray.DynArray[T](self).Empty()
+	return stlslices.Empty(self)
 }
 
 // ToSlice 转成切片
 func (self Queue[T]) ToSlice() []T {
-	return dynarray.DynArray[T](self).ToSlice()
+	return self
 }

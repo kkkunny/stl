@@ -2,7 +2,6 @@ package hashmap
 
 import (
 	stlbasic "github.com/kkkunny/stl/basic"
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/pair"
 )
 
@@ -179,52 +178,49 @@ func (self HashMap[K, V]) Empty() bool {
 }
 
 // Keys 获取所有键
-func (self HashMap[K, V]) Keys() dynarray.DynArray[K] {
+func (self HashMap[K, V]) Keys() []K {
 	self.init()
 
-	keys := dynarray.NewDynArrayWithLength[K](self.Length())
+	keys := make([]K, self.Length())
 	var i uint
 	for _, bkt := range *self.buckets {
 		if !bkt.Used {
 			continue
 		}
-		keys.Set(i, bkt.Key)
+		keys[i] = bkt.Key
 		i++
 	}
-	keys.Shuffle()
 	return keys
 }
 
 // Values 获取所有值
-func (self HashMap[K, V]) Values() dynarray.DynArray[V] {
+func (self HashMap[K, V]) Values() []V {
 	self.init()
 
-	values := dynarray.NewDynArrayWithLength[V](self.Length())
+	values := make([]V, self.Length())
 	var i uint
 	for _, bkt := range *self.buckets {
 		if !bkt.Used {
 			continue
 		}
-		values.Set(i, bkt.Value)
+		values[i] = bkt.Value
 		i++
 	}
-	values.Shuffle()
 	return values
 }
 
 // KeyValues 获取所有键值对
-func (self HashMap[K, V]) KeyValues() dynarray.DynArray[pair.Pair[K, V]] {
+func (self HashMap[K, V]) KeyValues() []pair.Pair[K, V] {
 	self.init()
 
-	pairs := dynarray.NewDynArrayWithLength[pair.Pair[K, V]](self.Length())
+	pairs := make([]pair.Pair[K, V], self.Length())
 	var i uint
 	for _, bkt := range *self.buckets {
 		if !bkt.Used {
 			continue
 		}
-		pairs.Set(i, pair.NewPair(bkt.Key, bkt.Value))
+		pairs[i] = pair.NewPair(bkt.Key, bkt.Value)
 		i++
 	}
-	pairs.Shuffle()
 	return pairs
 }

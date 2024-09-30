@@ -2,14 +2,14 @@ package heap
 
 import (
 	stlbasic "github.com/kkkunny/stl/basic"
-	"github.com/kkkunny/stl/container/dynarray"
+	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
 func (self *Heap[T]) init() {
 	if self.data != nil {
 		return
 	}
-	self.data = stlbasic.Ptr(dynarray.NewDynArray[T]())
+	self.data = make([]T, 0)
 }
 
 // 获取左子节点下标
@@ -29,13 +29,13 @@ func (self *Heap[T]) getParentIndex(i uint) uint {
 
 // 比较并交换
 func (self *Heap[T]) compareAndExchange(pi, si uint) bool {
-	pv, sv := self.data.Get(pi), self.data.Get(si)
+	pv, sv := self.data[pi], self.data[si]
 	sort := stlbasic.Order(pv, sv)
 	if !((!self.reverse && sort > 0) || (self.reverse && sort < 0)) {
 		return false
 	}
-	self.data.Set(pi, sv)
-	self.data.Set(si, pv)
+	self.data[pi] = sv
+	self.data[si] = pv
 	return true
 }
 
@@ -52,21 +52,21 @@ func (self *Heap[T]) fix(i uint) {
 func (self *Heap[T]) Push(v T, vs ...T) {
 	self.init()
 	for _, v = range append([]T{v}, vs...) {
-		self.data.PushBack(v)
-		self.fix(self.data.Length() - 1)
+		self.data = append(self.data, v)
+		self.fix(uint(len(self.data)) - 1)
 	}
 }
 
 // Pop 出堆 O(log(N))
 func (self *Heap[T]) Pop() T {
 	self.init()
-	v := self.data.Front()
-	if self.data.Length() == 1 {
-		self.data.PopFront()
+	v := stlslices.First(self.data)
+	if len(self.data) == 1 {
+		self.data = self.data[1:]
 	} else {
-		self.data.Set(0, self.data.Back())
-		self.data.PopBack()
-		self.fix(self.data.Length() - 1)
+		self.data[0] = stlslices.Last(self.data)
+		self.data = self.data[:len(self.data)-1]
+		self.fix(uint(len(self.data)) - 1)
 	}
 	return v
 }
@@ -74,7 +74,7 @@ func (self *Heap[T]) Pop() T {
 // Peek 头节点 O(1)
 func (self Heap[T]) Peek() T {
 	self.init()
-	return self.data.Front()
+	return stlslices.First(self.data)
 }
 
 // Reverse 反转 O(log(N))
@@ -91,5 +91,5 @@ func (self *Heap[T]) Clear() {
 
 // Empty 是否为空
 func (self Heap[T]) Empty() bool {
-	return self.data == nil || self.data.Empty()
+	return self.data == nil || stlslices.Empty(self.data)
 }

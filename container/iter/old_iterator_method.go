@@ -20,7 +20,7 @@ func IteratorMap[V1, V2 any](from Iterator[V1], f func(V1) V2) Iterator[V2] {
 		i++
 		return true
 	})
-	return newSliceIterator(slice...)
+	return NewSliceIterator(slice...)
 }
 
 // IteratorFlatMap 扁平映射
@@ -30,7 +30,7 @@ func IteratorFlatMap[V1, V2 any](from Iterator[V1], f func(V1) []V2) Iterator[V2
 		slice = append(slice, f(v)...)
 		return true
 	})
-	return newSliceIterator(slice...)
+	return NewSliceIterator(slice...)
 }
 
 // IteratorAll 所有元素都符合要求
@@ -62,7 +62,7 @@ func IteratorFilter[T any](iter Iterator[T], f func(T) bool) Iterator[T] {
 		}
 		return true
 	})
-	return newSliceIterator[T](slice...)
+	return NewSliceIterator[T](slice...)
 }
 
 // IteratorContainAll 包含所有

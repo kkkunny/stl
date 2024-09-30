@@ -14,8 +14,7 @@ func (self LinkedHashMap[K, V]) MarshalJSON() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	for iter := self.KeyValues().Iterator(); iter.Next(); {
-		pair := iter.Value()
+	for i, pair := range self.KeyValues() {
 		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", pair.First))
 		if err != nil {
 			return nil, err
@@ -32,7 +31,7 @@ func (self LinkedHashMap[K, V]) MarshalJSON() ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		if iter.HasNext() {
+		if i < int(self.Length())-1 {
 			err = buf.WriteByte(',')
 			if err != nil {
 				return nil, err

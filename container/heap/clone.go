@@ -1,12 +1,14 @@
 package heap
 
-import stlbasic "github.com/kkkunny/stl/basic"
+import (
+	stlslices "github.com/kkkunny/stl/container/slices"
+)
 
 // Clone 克隆
 func (self Heap[T]) Clone() Heap[T] {
 	self.init()
 	return Heap[T]{
 		reverse: self.reverse,
-		data:    stlbasic.Ptr(self.data.Clone()),
+		data:    stlslices.Clone(self.data),
 	}
 }

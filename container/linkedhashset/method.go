@@ -1,7 +1,6 @@
 package linkedhashset
 
 import (
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/linkedhashmap"
 )
 
@@ -41,6 +40,6 @@ func (self LinkedHashSet[T]) Empty() bool {
 }
 
 // ToSlice 转成切片
-func (self LinkedHashSet[T]) ToSlice() dynarray.DynArray[T] {
+func (self LinkedHashSet[T]) ToSlice() []T {
 	return linkedhashmap.LinkedHashMap[T, struct{}](self).Keys()
 }

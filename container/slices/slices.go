@@ -265,3 +265,17 @@ func Repeat[T any](v T, n int) []T {
 	}
 	return slice
 }
+
+// Equal 比较两个切片里的元素是否相等
+func Equal[T any](l, r []T) bool {
+	if len(l) != len(r) {
+		return false
+	}
+	for i, lv := range l {
+		rv := r[i]
+		if !stlbasic.Equal(lv, rv) {
+			return false
+		}
+	}
+	return true
+}

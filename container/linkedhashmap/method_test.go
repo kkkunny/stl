@@ -3,7 +3,6 @@ package linkedhashmap
 import (
 	"testing"
 
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/pair"
 	stltest "github.com/kkkunny/stl/test"
 )
@@ -52,15 +51,15 @@ func TestLinkedHashMap_Empty(t *testing.T) {
 
 func TestLinkedHashMap_Keys(t *testing.T) {
 	hm := NewLinkedHashMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.Keys(), dynarray.NewDynArrayWith(1, 2))
+	stltest.AssertEq(t, hm.Keys(), []int{1, 2})
 }
 
 func TestLinkedHashMap_Values(t *testing.T) {
 	hm := NewLinkedHashMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.Values(), dynarray.NewDynArrayWith(1, 2))
+	stltest.AssertEq(t, hm.Values(), []int{1, 2})
 }
 
 func TestLinkedHashMap_KeyValues(t *testing.T) {
 	hm := NewLinkedHashMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.KeyValues(), dynarray.NewDynArrayWith(pair.NewPair(1, 1), pair.NewPair(2, 2)))
+	stltest.AssertEq(t, hm.KeyValues(), []pair.Pair[int, int]{pair.NewPair(1, 1), pair.NewPair(2, 2)})
 }

@@ -14,5 +14,5 @@ func (_ LinkedHashSet[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 }
 
 func (self LinkedHashSet[T]) Iterator() stliter.Iterator[T] {
-	return linkedhashmap.LinkedHashMap[T, struct{}](self).Keys().Iterator()
+	return stliter.NewSliceIterator(linkedhashmap.LinkedHashMap[T, struct{}](self).Keys()...)
 }

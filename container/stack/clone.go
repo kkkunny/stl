@@ -1,8 +1,10 @@
 package stack
 
-import "github.com/kkkunny/stl/container/dynarray"
+import (
+	stlslices "github.com/kkkunny/stl/container/slices"
+)
 
 // Clone 克隆
 func (self Stack[T]) Clone() Stack[T] {
-	return Stack[T](dynarray.DynArray[T](self).Clone())
+	return stlslices.Clone(self)
 }

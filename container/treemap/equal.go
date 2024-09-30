@@ -1,6 +1,8 @@
 package treemap
 
-import stlbasic "github.com/kkkunny/stl/basic"
+import (
+	stlslices "github.com/kkkunny/stl/container/slices"
+)
 
 // Equal 比较
 func (self TreeMap[K, V]) Equal(dst TreeMap[K, V]) bool {
@@ -13,11 +15,5 @@ func (self TreeMap[K, V]) Equal(dst TreeMap[K, V]) bool {
 		return false
 	}
 
-	var i uint
-	for selfIter, dstIter := self.KeyValues().Iterator(), dst.KeyValues().Iterator(); selfIter.Next() && dstIter.Next(); i++ {
-		if !stlbasic.Equal(selfIter.Value(), dstIter.Value()) {
-			return false
-		}
-	}
-	return true
+	return stlslices.Equal(self.KeyValues(), dst.KeyValues())
 }

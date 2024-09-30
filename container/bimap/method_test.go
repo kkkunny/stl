@@ -3,8 +3,8 @@ package bimap
 import (
 	"testing"
 
-	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
+	stlslices "github.com/kkkunny/stl/container/slices"
 	stltest "github.com/kkkunny/stl/test"
 )
 
@@ -54,20 +54,20 @@ func TestBiMap_Empty(t *testing.T) {
 func TestBiMap_Keys(t *testing.T) {
 	hm := NewBiMapWith[int, int](1, 1, 2, 2)
 	keys := hm.Keys()
-	stltest.AssertEq(t, stliter.Contain[int](keys, 1), true)
-	stltest.AssertEq(t, stliter.Contain[int](keys, 3), false)
+	stltest.AssertEq(t, stlslices.Contain[int](keys, 1), true)
+	stltest.AssertEq(t, stlslices.Contain[int](keys, 3), false)
 }
 
 func TestBiMap_Values(t *testing.T) {
 	hm := NewBiMapWith[int, int](1, 1, 2, 2)
 	values := hm.Values()
-	stltest.AssertEq(t, stliter.Contain[int](values, 1), true)
-	stltest.AssertEq(t, stliter.Contain[int](values, 3), false)
+	stltest.AssertEq(t, stlslices.Contain[int](values, 1), true)
+	stltest.AssertEq(t, stlslices.Contain[int](values, 3), false)
 }
 
 func TestBiMap_KeyValues(t *testing.T) {
 	hm := NewBiMapWith[int, int](1, 1, 2, 2)
 	pairs := hm.KeyValues()
-	stltest.AssertEq(t, stliter.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 1)), true)
-	stltest.AssertEq(t, stliter.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 2)), false)
+	stltest.AssertEq(t, stlslices.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 1)), true)
+	stltest.AssertEq(t, stlslices.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 2)), false)
 }

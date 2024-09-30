@@ -1,21 +1,15 @@
 package heap
 
-import (
-	stlbasic "github.com/kkkunny/stl/basic"
-	"github.com/kkkunny/stl/container/dynarray"
-)
-
 // Heap 堆
 type Heap[T any] struct {
 	reverse bool
-	data    *dynarray.DynArray[T]
+	data    []T
 }
 
 // NewMinHeap 新建小顶堆
 func NewMinHeap[T any]() Heap[T] {
 	return Heap[T]{
 		reverse: false,
-		data:    stlbasic.Ptr(dynarray.NewDynArray[T]()),
 	}
 }
 
@@ -23,7 +17,6 @@ func NewMinHeap[T any]() Heap[T] {
 func NewMaxHeap[T any]() Heap[T] {
 	return Heap[T]{
 		reverse: true,
-		data:    stlbasic.Ptr(dynarray.NewDynArray[T]()),
 	}
 }
 

@@ -7,18 +7,18 @@ import (
 	stltest "github.com/kkkunny/stl/test"
 )
 
-func TestQueue_PushAndPop(t *testing.T) {
+func TestStack_PushAndPop(t *testing.T) {
 	v := NewStackWith[int](1)
 	v.Push(2, 3)
-	stltest.AssertEq(t, v.Pop(), 1)
-	stltest.AssertEq(t, v.Pop(), 2)
 	stltest.AssertEq(t, v.Pop(), 3)
+	stltest.AssertEq(t, v.Pop(), 2)
+	stltest.AssertEq(t, v.Pop(), 1)
 }
 
-func TestQueue_Peek(t *testing.T) {
+func TestStack_Peek(t *testing.T) {
 	v := NewStackWith[int](1, 2, 3)
-	stltest.AssertEq(t, v.Peek(), 1)
-	stltest.AssertEq(t, v.Pop(), 1)
+	stltest.AssertEq(t, v.Peek(), 3)
+	stltest.AssertEq(t, v.Pop(), 3)
 	stltest.AssertEq(t, v.Peek(), 2)
 }
 

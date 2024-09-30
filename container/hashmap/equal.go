@@ -12,8 +12,7 @@ func (self HashMap[K, V]) Equal(dst HashMap[K, V]) bool {
 		return false
 	}
 
-	for iter := self.KeyValues().Iterator(); iter.Next(); {
-		pair := iter.Value()
+	for _, pair := range self.KeyValues() {
 		if !dst.ContainKey(pair.First) {
 			return false
 		} else if !stlbasic.Equal(pair.Second, dst.Get(pair.First)) {

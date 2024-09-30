@@ -1,7 +1,6 @@
 package linkedhashmap
 
 import (
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/hashmap"
 	"github.com/kkkunny/stl/container/pair"
 	"github.com/kkkunny/stl/list"
@@ -79,39 +78,39 @@ func (self LinkedHashMap[K, V]) Empty() bool {
 }
 
 // Keys 获取所有键
-func (self LinkedHashMap[K, V]) Keys() dynarray.DynArray[K] {
+func (self LinkedHashMap[K, V]) Keys() []K {
 	self.init()
 
-	keys := dynarray.NewDynArrayWithLength[K](self.Length())
+	keys := make([]K, self.Length())
 	var i uint
 	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
-		keys.Set(i, cursor.Value.First)
+		keys[i] = cursor.Value.First
 		i++
 	}
 	return keys
 }
 
 // Values 获取所有值
-func (self LinkedHashMap[K, V]) Values() dynarray.DynArray[V] {
+func (self LinkedHashMap[K, V]) Values() []V {
 	self.init()
 
-	values := dynarray.NewDynArrayWithLength[V](self.Length())
+	values := make([]V, self.Length())
 	var i uint
 	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
-		values.Set(i, cursor.Value.Second)
+		values[i] = cursor.Value.Second
 		i++
 	}
 	return values
 }
 
 // KeyValues 获取所有键值对
-func (self LinkedHashMap[K, V]) KeyValues() dynarray.DynArray[pair.Pair[K, V]] {
+func (self LinkedHashMap[K, V]) KeyValues() []pair.Pair[K, V] {
 	self.init()
 
-	pairs := dynarray.NewDynArrayWithLength[pair.Pair[K, V]](self.Length())
+	pairs := make([]pair.Pair[K, V], self.Length())
 	var i uint
 	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
-		pairs.Set(i, pair.NewPair(cursor.Value.First, cursor.Value.Second))
+		pairs[i] = pair.NewPair(cursor.Value.First, cursor.Value.Second)
 		i++
 	}
 	return pairs

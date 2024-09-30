@@ -1,7 +1,6 @@
 package hashset
 
 import (
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/hashmap"
 )
 
@@ -41,6 +40,6 @@ func (self HashSet[T]) Empty() bool {
 }
 
 // ToSlice 转成切片
-func (self HashSet[T]) ToSlice() dynarray.DynArray[T] {
+func (self HashSet[T]) ToSlice() []T {
 	return hashmap.HashMap[T, struct{}](self).Keys()
 }

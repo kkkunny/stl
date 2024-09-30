@@ -3,7 +3,6 @@ package treemap
 import (
 	"testing"
 
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/pair"
 	stltest "github.com/kkkunny/stl/test"
 )
@@ -52,17 +51,17 @@ func TestTreeMap_Empty(t *testing.T) {
 
 func TestTreeMap_Keys(t *testing.T) {
 	hm := NewTreeMapWith[int, int](2, 2, 3, 3, 1, 1)
-	stltest.AssertEq(t, hm.Keys(), dynarray.NewDynArrayWith(1, 2, 3))
+	stltest.AssertEq(t, hm.Keys(), []int{1, 2, 3})
 }
 
 func TestTreeMap_Values(t *testing.T) {
 	hm := NewTreeMapWith[int, int](2, 2, 3, 3, 1, 1)
-	stltest.AssertEq(t, hm.Values(), dynarray.NewDynArrayWith(1, 2, 3))
+	stltest.AssertEq(t, hm.Values(), []int{1, 2, 3})
 }
 
 func TestTreeMap_KeyValues(t *testing.T) {
 	hm := NewTreeMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.KeyValues(), dynarray.NewDynArrayWith(pair.NewPair(1, 1), pair.NewPair(2, 2)))
+	stltest.AssertEq(t, hm.KeyValues(), []pair.Pair[int, int]{pair.NewPair(1, 1), pair.NewPair(2, 2)})
 }
 
 func TestTreeMap_Front(t *testing.T) {

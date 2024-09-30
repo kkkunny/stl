@@ -1,8 +1,10 @@
 package queue
 
-import "github.com/kkkunny/stl/container/dynarray"
+import (
+	stlslices "github.com/kkkunny/stl/container/slices"
+)
 
 // Clone 克隆
 func (self Queue[T]) Clone() Queue[T] {
-	return Queue[T](dynarray.DynArray[T](self).Clone())
+	return stlslices.Clone(self)
 }

@@ -1,7 +1,6 @@
 package bimap
 
 import (
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/pair"
 )
 
@@ -65,16 +64,16 @@ func (self BiMap[K, V]) Empty() bool {
 }
 
 // Keys 获取所有键
-func (self BiMap[K, V]) Keys() dynarray.DynArray[K] {
+func (self BiMap[K, V]) Keys() []K {
 	return self.keys.Keys()
 }
 
 // Values 获取所有值
-func (self BiMap[K, V]) Values() dynarray.DynArray[V] {
+func (self BiMap[K, V]) Values() []V {
 	return self.values.Keys()
 }
 
 // KeyValues 获取所有键值对
-func (self BiMap[K, V]) KeyValues() dynarray.DynArray[pair.Pair[K, V]] {
+func (self BiMap[K, V]) KeyValues() []pair.Pair[K, V] {
 	return self.keys.KeyValues()
 }

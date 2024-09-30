@@ -16,5 +16,5 @@ func (_ LinkedHashMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, 
 
 func (self LinkedHashMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
 	self.init()
-	return self.KeyValues().Iterator()
+	return stliter.NewSliceIterator(self.KeyValues()...)
 }

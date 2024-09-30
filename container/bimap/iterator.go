@@ -15,5 +15,5 @@ func (_ BiMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any
 }
 
 func (self BiMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
-	return self.KeyValues().Iterator()
+	return stliter.NewSliceIterator(self.KeyValues()...)
 }

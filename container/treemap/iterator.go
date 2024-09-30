@@ -16,5 +16,5 @@ func (_ TreeMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) a
 
 func (self TreeMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
 	self.init()
-	return self.KeyValues().Iterator()
+	return stliter.NewSliceIterator(self.KeyValues()...)
 }

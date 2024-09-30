@@ -3,7 +3,6 @@ package treemap
 import (
 	"github.com/HuKeping/rbtree"
 
-	"github.com/kkkunny/stl/container/dynarray"
 	"github.com/kkkunny/stl/container/pair"
 )
 
@@ -79,14 +78,14 @@ func (self TreeMap[K, V]) Empty() bool {
 }
 
 // Keys 获取所有键
-func (self TreeMap[K, V]) Keys() dynarray.DynArray[K] {
+func (self TreeMap[K, V]) Keys() []K {
 	self.init()
 
-	keys := dynarray.NewDynArrayWithLength[K](self.Length())
+	keys := make([]K, self.Length())
 	if !self.Empty() {
 		var i uint
 		self.tree.Ascend(self.tree.Min(), func(item rbtree.Item) bool {
-			keys.Set(i, item.(*entry[K, V]).First)
+			keys[i] = item.(*entry[K, V]).First
 			i++
 			return true
 		})
@@ -95,14 +94,14 @@ func (self TreeMap[K, V]) Keys() dynarray.DynArray[K] {
 }
 
 // Values 获取所有值
-func (self TreeMap[K, V]) Values() dynarray.DynArray[V] {
+func (self TreeMap[K, V]) Values() []V {
 	self.init()
 
-	values := dynarray.NewDynArrayWithLength[V](self.Length())
+	values := make([]V, self.Length())
 	if !self.Empty() {
 		var i uint
 		self.tree.Ascend(self.tree.Min(), func(item rbtree.Item) bool {
-			values.Set(i, item.(*entry[K, V]).Second)
+			values[i] = item.(*entry[K, V]).Second
 			i++
 			return true
 		})
@@ -111,15 +110,15 @@ func (self TreeMap[K, V]) Values() dynarray.DynArray[V] {
 }
 
 // KeyValues 获取所有键值对
-func (self TreeMap[K, V]) KeyValues() dynarray.DynArray[pair.Pair[K, V]] {
+func (self TreeMap[K, V]) KeyValues() []pair.Pair[K, V] {
 	self.init()
 
-	pairs := dynarray.NewDynArrayWithLength[pair.Pair[K, V]](self.Length())
+	pairs := make([]pair.Pair[K, V], self.Length())
 	if !self.Empty() {
 		var i uint
 		self.tree.Ascend(self.tree.Min(), func(item rbtree.Item) bool {
 			node := item.(*entry[K, V])
-			pairs.Set(i, pair.NewPair(node.First, node.Second))
+			pairs[i] = pair.NewPair(node.First, node.Second)
 			i++
 			return true
 		})
