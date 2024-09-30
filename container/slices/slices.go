@@ -6,7 +6,6 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	stlbasic "github.com/kkkunny/stl/basic"
 	"github.com/kkkunny/stl/cmp"
 )
 
@@ -110,9 +109,9 @@ func Sort[T any](slice []T, reverse ...bool) []T {
 	slice = slices.Clone(slice)
 	slices.SortFunc(slice, func(l, r T) int {
 		if len(reverse) > 0 && reverse[0] {
-			return stlbasic.Order(r, l)
+			return stlcmp.Compare(r, l)
 		} else {
-			return stlbasic.Order(l, r)
+			return stlcmp.Compare(l, r)
 		}
 	})
 	return slice

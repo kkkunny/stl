@@ -65,7 +65,7 @@ func (self Bits) Hash() uint64 {
 	return v
 }
 
-func (self Bits) Order(dst Bits) int {
+func (self Bits) Compare(dst Bits) int {
 	var selfCpy, dstCpy Bits
 	if len(self) < len(dst) {
 		selfCpy, dstCpy = make([]Bit, len(dst)), dst
@@ -78,7 +78,7 @@ func (self Bits) Order(dst Bits) int {
 	}
 
 	for i := 0; i < len(selfCpy); i++ {
-		if order := selfCpy[i].Order(dstCpy[i]); order > 0 {
+		if order := selfCpy[i].Compare(dstCpy[i]); order > 0 {
 			return 1
 		} else if order < 0 {
 			return -1

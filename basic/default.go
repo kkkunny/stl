@@ -14,8 +14,3 @@ func Default[T any]() T {
 		return self
 	}
 }
-
-// New 获取默认值指针
-func New[T any]() *T {
-	return Ptr(Default[T]())
-}

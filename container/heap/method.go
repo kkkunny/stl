@@ -1,7 +1,7 @@
 package heap
 
 import (
-	stlbasic "github.com/kkkunny/stl/basic"
+	stlbasic "github.com/kkkunny/stl/cmp"
 	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
@@ -30,7 +30,7 @@ func (self *Heap[T]) getParentIndex(i uint) uint {
 // 比较并交换
 func (self *Heap[T]) compareAndExchange(pi, si uint) bool {
 	pv, sv := self.data[pi], self.data[si]
-	sort := stlbasic.Order(pv, sv)
+	sort := stlbasic.Compare(pv, sv)
 	if !((!self.reverse && sort > 0) || (self.reverse && sort < 0)) {
 		return false
 	}

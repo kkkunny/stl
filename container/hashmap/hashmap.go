@@ -14,7 +14,7 @@ type HashMap[K, V any] interface {
 	stlbasic.Defaultable[HashMap[K, V]]
 	stlbasic.Capacityable
 	stlbasic.Cloneable[HashMap[K, V]]
-	stlcmp.Comparable[HashMap[K, V]]
+	stlcmp.Equalable[HashMap[K, V]]
 	stliter.IteratorContainer[pair.Pair[K, V]]
 	json.Marshaler
 	stlbasic.Lengthable

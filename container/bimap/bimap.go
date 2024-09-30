@@ -14,7 +14,7 @@ type BiMap[T, E any] interface {
 	stlbasic.Defaultable[BiMap[T, E]]
 	stlbasic.Capacityable
 	stlbasic.Cloneable[BiMap[T, E]]
-	stlcmp.Comparable[BiMap[T, E]]
+	stlcmp.Equalable[BiMap[T, E]]
 	stliter.IteratorContainer[pair.Pair[T, E]]
 	stlbasic.Lengthable
 	Set(k T, v E) (T, E)

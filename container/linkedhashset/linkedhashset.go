@@ -12,7 +12,7 @@ import (
 type LinkedHashSet[T any] interface {
 	stlbasic.Defaultable[LinkedHashSet[T]]
 	stlbasic.Cloneable[LinkedHashSet[T]]
-	stlcmp.Comparable[LinkedHashSet[T]]
+	stlcmp.Equalable[LinkedHashSet[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable
 	Add(v T) bool

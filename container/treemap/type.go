@@ -3,7 +3,6 @@ package treemap
 import (
 	"github.com/HuKeping/rbtree"
 
-	stlbasic "github.com/kkkunny/stl/basic"
 	"github.com/kkkunny/stl/cmp"
 	"github.com/kkkunny/stl/container/pair"
 )
@@ -14,12 +13,12 @@ func (self entry[K, V]) Equal(dst entry[K, V]) bool {
 	return stlcmp.Equal(self.First, dst.First)
 }
 
-func (self entry[K, V]) Order(dst entry[K, V]) int {
-	return stlbasic.Order(self.First, dst.First)
+func (self entry[K, V]) Compare(dst entry[K, V]) int {
+	return stlcmp.Compare(self.First, dst.First)
 }
 
 func (self *entry[K, V]) Less(dst rbtree.Item) bool {
-	return self.Order(*dst.(*entry[K, V])) < 0
+	return self.Compare(*dst.(*entry[K, V])) < 0
 }
 
 // TreeMap 有序表

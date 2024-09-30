@@ -20,3 +20,13 @@ func DerefPtrOr[T any](p *T, defaultVal ...T) T {
 	}
 	return stlslices.Last(defaultVal)
 }
+
+// Ptr 获取值指针
+func Ptr[T any](v T) *T {
+	return &v
+}
+
+// New 获取默认值指针
+func New[T any]() *T {
+	return Ptr(stlbasic.Default[T]())
+}

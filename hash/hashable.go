@@ -10,8 +10,12 @@ type Hashable interface {
 }
 
 // GetHashFunc 获取哈希函数，若没有会panic
-func GetHashFunc[T any]() func(v T) uint64 {
+func GetHashFunc[T any](vs ...T) func(v T) uint64 {
 	var v T
+	if len(vs) > 0 {
+		v = vs[0]
+	}
+
 	switch any(v).(type) {
 	case Hashable:
 		return func(vv T) uint64 {
@@ -27,5 +31,5 @@ func GetHashFunc[T any]() func(v T) uint64 {
 
 // Hash 获取哈希，若没有会panic
 func Hash[T any](v T) uint64 {
-	return GetHashFunc[T]()(v)
+	return GetHashFunc[T](v)(v)
 }

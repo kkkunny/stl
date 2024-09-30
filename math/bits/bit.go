@@ -33,7 +33,7 @@ func (self Bit) Hash() uint64 {
 	}
 }
 
-func (self Bit) Order(dst Bit) int {
+func (self Bit) Compare(dst Bit) int {
 	if self.Hash() < dst.Hash() {
 		return -1
 	} else if self.Hash() == dst.Hash() {

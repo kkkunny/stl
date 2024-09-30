@@ -13,7 +13,7 @@ func (self node[T]) Equal(dst node[T]) bool {
 	return self.priority == dst.priority
 }
 
-func (self node[T]) Order(dst node[T]) int {
+func (self node[T]) Compare(dst node[T]) int {
 	if self.priority < dst.priority {
 		return 1
 	} else if self.priority == dst.priority {
