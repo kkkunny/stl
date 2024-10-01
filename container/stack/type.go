@@ -12,7 +12,3 @@ func NewStack[T any]() Stack[T] {
 func NewStackWith[T any](vs ...T) Stack[T] {
 	return vs
 }
-
-func (self Stack[T]) Default() Stack[T] {
-	return NewStack[T]()
-}

@@ -34,10 +34,6 @@ func _NewAnyTreeMapWith[K, V any](vs ...any) TreeMap[K, V] {
 	return self
 }
 
-func (self *_AnyTreeMap[K, V]) Default() TreeMap[K, V] {
-	return _NewAnyTreeMap[K, V]()
-}
-
 // Clone 克隆
 func (self *_AnyTreeMap[K, V]) Clone() TreeMap[K, V] {
 	tm := _NewAnyTreeMap[K, V]()

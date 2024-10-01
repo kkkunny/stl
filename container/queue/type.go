@@ -12,7 +12,3 @@ func NewQueue[T any]() Queue[T] {
 func NewQueueWith[T any](vs ...T) Queue[T] {
 	return vs
 }
-
-func (self Queue[T]) Default() Queue[T] {
-	return NewQueue[T]()
-}

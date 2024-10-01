@@ -40,10 +40,6 @@ func _NewSwissTableWith[K comparable, V any](vs ...any) HashMap[K, V] {
 	return self
 }
 
-func (self *_SwissTable[K, V]) Default() HashMap[K, V] {
-	return _NewSwissTable[K, V]()
-}
-
 func (self *_SwissTable[K, V]) Capacity() uint {
 	return uint(self.data.Capacity() + self.data.Count())
 }

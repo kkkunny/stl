@@ -22,7 +22,3 @@ func NewLinkedListWith[T any](vs ...T) LinkedList[T] {
 	}
 	return self
 }
-
-func (self LinkedList[T]) Default() LinkedList[T] {
-	return NewLinkedList[T]()
-}

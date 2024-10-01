@@ -40,10 +40,6 @@ func _NewAnyLinkedHashMapWith[K, V any](vs ...any) LinkedHashMap[K, V] {
 	return self
 }
 
-func (self *_AnyLinkedHashMap[K, V]) Default() LinkedHashMap[K, V] {
-	return _NewAnyLinkedHashMap[K, V]()
-}
-
 func (self *_AnyLinkedHashMap[K, V]) Capacity() uint {
 	return self.kvs.Capacity()
 }

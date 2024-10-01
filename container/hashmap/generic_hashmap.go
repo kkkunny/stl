@@ -37,10 +37,6 @@ func _NewGenericHashMapWith[K, V any](vs ...any) HashMap[K, V] {
 	return self
 }
 
-func (self *_GenericHashMap[K, V]) Default() HashMap[K, V] {
-	return _NewGenericHashMap[K, V]()
-}
-
 func (self *_GenericHashMap[K, V]) Capacity() uint {
 	return uint(self.data.Size())
 }

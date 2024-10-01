@@ -3,6 +3,7 @@ package optional
 import (
 	stlbasic "github.com/kkkunny/stl/basic"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 type Optional[T any] struct {
@@ -27,7 +28,7 @@ func (op Optional[T]) IsNone() bool {
 
 func (op Optional[T]) Value() (T, bool) {
 	if op.IsNone() {
-		return stlbasic.Default[T](), false
+		return stlval.Default[T](), false
 	}
 	return *op.data, true
 }

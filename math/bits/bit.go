@@ -46,7 +46,3 @@ func (self Bit) Compare(dst Bit) int {
 func (self Bit) Not() Bit {
 	return !self
 }
-
-func (self Bit) Default() Bit {
-	return false
-}

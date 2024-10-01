@@ -24,10 +24,6 @@ func _NewAnyTreeSetWith[T any](vs ...T) TreeSet[T] {
 	return self
 }
 
-func (self *_AnyTreeSet[T]) Default() TreeSet[T] {
-	return _NewAnyTreeSet[T]()
-}
-
 func (self *_AnyTreeSet[T]) Clone() TreeSet[T] {
 	return &_AnyTreeSet[T]{data: self.data.Clone()}
 }

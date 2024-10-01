@@ -24,10 +24,6 @@ func GetWorkDirectory() (FilePath, error) {
 	return FilePath(fp), nil
 }
 
-func (self FilePath) Default() FilePath {
-	return ""
-}
-
 func (self FilePath) String() string {
 	return string(self)
 }

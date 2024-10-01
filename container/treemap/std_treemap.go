@@ -28,10 +28,6 @@ func _NewStdTreeMapWith[K cmp.Ordered, V any](vs ...any) TreeMap[K, V] {
 	return self
 }
 
-func (self *_StdTreeMap[K, V]) Default() TreeMap[K, V] {
-	return _NewStdTreeMap[K, V]()
-}
-
 // Clone 克隆
 func (self *_StdTreeMap[K, V]) Clone() TreeMap[K, V] {
 	tm := _NewStdTreeMap[K, V]()

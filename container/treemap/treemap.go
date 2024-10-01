@@ -11,7 +11,6 @@ import (
 )
 
 type TreeMap[K, V any] interface {
-	stlbasic.Defaultable[TreeMap[K, V]]
 	stlbasic.Cloneable[TreeMap[K, V]]
 	stlcmp.Equalable[TreeMap[K, V]]
 	stliter.IteratorContainer[pair.Pair[K, V]]

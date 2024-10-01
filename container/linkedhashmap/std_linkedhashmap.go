@@ -40,10 +40,6 @@ func _NewStdLinkedHashMapWith[K comparable, V any](vs ...any) LinkedHashMap[K, V
 	return self
 }
 
-func (self *_StdLinkedHashMap[K, V]) Default() LinkedHashMap[K, V] {
-	return _NewStdLinkedHashMap[K, V]()
-}
-
 func (self *_StdLinkedHashMap[K, V]) Capacity() uint {
 	return self.kvs.Capacity()
 }

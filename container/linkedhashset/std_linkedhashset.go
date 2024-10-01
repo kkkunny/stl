@@ -28,10 +28,6 @@ func _NewStdLinkedHashSetWith[T comparable](vs ...T) LinkedHashSet[T] {
 	return self
 }
 
-func (self *_StdLinkedHashSet[T]) Default() LinkedHashSet[T] {
-	return _NewStdLinkedHashSet[T]()
-}
-
 func (self *_StdLinkedHashSet[T]) Clone() LinkedHashSet[T] {
 	return &_StdLinkedHashSet[T]{data: self.data.Clone()}
 }

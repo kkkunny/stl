@@ -28,10 +28,6 @@ func _NewStdHashSetWith[T comparable](vs ...T) HashSet[T] {
 	return self
 }
 
-func (self *_StdHashSet[T]) Default() HashSet[T] {
-	return _NewStdHashSet[T]()
-}
-
 func (self *_StdHashSet[T]) Clone() HashSet[T] {
 	return &_StdHashSet[T]{data: self.data.Clone()}
 }

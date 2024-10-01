@@ -36,10 +36,6 @@ func _NewAnyBiMapWith[T, E any](vs ...any) BiMap[T, E] {
 	return self
 }
 
-func (self *_AnyBiMap[T, E]) Default() BiMap[T, E] {
-	return _NewAnyBiMap[T, E]()
-}
-
 func (self *_AnyBiMap[T, E]) Capacity() uint {
 	return self.keys.Capacity()
 }

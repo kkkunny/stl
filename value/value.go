@@ -1,13 +1,17 @@
 package stlval
 
 import (
-	stlbasic "github.com/kkkunny/stl/basic"
 	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
+func Default[T any]() T {
+	var v T
+	return v
+}
+
 // ValueOr 获取值，如果为零值则返回defaultVal
 func ValueOr[T comparable](v T, defaultVal ...T) T {
-	if v != stlbasic.Default[T]() {
+	if v != Default[T]() {
 		return v
 	}
 	return stlslices.Last(defaultVal)
@@ -28,5 +32,5 @@ func Ptr[T any](v T) *T {
 
 // New 获取默认值指针
 func New[T any]() *T {
-	return Ptr(stlbasic.Default[T]())
+	return Ptr(Default[T]())
 }

@@ -28,10 +28,6 @@ func _NewAnyLinkedHashSetWith[T any](vs ...T) LinkedHashSet[T] {
 	return self
 }
 
-func (self *_AnyLinkedHashSet[T]) Default() LinkedHashSet[T] {
-	return _NewAnyLinkedHashSet[T]()
-}
-
 func (self *_AnyLinkedHashSet[T]) Clone() LinkedHashSet[T] {
 	return &_AnyLinkedHashSet[T]{data: self.data.Clone()}
 }

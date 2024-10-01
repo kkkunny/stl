@@ -99,7 +99,3 @@ func (self Size) Equal(dst Size) bool {
 func (self Size) Hash() uint64 {
 	return uint64(self)
 }
-
-func (self Size) Default() Size {
-	return 0
-}

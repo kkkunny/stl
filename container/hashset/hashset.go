@@ -10,7 +10,6 @@ import (
 )
 
 type HashSet[T any] interface {
-	stlbasic.Defaultable[HashSet[T]]
 	stlbasic.Cloneable[HashSet[T]]
 	stlcmp.Equalable[HashSet[T]]
 	stliter.IteratorContainer[T]

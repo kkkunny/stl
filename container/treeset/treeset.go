@@ -11,7 +11,6 @@ import (
 )
 
 type TreeSet[T any] interface {
-	stlbasic.Defaultable[TreeSet[T]]
 	stlbasic.Cloneable[TreeSet[T]]
 	stlcmp.Equalable[TreeSet[T]]
 	stliter.IteratorContainer[T]

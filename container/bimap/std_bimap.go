@@ -36,10 +36,6 @@ func _NewStdBiMapWith[T, E comparable](vs ...any) BiMap[T, E] {
 	return self
 }
 
-func (self *_StdBiMap[T, E]) Default() BiMap[T, E] {
-	return _NewStdBiMap[T, E]()
-}
-
 func (self *_StdBiMap[T, E]) Capacity() uint {
 	return self.keys.Capacity()
 }

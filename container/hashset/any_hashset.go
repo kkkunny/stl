@@ -28,10 +28,6 @@ func _NewAnyHashSetWith[T any](vs ...T) HashSet[T] {
 	return self
 }
 
-func (self *_AnyHashSet[T]) Default() HashSet[T] {
-	return _NewAnyHashSet[T]()
-}
-
 func (self *_AnyHashSet[T]) Clone() HashSet[T] {
 	return &_AnyHashSet[T]{data: self.data.Clone()}
 }
