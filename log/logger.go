@@ -11,10 +11,9 @@ import (
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/exp/slices"
-
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stlerr "github.com/kkkunny/stl/error"
+	"github.com/kkkunny/stl/internal/slices"
 	stlos "github.com/kkkunny/stl/os"
 )
 

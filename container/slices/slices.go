@@ -4,9 +4,8 @@ import (
 	"math/rand"
 	"time"
 
-	"golang.org/x/exp/slices"
-
 	"github.com/kkkunny/stl/cmp"
+	"github.com/kkkunny/stl/internal/slices"
 )
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
