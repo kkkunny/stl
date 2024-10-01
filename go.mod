@@ -10,6 +10,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/sakeven/RbTree v1.1.1
 	github.com/zyedidia/generic v1.2.1
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
 )
