@@ -25,6 +25,14 @@ type Queue[T any] interface {
 	getData() []T
 }
 
+func New[T any](vs ...T) Queue[T] {
+	if len(vs) == 0 {
+		return _NewQueue[T]()
+	} else {
+		return _NewQueueWith[T](vs...)
+	}
+}
+
 type _Queue[T any] struct {
 	data []T
 }
