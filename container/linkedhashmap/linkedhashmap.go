@@ -12,6 +12,7 @@ import (
 )
 
 type LinkedHashMap[K, V any] interface {
+	linkedhashmapIter[K, V]
 	stlbasic.Capacityable
 	stlbasic.Cloneable[LinkedHashMap[K, V]]
 	stlcmp.Equalable[LinkedHashMap[K, V]]

@@ -11,6 +11,7 @@ import (
 )
 
 type HashMap[K, V any] interface {
+	hashmapIter2[K, V]
 	stlbasic.Capacityable
 	stlbasic.Cloneable[HashMap[K, V]]
 	stlcmp.Equalable[HashMap[K, V]]

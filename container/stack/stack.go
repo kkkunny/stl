@@ -12,6 +12,7 @@ import (
 )
 
 type Stack[T any] interface {
+	stackIter[T]
 	stlbasic.Cloneable[Stack[T]]
 	stlcmp.Equalable[Stack[T]]
 	stliter.IteratorContainer[T]

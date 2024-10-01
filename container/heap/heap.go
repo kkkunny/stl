@@ -9,6 +9,7 @@ import (
 )
 
 type Heap[T any] interface {
+	heapIter[T]
 	stlbasic.Cloneable[Heap[T]]
 	stlcmp.Equalable[Heap[T]]
 	stliter.IteratorContainer[T]

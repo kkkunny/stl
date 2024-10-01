@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"unsafe"
 
 	hm "github.com/zyedidia/generic/hashmap"
 
@@ -16,6 +17,50 @@ import (
 )
 
 const initGenericHashMapCapacity = 10
+
+type genericHashMapDataEntry[K, V any] struct {
+	key    K
+	filled bool
+	value  V
+}
+
+type genericHashMapDataOps[T any] struct {
+	equals func(a, b T) bool
+	hash   func(t T) uint64
+}
+
+type genericHashMapData[K, V any] struct {
+	entries  []genericHashMapDataEntry[K, V]
+	capacity uint64
+	length   uint64
+	readonly bool
+
+	ops genericHashMapDataOps[K]
+}
+
+func toGenericHashMapData[K, V any](h *hm.Map[K, V]) *genericHashMapData[K, V] {
+	if h == nil {
+		return nil
+	}
+	return (*genericHashMapData[K, V])(unsafe.Pointer(h))
+}
+
+func (self *genericHashMapData[K, V]) toData() *hm.Map[K, V] {
+	if self == nil {
+		return nil
+	}
+	return (*hm.Map[K, V])(unsafe.Pointer(self))
+}
+
+func (self *genericHashMapData[K, V]) Each(fn func(k K, v V) bool) {
+	for _, ent := range self.entries {
+		if ent.filled {
+			if !fn(ent.key, ent.value) {
+				return
+			}
+		}
+	}
+}
 
 type _GenericHashMap[K, V any] struct {
 	data *hm.Map[K, V]
@@ -38,7 +83,8 @@ func _NewGenericHashMapWith[K, V any](vs ...any) HashMap[K, V] {
 }
 
 func (self *_GenericHashMap[K, V]) Capacity() uint {
-	return uint(self.data.Size())
+	h := toGenericHashMapData(self.data)
+	return uint(h.capacity)
 }
 
 func (self *_GenericHashMap[K, V]) Clone() HashMap[K, V] {

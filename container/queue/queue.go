@@ -11,6 +11,7 @@ import (
 )
 
 type Queue[T any] interface {
+	queueIter[T]
 	stlbasic.Cloneable[Queue[T]]
 	stlcmp.Equalable[Queue[T]]
 	stliter.IteratorContainer[T]

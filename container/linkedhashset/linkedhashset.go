@@ -10,6 +10,7 @@ import (
 )
 
 type LinkedHashSet[T any] interface {
+	linkedhashsetIter[T]
 	stlbasic.Cloneable[LinkedHashSet[T]]
 	stlcmp.Equalable[LinkedHashSet[T]]
 	stliter.IteratorContainer[T]

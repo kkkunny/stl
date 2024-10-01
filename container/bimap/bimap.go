@@ -11,6 +11,7 @@ import (
 )
 
 type BiMap[T, E any] interface {
+	bimapIter[T, E]
 	stlbasic.Capacityable
 	stlbasic.Cloneable[BiMap[T, E]]
 	stlcmp.Equalable[BiMap[T, E]]

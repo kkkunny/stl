@@ -11,6 +11,7 @@ import (
 )
 
 type PQueue[T any] interface {
+	pqueueIter[T]
 	stlbasic.Cloneable[PQueue[T]]
 	stlcmp.Equalable[PQueue[T]]
 	stliter.IteratorContainer[pair.Pair[uint64, T]]
