@@ -44,7 +44,7 @@ func (self *_SwissTable[K, V]) Capacity() uint {
 	return uint(self.data.Capacity() + self.data.Count())
 }
 
-func (self *_SwissTable[K, V]) Clone() HashMap[K, V] {
+func (self *_SwissTable[K, V]) Clone() any {
 	newMap := _NewSwissTableWithCapacity[K, V](self.Capacity())
 	self.data.Iter(func(k K, v V) bool {
 		newMap.Set(k, v)
@@ -53,14 +53,25 @@ func (self *_SwissTable[K, V]) Clone() HashMap[K, V] {
 	return newMap
 }
 
-func (self *_SwissTable[K, V]) Equal(dst HashMap[K, V]) (eq bool) {
+func (self *_SwissTable[K, V]) Equal(dstObj any) (eq bool) {
+	if dstObj == nil && self == nil {
+		return true
+	} else if dstObj == nil {
+		return false
+	}
+
+	dst, ok := dstObj.(HashMap[K, V])
+	if !ok {
+		return false
+	}
+
 	if self.Length() != dst.Length() {
 		return false
 	}
 
 	eq = true
 	self.data.Iter(func(k K, sv V) bool {
-		if !dst.ContainKey(k) || !stlbasic.Equal(sv, dst.Get(k)) {
+		if !dst.Contain(k) || !stlbasic.Equal(sv, dst.Get(k)) {
 			eq = false
 			return true
 		}
@@ -146,8 +157,8 @@ func (self *_SwissTable[K, V]) Get(k K, defaultValue ...V) V {
 	return v
 }
 
-// ContainKey 是否包含键
-func (self *_SwissTable[K, V]) ContainKey(k K) bool {
+// Contain 是否包含键
+func (self *_SwissTable[K, V]) Contain(k K) bool {
 	return self.data.Has(k)
 }
 

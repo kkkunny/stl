@@ -1,34 +1,13 @@
 package linkedhashmap
 
 import (
-	"encoding/json"
-	"fmt"
-
-	stlbasic "github.com/kkkunny/stl/basic"
-	stlcmp "github.com/kkkunny/stl/cmp"
-	stliter "github.com/kkkunny/stl/container/iter"
+	"github.com/kkkunny/stl/container/hashmap"
 	"github.com/kkkunny/stl/container/pair"
 	"github.com/kkkunny/stl/list"
 )
 
 type LinkedHashMap[K, V any] interface {
-	linkedhashmapIter[K, V]
-	stlbasic.Capacityable
-	stlbasic.Cloneable[LinkedHashMap[K, V]]
-	stlcmp.Equalable[LinkedHashMap[K, V]]
-	stliter.IteratorContainer[pair.Pair[K, V]]
-	json.Marshaler
-	stlbasic.Lengthable
-	Set(k K, v V) V
-	Get(k K, defaultValue ...V) V
-	ContainKey(k K) bool
-	Remove(k K, defaultValue ...V) V
-	Clear()
-	Empty() bool
-	Keys() []K
-	Values() []V
-	KeyValues() []pair.Pair[K, V]
-	fmt.Stringer
+	hashmap.HashMap[K, V]
 	getList() *list.List[pair.Pair[K, V]]
 }
 

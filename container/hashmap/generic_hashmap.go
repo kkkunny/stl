@@ -16,7 +16,7 @@ import (
 	stlhash "github.com/kkkunny/stl/hash"
 )
 
-const initGenericHashMapCapacity = 10
+const initGenericHashMapCapacity = 8
 
 type genericHashMapDataEntry[K, V any] struct {
 	key    K
@@ -87,17 +87,28 @@ func (self *_GenericHashMap[K, V]) Capacity() uint {
 	return uint(h.capacity)
 }
 
-func (self *_GenericHashMap[K, V]) Clone() HashMap[K, V] {
+func (self *_GenericHashMap[K, V]) Clone() any {
 	return &_GenericHashMap[K, V]{data: self.data.Copy()}
 }
 
-func (self *_GenericHashMap[K, V]) Equal(dst HashMap[K, V]) (eq bool) {
+func (self *_GenericHashMap[K, V]) Equal(dstObj any) (eq bool) {
+	if dstObj == nil && self == nil {
+		return true
+	} else if dstObj == nil {
+		return false
+	}
+
+	dst, ok := dstObj.(HashMap[K, V])
+	if !ok {
+		return false
+	}
+
 	if self.Length() != dst.Length() {
 		return false
 	}
 
 	for _, p := range self.KeyValues() {
-		if !dst.ContainKey(p.First) || !stlcmp.Equal(p.Second, dst.Get(p.First)) {
+		if !dst.Contain(p.First) || !stlcmp.Equal(p.Second, dst.Get(p.First)) {
 			return false
 		}
 	}
@@ -174,8 +185,8 @@ func (self *_GenericHashMap[K, V]) Get(k K, defaultValue ...V) V {
 	return v
 }
 
-// ContainKey 是否包含键
-func (self *_GenericHashMap[K, V]) ContainKey(k K) bool {
+// Contain 是否包含键
+func (self *_GenericHashMap[K, V]) Contain(k K) bool {
 	_, ok := self.data.Get(k)
 	return ok
 }

@@ -1,6 +1,8 @@
 package stlval
 
 import (
+	"unsafe"
+
 	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
@@ -33,4 +35,31 @@ func Ptr[T any](v T) *T {
 // New 获取默认值指针
 func New[T any]() *T {
 	return Ptr(Default[T]())
+}
+
+// Is 类型是否是
+func Is[T any](v any) bool {
+	_, ok := v.(T)
+	return ok
+}
+
+// As 强制转换
+func As[From, To any](v From) To {
+	return *(*To)(unsafe.Pointer(&v))
+}
+
+// Ternary 三目运算
+func Ternary[T any](cond bool, t, f T) T {
+	if cond {
+		return t
+	}
+	return f
+}
+
+// TernaryAction 三目运算行为
+func TernaryAction[T any](cond bool, t, f func() T) T {
+	if cond {
+		return t()
+	}
+	return f()
 }

@@ -2,32 +2,15 @@ package hashmap
 
 import (
 	"encoding/json"
-	"fmt"
 
 	stlbasic "github.com/kkkunny/stl/basic"
-	"github.com/kkkunny/stl/cmp"
-	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 )
 
 type HashMap[K, V any] interface {
-	hashmapIter2[K, V]
+	stlmaps.MapObj[K, V]
 	stlbasic.Capacityable
-	stlbasic.Cloneable[HashMap[K, V]]
-	stlcmp.Equalable[HashMap[K, V]]
-	stliter.IteratorContainer[pair.Pair[K, V]]
 	json.Marshaler
-	stlbasic.Lengthable
-	Set(k K, v V) V
-	Get(k K, defaultValue ...V) V
-	ContainKey(k K) bool
-	Remove(k K, defaultValue ...V) V
-	Clear()
-	Empty() bool
-	Keys() []K
-	Values() []V
-	KeyValues() []pair.Pair[K, V]
-	fmt.Stringer
 }
 
 // StdWith 使用go的默认hash函数，相比map，write更慢，read更快

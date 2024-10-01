@@ -1,12 +1,15 @@
 package bimap
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 type _StdBiMap[T, E comparable] struct {
@@ -31,7 +34,7 @@ func _NewStdBiMapWithCapacity[T, E comparable](cap uint) BiMap[T, E] {
 func _NewStdBiMapWith[T, E comparable](vs ...any) BiMap[T, E] {
 	self := _NewStdBiMapWithCapacity[T, E](uint(len(vs) / 2))
 	for i := 0; i < len(vs); i += 2 {
-		self.Set(vs[i].(T), vs[i+1].(E))
+		self.Put(vs[i].(T), vs[i+1].(E))
 	}
 	return self
 }
@@ -40,14 +43,25 @@ func (self *_StdBiMap[T, E]) Capacity() uint {
 	return self.keys.Capacity()
 }
 
-func (self *_StdBiMap[T, E]) Clone() BiMap[T, E] {
+func (self *_StdBiMap[T, E]) Clone() any {
 	return &_StdBiMap[T, E]{
-		keys:   self.keys.Clone(),
-		values: self.values.Clone(),
+		keys:   stlval.Clone(self.keys),
+		values: stlval.Clone(self.values),
 	}
 }
 
-func (self *_StdBiMap[T, E]) Equal(dst BiMap[T, E]) bool {
+func (self *_StdBiMap[T, E]) Equal(dstObj any) bool {
+	if dstObj == nil && self == nil {
+		return true
+	} else if dstObj == nil {
+		return false
+	}
+
+	dst, ok := dstObj.(BiMap[T, E])
+	if !ok {
+		return false
+	}
+
 	return self.keys.Equal(dst.getKeyData())
 }
 
@@ -55,7 +69,7 @@ func (_ *_StdBiMap[T, E]) NewWithIterator(iter stliter.Iterator[pair.Pair[T, E]]
 	self := _NewStdBiMapWithCapacity[T, E](iter.Length())
 	for iter.Next() {
 		item := iter.Value()
-		self.Set(item.First, item.Second)
+		self.Put(item.First, item.Second)
 	}
 	return self
 }
@@ -69,11 +83,22 @@ func (self *_StdBiMap[T, E]) Length() uint {
 }
 
 // Set 插入键值对
-func (self *_StdBiMap[T, E]) Set(k T, v E) (T, E) {
+func (self *_StdBiMap[T, E]) Set(k T, v E) E {
+	_, pv := self.Put(k, v)
+	return pv
+}
+
+// Put 插入键值对
+func (self *_StdBiMap[T, E]) Put(k T, v E) (T, E) {
 	pv, pk := self.RemoveKey(k), self.RemoveValue(v)
 	self.keys.Set(k, v)
 	self.values.Set(v, k)
 	return pk, pv
+}
+
+// Get 获取值
+func (self *_StdBiMap[T, E]) Get(k T, defaultValue ...E) E {
+	return self.GetValue(k, defaultValue...)
 }
 
 // GetValue 获取值
@@ -86,19 +111,29 @@ func (self *_StdBiMap[T, E]) GetKey(v E, defaultKey ...T) T {
 	return self.values.Get(v, defaultKey...)
 }
 
+// Contain 是否包含键
+func (self *_StdBiMap[T, E]) Contain(k T) bool {
+	return self.ContainKey(k)
+}
+
 // ContainKey 是否包含键
 func (self *_StdBiMap[T, E]) ContainKey(k T) bool {
-	return self.keys.ContainKey(k)
+	return self.keys.Contain(k)
 }
 
 // ContainValue 是否包含值
 func (self *_StdBiMap[T, E]) ContainValue(v E) bool {
-	return self.values.ContainKey(v)
+	return self.values.Contain(v)
+}
+
+// Remove 移除键
+func (self *_StdBiMap[T, E]) Remove(k T, defaultValue ...E) E {
+	return self.RemoveKey(k, defaultValue...)
 }
 
 // RemoveKey 移除键
 func (self *_StdBiMap[T, E]) RemoveKey(k T, defaultValue ...E) E {
-	exist := self.ContainKey(k)
+	exist := self.Contain(k)
 	pv := self.keys.Remove(k, defaultValue...)
 	if exist {
 		self.values.Remove(pv)
@@ -163,4 +198,41 @@ func (self *_StdBiMap[T, E]) getKeyData() hashmap.HashMap[T, E] {
 
 func (self *_StdBiMap[T, E]) getValueData() hashmap.HashMap[E, T] {
 	return self.values
+}
+
+func (self *_StdBiMap[K, V]) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	err := buf.WriteByte('{')
+	if err != nil {
+		return nil, err
+	}
+	for i, p := range self.KeyValues() {
+		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", p.First))
+		if err != nil {
+			return nil, err
+		}
+		err = buf.WriteByte(':')
+		if err != nil {
+			return nil, err
+		}
+		vs, err := json.Marshal(p.Second)
+		if err != nil {
+			return nil, err
+		}
+		_, err = buf.Write(vs)
+		if err != nil {
+			return nil, err
+		}
+		if i < int(self.keys.Length())-1 {
+			err = buf.WriteByte(',')
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	err = buf.WriteByte('}')
+	if err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

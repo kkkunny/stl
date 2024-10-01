@@ -6,7 +6,9 @@ import (
 
 	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	stlmath "github.com/kkkunny/stl/math"
 	stltest "github.com/kkkunny/stl/test"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 func BenchmarkWrite_GenericHashMap(b *testing.B) {
@@ -30,14 +32,14 @@ func BenchmarkRead_GenericHashMap(b *testing.B) {
 
 func TestGenericHashMap_Capacity(t *testing.T) {
 	hm := _NewGenericHashMap[int, int]()
-	stltest.AssertEq(t, hm.Capacity(), hm.Length())
+	stltest.AssertEq(t, hm.Capacity(), initGenericHashMapCapacity)
 	hm = _NewGenericHashMapWithCapacity[int, int](20)
-	stltest.AssertEq(t, hm.Capacity(), hm.Length())
+	stltest.AssertEq(t, hm.Capacity(), stlmath.RoundToPowerOf[uint](20, 2))
 }
 
 func TestGenericHashMap_Clone(t *testing.T) {
 	hm1 := _NewGenericHashMapWith[int, int](1, 1, 2, 2)
-	hm2 := hm1.Clone()
+	hm2 := stlval.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 
@@ -72,8 +74,8 @@ func TestGenericHashMap_Get(t *testing.T) {
 
 func TestGenericHashMap_ContainKey(t *testing.T) {
 	hm := _NewGenericHashMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.ContainKey(1), true)
-	stltest.AssertEq(t, hm.ContainKey(3), false)
+	stltest.AssertEq(t, hm.Contain(1), true)
+	stltest.AssertEq(t, hm.Contain(3), false)
 }
 
 func TestGenericHashMap_Remove(t *testing.T) {

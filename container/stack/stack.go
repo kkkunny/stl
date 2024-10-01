@@ -9,11 +9,12 @@ import (
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/internal/slices"
+	"github.com/kkkunny/stl/value"
 )
 
 type Stack[T any] interface {
 	stackIter[T]
-	stlbasic.Cloneable[Stack[T]]
+	stlval.Cloneable[Stack[T]]
 	stlcmp.Equalable[Stack[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable

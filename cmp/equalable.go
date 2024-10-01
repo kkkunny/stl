@@ -22,6 +22,10 @@ func GetEqualFunc[T any](vs ...T) func(l, r T) bool {
 		return func(l, r T) bool {
 			return any(l).(Equalable[T]).Equal(r)
 		}
+	case Equalable[any]:
+		return func(l, r T) bool {
+			return any(l).(Equalable[any]).Equal(r)
+		}
 	default:
 		f := getReflectEqualFunc(reflect.ValueOf(v))
 		return func(l, r T) bool {

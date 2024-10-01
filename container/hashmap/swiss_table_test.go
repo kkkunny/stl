@@ -8,6 +8,7 @@ import (
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stlmath "github.com/kkkunny/stl/math"
 	stltest "github.com/kkkunny/stl/test"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 func BenchmarkWrite_SwissTable(b *testing.B) {
@@ -38,7 +39,7 @@ func TestSwissTable_Capacity(t *testing.T) {
 
 func TestSwissTable_Clone(t *testing.T) {
 	hm1 := _NewSwissTableWith[int, int](1, 1, 2, 2)
-	hm2 := hm1.Clone()
+	hm2 := stlval.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 
@@ -73,8 +74,8 @@ func TestSwissTable_Get(t *testing.T) {
 
 func TestSwissTable_ContainKey(t *testing.T) {
 	hm := _NewSwissTableWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.ContainKey(1), true)
-	stltest.AssertEq(t, hm.ContainKey(3), false)
+	stltest.AssertEq(t, hm.Contain(1), true)
+	stltest.AssertEq(t, hm.Contain(3), false)
 }
 
 func TestSwissTable_Remove(t *testing.T) {

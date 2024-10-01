@@ -1,7 +1,6 @@
 package optional
 
 import (
-	stlbasic "github.com/kkkunny/stl/basic"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -35,7 +34,7 @@ func (op Optional[T]) Value() (T, bool) {
 
 func (op Optional[T]) ValueWith(defaultValue ...T) T {
 	if stlslices.Empty(defaultValue) {
-		return stlbasic.IgnoreWith(op.Value())
+		return stlval.IgnoreWith(op.Value())
 	} else if op.IsNone() {
 		return stlslices.First(defaultValue)
 	} else {

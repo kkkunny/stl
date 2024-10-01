@@ -35,7 +35,7 @@ func _NewAnyTreeMapWith[K, V any](vs ...any) TreeMap[K, V] {
 }
 
 // Clone 克隆
-func (self *_AnyTreeMap[K, V]) Clone() TreeMap[K, V] {
+func (self *_AnyTreeMap[K, V]) Clone() any {
 	tm := _NewAnyTreeMap[K, V]()
 	if !self.Empty() {
 		self.data.Ascend(self.data.Min(), func(item rbtree.Item) bool {
@@ -48,7 +48,18 @@ func (self *_AnyTreeMap[K, V]) Clone() TreeMap[K, V] {
 }
 
 // Equal 比较
-func (self *_AnyTreeMap[K, V]) Equal(dst TreeMap[K, V]) bool {
+func (self *_AnyTreeMap[K, V]) Equal(dstObj any) bool {
+	if dstObj == nil && self == nil {
+		return true
+	} else if dstObj == nil {
+		return false
+	}
+
+	dst, ok := dstObj.(TreeMap[K, V])
+	if !ok {
+		return false
+	}
+
 	if self.Length() != dst.Length() {
 		return false
 	}
@@ -99,8 +110,8 @@ func (self *_AnyTreeMap[K, V]) Get(k K, defaultValue ...V) V {
 	return item.(*anyTreeMapEntry[K, V]).Second
 }
 
-// ContainKey 是否包含键
-func (self *_AnyTreeMap[K, V]) ContainKey(k K) bool {
+// Contain 是否包含键
+func (self *_AnyTreeMap[K, V]) Contain(k K) bool {
 	return self.data.Get(&anyTreeMapEntry[K, V]{First: k}) != nil
 }
 

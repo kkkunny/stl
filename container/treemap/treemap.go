@@ -2,32 +2,14 @@ package treemap
 
 import (
 	"cmp"
-	"fmt"
 
-	stlbasic "github.com/kkkunny/stl/basic"
-	stlcmp "github.com/kkkunny/stl/cmp"
-	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 )
 
 type TreeMap[K, V any] interface {
-	treemapIter[K, V]
-	stlbasic.Cloneable[TreeMap[K, V]]
-	stlcmp.Equalable[TreeMap[K, V]]
-	stliter.IteratorContainer[pair.Pair[K, V]]
-	stlbasic.Lengthable
-	Set(k K, v V) V
-	Get(k K, defaultValue ...V) V
-	ContainKey(k K) bool
-	Remove(k K, defaultValue ...V) V
-	Clear()
-	Empty() bool
-	Keys() []K
-	Values() []V
-	KeyValues() []pair.Pair[K, V]
+	stlmaps.MapObj[K, V]
 	Back() (K, V)
 	Front() (K, V)
-	fmt.Stringer
 }
 
 // StdWith 使用go的默认cmp函数

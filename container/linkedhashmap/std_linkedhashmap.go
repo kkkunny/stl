@@ -44,7 +44,7 @@ func (self *_StdLinkedHashMap[K, V]) Capacity() uint {
 	return self.kvs.Capacity()
 }
 
-func (self *_StdLinkedHashMap[K, V]) Clone() LinkedHashMap[K, V] {
+func (self *_StdLinkedHashMap[K, V]) Clone() any {
 	hm := _NewStdLinkedHashMapWithCapacity[K, V](self.Capacity())
 	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		hm.Set(cursor.Value.First, cursor.Value.Second)
@@ -52,7 +52,18 @@ func (self *_StdLinkedHashMap[K, V]) Clone() LinkedHashMap[K, V] {
 	return hm
 }
 
-func (self *_StdLinkedHashMap[K, V]) Equal(dst LinkedHashMap[K, V]) bool {
+func (self *_StdLinkedHashMap[K, V]) Equal(dstObj any) bool {
+	if dstObj == nil && self == nil {
+		return true
+	} else if dstObj == nil {
+		return false
+	}
+
+	dst, ok := dstObj.(LinkedHashMap[K, V])
+	if !ok {
+		return false
+	}
+
 	if self.Length() != dst.Length() {
 		return false
 	}
@@ -145,9 +156,9 @@ func (self *_StdLinkedHashMap[K, V]) Get(k K, defaultValue ...V) V {
 	return node.Value.Second
 }
 
-// ContainKey 是否包含键
-func (self *_StdLinkedHashMap[K, V]) ContainKey(k K) bool {
-	return self.kvs.ContainKey(k)
+// Contain 是否包含键
+func (self *_StdLinkedHashMap[K, V]) Contain(k K) bool {
+	return self.kvs.Contain(k)
 }
 
 // Remove 移除键值对

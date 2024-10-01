@@ -1,35 +1,18 @@
 package bimap
 
 import (
-	"fmt"
-
-	stlbasic "github.com/kkkunny/stl/basic"
-	stlcmp "github.com/kkkunny/stl/cmp"
 	"github.com/kkkunny/stl/container/hashmap"
-	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
 )
 
 type BiMap[T, E any] interface {
-	bimapIter[T, E]
-	stlbasic.Capacityable
-	stlbasic.Cloneable[BiMap[T, E]]
-	stlcmp.Equalable[BiMap[T, E]]
-	stliter.IteratorContainer[pair.Pair[T, E]]
-	stlbasic.Lengthable
-	Set(k T, v E) (T, E)
+	hashmap.HashMap[T, E]
+	Put(k T, v E) (T, E)
 	GetValue(k T, defaultValue ...E) E
 	GetKey(v E, defaultKey ...T) T
 	ContainKey(k T) bool
 	ContainValue(v E) bool
 	RemoveKey(k T, defaultValue ...E) E
 	RemoveValue(v E, defaultKey ...T) T
-	Clear()
-	Empty() bool
-	Keys() []T
-	Values() []E
-	KeyValues() []pair.Pair[T, E]
-	fmt.Stringer
 	getKeyData() hashmap.HashMap[T, E]
 	getValueData() hashmap.HashMap[E, T]
 }

@@ -8,11 +8,12 @@ import (
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/value"
 )
 
 type Queue[T any] interface {
 	queueIter[T]
-	stlbasic.Cloneable[Queue[T]]
+	stlval.Cloneable[Queue[T]]
 	stlcmp.Equalable[Queue[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable

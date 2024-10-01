@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	stlbasic "github.com/kkkunny/stl/basic"
+	stlbasic "github.com/kkkunny/stl/value"
 )
 
 // TempDir 缓存目录地址

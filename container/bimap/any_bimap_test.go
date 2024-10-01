@@ -6,11 +6,12 @@ import (
 	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stltest "github.com/kkkunny/stl/test"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 func TestAnyBiMap_Clone(t *testing.T) {
 	hm1 := _NewAnyBiMapWith[int, int](1, 1, 2, 2)
-	hm2 := hm1.Clone()
+	hm2 := stlval.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 
@@ -30,9 +31,9 @@ func TestAnyBiMap_Length(t *testing.T) {
 
 func TestAnyBiMap_Set(t *testing.T) {
 	hm := _NewAnyBiMap[int, int]()
-	stltest.AssertEq(t, pair.NewPair(hm.Set(1, 1)), pair.NewPair(0, 0))
-	stltest.AssertEq(t, pair.NewPair(hm.Set(1, 2)), pair.NewPair(0, 1))
-	stltest.AssertEq(t, pair.NewPair(hm.Set(2, 1)), pair.NewPair(0, 0))
+	stltest.AssertEq(t, pair.NewPair(hm.Put(1, 1)), pair.NewPair(0, 0))
+	stltest.AssertEq(t, pair.NewPair(hm.Put(1, 2)), pair.NewPair(0, 1))
+	stltest.AssertEq(t, pair.NewPair(hm.Put(2, 1)), pair.NewPair(0, 0))
 }
 
 func TestAnyBiMap_Get(t *testing.T) {
@@ -44,8 +45,8 @@ func TestAnyBiMap_Get(t *testing.T) {
 
 func TestAnyBiMap_Contain(t *testing.T) {
 	hm := _NewAnyBiMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.ContainKey(1), true)
-	stltest.AssertEq(t, hm.ContainKey(3), false)
+	stltest.AssertEq(t, hm.Contain(1), true)
+	stltest.AssertEq(t, hm.Contain(3), false)
 	stltest.AssertEq(t, hm.ContainValue(1), true)
 	stltest.AssertEq(t, hm.ContainValue(3), false)
 }

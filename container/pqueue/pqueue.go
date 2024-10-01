@@ -8,11 +8,12 @@ import (
 	stlheap "github.com/kkkunny/stl/container/heap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/value"
 )
 
 type PQueue[T any] interface {
 	pqueueIter[T]
-	stlbasic.Cloneable[PQueue[T]]
+	stlval.Cloneable[PQueue[T]]
 	stlcmp.Equalable[PQueue[T]]
 	stliter.IteratorContainer[pair.Pair[uint64, T]]
 	stlbasic.Lengthable

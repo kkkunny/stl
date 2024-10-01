@@ -6,6 +6,7 @@ import (
 
 	"github.com/kkkunny/stl/container/pair"
 	stltest "github.com/kkkunny/stl/test"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 func BenchmarkWrite_AnyTreeMap(b *testing.B) {
@@ -29,7 +30,7 @@ func BenchmarkRead_AnyTreeMap(b *testing.B) {
 
 func TestAnyTreeMap_Clone(t *testing.T) {
 	hm1 := _NewAnyTreeMapWith[int, int](1, 1, 2, 2)
-	hm2 := hm1.Clone()
+	hm2 := stlval.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 
@@ -64,8 +65,8 @@ func TestAnyTreeMap_Get(t *testing.T) {
 
 func TestAnyTreeMap_ContainKey(t *testing.T) {
 	hm := _NewAnyTreeMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.ContainKey(1), true)
-	stltest.AssertEq(t, hm.ContainKey(3), false)
+	stltest.AssertEq(t, hm.Contain(1), true)
+	stltest.AssertEq(t, hm.Contain(3), false)
 }
 
 func TestAnyTreeMap_Remove(t *testing.T) {

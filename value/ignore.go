@@ -1,4 +1,4 @@
-package stlbasic
+package stlval
 
 // Ignore 忽略返回值
 func Ignore[T any](_ T) {}

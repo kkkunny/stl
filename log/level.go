@@ -5,9 +5,9 @@ import (
 
 	"github.com/gookit/color"
 
-	stlbasic "github.com/kkkunny/stl/basic"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stlstr "github.com/kkkunny/stl/str"
+	stlbasic "github.com/kkkunny/stl/value"
 )
 
 type Level uint8

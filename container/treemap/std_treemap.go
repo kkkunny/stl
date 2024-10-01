@@ -29,7 +29,7 @@ func _NewStdTreeMapWith[K cmp.Ordered, V any](vs ...any) TreeMap[K, V] {
 }
 
 // Clone 克隆
-func (self *_StdTreeMap[K, V]) Clone() TreeMap[K, V] {
+func (self *_StdTreeMap[K, V]) Clone() any {
 	tm := _NewStdTreeMap[K, V]()
 	for iter := self.data.Iterator(); iter != nil; iter = iter.Next() {
 		tm.Set(iter.Key, iter.Value)
@@ -38,7 +38,18 @@ func (self *_StdTreeMap[K, V]) Clone() TreeMap[K, V] {
 }
 
 // Equal 比较
-func (self *_StdTreeMap[K, V]) Equal(dst TreeMap[K, V]) bool {
+func (self *_StdTreeMap[K, V]) Equal(dstObj any) bool {
+	if dstObj == nil && self == nil {
+		return true
+	} else if dstObj == nil {
+		return false
+	}
+
+	dst, ok := dstObj.(TreeMap[K, V])
+	if !ok {
+		return false
+	}
+
 	if self.Length() != dst.Length() {
 		return false
 	}
@@ -84,8 +95,8 @@ func (self *_StdTreeMap[K, V]) Get(k K, defaultValue ...V) V {
 	return node.Value
 }
 
-// ContainKey 是否包含键
-func (self *_StdTreeMap[K, V]) ContainKey(k K) bool {
+// Contain 是否包含键
+func (self *_StdTreeMap[K, V]) Contain(k K) bool {
 	return self.data.FindIt(k) != nil
 }
 
