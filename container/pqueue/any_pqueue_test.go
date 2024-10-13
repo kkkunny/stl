@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 	stltest "github.com/kkkunny/stl/test"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -50,9 +50,9 @@ func TestAnyPQueue_PushAndPop(t *testing.T) {
 	v.Push(1, 1)
 	v.Push(2, 2)
 	v.Push(3, 3)
-	stltest.AssertEq(t, pair.NewPair(v.Pop()), pair.NewPair[uint64, int](3, 3))
-	stltest.AssertEq(t, pair.NewPair(v.Pop()), pair.NewPair[uint64, int](2, 2))
-	stltest.AssertEq(t, pair.NewPair(v.Pop()), pair.NewPair[uint64, int](1, 1))
+	stltest.AssertEq(t, tuple.Pack2(v.Pop()), tuple.Pack2[uint64, int](3, 3))
+	stltest.AssertEq(t, tuple.Pack2(v.Pop()), tuple.Pack2[uint64, int](2, 2))
+	stltest.AssertEq(t, tuple.Pack2(v.Pop()), tuple.Pack2[uint64, int](1, 1))
 }
 
 func TestAnyPQueue_Peek(t *testing.T) {
@@ -60,9 +60,9 @@ func TestAnyPQueue_Peek(t *testing.T) {
 	v.Push(1, 1)
 	v.Push(2, 2)
 	v.Push(3, 3)
-	stltest.AssertEq(t, pair.NewPair(v.Peek()), pair.NewPair[uint64, int](3, 3))
-	stltest.AssertEq(t, pair.NewPair(v.Pop()), pair.NewPair[uint64, int](3, 3))
-	stltest.AssertEq(t, pair.NewPair(v.Peek()), pair.NewPair[uint64, int](2, 2))
+	stltest.AssertEq(t, tuple.Pack2(v.Peek()), tuple.Pack2[uint64, int](3, 3))
+	stltest.AssertEq(t, tuple.Pack2(v.Pop()), tuple.Pack2[uint64, int](3, 3))
+	stltest.AssertEq(t, tuple.Pack2(v.Peek()), tuple.Pack2[uint64, int](2, 2))
 }
 
 func TestAnyPQueue_Clear(t *testing.T) {

@@ -2,7 +2,7 @@ package either
 
 import (
 	stlbasic "github.com/kkkunny/stl/cmp"
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 )
 
 func (self Either[L, R]) Equal(dst Either[L, R]) bool {
@@ -10,8 +10,8 @@ func (self Either[L, R]) Equal(dst Either[L, R]) bool {
 	dst.init()
 
 	if self.IsLeft() {
-		return stlbasic.Equal(pair.NewPair(self.Left()), pair.NewPair(dst.Left()))
+		return stlbasic.Equal(tuple.Pack2(self.Left()), tuple.Pack2(dst.Left()))
 	} else {
-		return stlbasic.Equal(pair.NewPair(self.Right()), pair.NewPair(dst.Right()))
+		return stlbasic.Equal(tuple.Pack2(self.Right()), tuple.Pack2(dst.Right()))
 	}
 }

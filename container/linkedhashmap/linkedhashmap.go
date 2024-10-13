@@ -2,13 +2,13 @@ package linkedhashmap
 
 import (
 	"github.com/kkkunny/stl/container/hashmap"
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 	"github.com/kkkunny/stl/list"
 )
 
 type LinkedHashMap[K, V any] interface {
 	hashmap.HashMap[K, V]
-	getList() *list.List[pair.Pair[K, V]]
+	getList() *list.List[tuple.Tuple2[K, V]]
 }
 
 // StdWith 使用go的默认hash函数，相比map，write更慢，read更快

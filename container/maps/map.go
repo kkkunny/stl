@@ -6,7 +6,7 @@ import (
 	stlbasic "github.com/kkkunny/stl/basic"
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 	stlval "github.com/kkkunny/stl/value"
 )
 
@@ -14,7 +14,7 @@ type MapObj[K, V any] interface {
 	mapIter2[K, V]
 	stlval.Cloneable[any]
 	stlcmp.Equalable[any]
-	stliter.IteratorContainer[pair.Pair[K, V]]
+	stliter.IteratorContainer[tuple.Tuple2[K, V]]
 	stlbasic.Lengthable
 	Set(k K, v V) V
 	Get(k K, defaultValue ...V) V
@@ -24,6 +24,6 @@ type MapObj[K, V any] interface {
 	Empty() bool
 	Keys() []K
 	Values() []V
-	KeyValues() []pair.Pair[K, V]
+	KeyValues() []tuple.Tuple2[K, V]
 	fmt.Stringer
 }

@@ -6,8 +6,8 @@ import (
 
 	stlheap "github.com/kkkunny/stl/container/heap"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 	"github.com/kkkunny/stl/internal/slices"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -57,17 +57,17 @@ func (self *_AnyPQueue[T]) Equal(dst PQueue[T]) bool {
 	return self.data.Equal(dst.getData())
 }
 
-func (self *_AnyPQueue[T]) NewWithIterator(iter stliter.Iterator[pair.Pair[uint64, T]]) any {
+func (self *_AnyPQueue[T]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[uint64, T]]) any {
 	pq := _NewAnyPQueue[T]()
-	stliter.IteratorForeach(iter, func(v pair.Pair[uint64, T]) bool {
-		pq.Push(v.First, v.Second)
+	stliter.IteratorForeach(iter, func(v tuple.Tuple2[uint64, T]) bool {
+		pq.Push(v.Unpack())
 		return true
 	})
 	return pq
 }
 
 // Iterator 迭代器
-func (self *_AnyPQueue[T]) Iterator() stliter.Iterator[pair.Pair[uint64, T]] {
+func (self *_AnyPQueue[T]) Iterator() stliter.Iterator[tuple.Tuple2[uint64, T]] {
 	return stliter.NewSliceIterator(self.ToSlice()...)
 }
 
@@ -111,9 +111,9 @@ func (self *_AnyPQueue[T]) String() string {
 	var buf strings.Builder
 	buf.WriteString("PQueue{")
 	for iter := self.Iterator(); iter.Next(); {
-		buf.WriteString(fmt.Sprintf("%d", iter.Value().First))
+		buf.WriteString(fmt.Sprintf("%d", iter.Value().E1()))
 		buf.WriteByte(':')
-		buf.WriteString(fmt.Sprintf("%v", iter.Value().Second))
+		buf.WriteString(fmt.Sprintf("%v", iter.Value().E2()))
 		if iter.HasNext() {
 			buf.WriteString(", ")
 		}
@@ -122,13 +122,13 @@ func (self *_AnyPQueue[T]) String() string {
 	return buf.String()
 }
 
-func (self *_AnyPQueue[T]) ToSlice() []pair.Pair[uint64, T] {
+func (self *_AnyPQueue[T]) ToSlice() []tuple.Tuple2[uint64, T] {
 	data := self.data.ToSlice()
 	slices.SortFunc(data, func(a anyPQueueNode[T], b anyPQueueNode[T]) int {
 		return -a.Compare(b)
 	})
-	return stlslices.Map(data, func(_ int, node anyPQueueNode[T]) pair.Pair[uint64, T] {
-		return pair.NewPair(node.priority, node.value)
+	return stlslices.Map(data, func(_ int, node anyPQueueNode[T]) tuple.Tuple2[uint64, T] {
+		return tuple.Pack2(node.priority, node.value)
 	})
 }
 

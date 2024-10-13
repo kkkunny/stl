@@ -9,8 +9,8 @@ import (
 
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 )
 
 type _StdTreeMap[K cmp.Ordered, V any] struct {
@@ -57,16 +57,15 @@ func (self *_StdTreeMap[K, V]) Equal(dstObj any) bool {
 	return stlcmp.Equal(self.KeyValues(), dst.KeyValues())
 }
 
-func (_ *_StdTreeMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {
+func (_ *_StdTreeMap[K, V]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[K, V]]) any {
 	self := _NewStdTreeMap[K, V]()
 	for iter.Next() {
-		node := iter.Value()
-		self.Set(node.First, node.Second)
+		self.Set(iter.Value().Unpack())
 	}
 	return self
 }
 
-func (self *_StdTreeMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
+func (self *_StdTreeMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
@@ -144,11 +143,11 @@ func (self *_StdTreeMap[K, V]) Values() []V {
 }
 
 // KeyValues 获取所有键值对
-func (self *_StdTreeMap[K, V]) KeyValues() []pair.Pair[K, V] {
-	pairs := make([]pair.Pair[K, V], self.Length())
+func (self *_StdTreeMap[K, V]) KeyValues() []tuple.Tuple2[K, V] {
+	pairs := make([]tuple.Tuple2[K, V], self.Length())
 	var i int
 	for iter := self.data.Iterator(); iter != nil; iter = iter.Next() {
-		pairs[i] = pair.NewPair(iter.Key, iter.Value)
+		pairs[i] = tuple.Pack2(iter.Key, iter.Value)
 		i++
 	}
 	return pairs

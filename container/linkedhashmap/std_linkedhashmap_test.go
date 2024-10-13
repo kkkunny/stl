@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 	stltest "github.com/kkkunny/stl/test"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -92,7 +92,7 @@ func TestStdLinkedHashMap_Values(t *testing.T) {
 
 func TestStdLinkedHashMap_KeyValues(t *testing.T) {
 	hm := _NewStdLinkedHashMapWith[int, int](1, 1, 2, 2)
-	stltest.AssertEq(t, hm.KeyValues(), []pair.Pair[int, int]{pair.NewPair(1, 1), pair.NewPair(2, 2)})
+	stltest.AssertEq(t, hm.KeyValues(), []tuple.Tuple2[int, int]{tuple.Pack2(1, 1), tuple.Pack2(2, 2)})
 }
 
 func TestStdLinkedHashMap_String(t *testing.T) {

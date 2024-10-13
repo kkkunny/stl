@@ -3,8 +3,8 @@ package bimap
 import (
 	"testing"
 
-	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 	stltest "github.com/kkkunny/stl/test"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -31,9 +31,9 @@ func TestAnyBiMap_Length(t *testing.T) {
 
 func TestAnyBiMap_Set(t *testing.T) {
 	hm := _NewAnyBiMap[int, int]()
-	stltest.AssertEq(t, pair.NewPair(hm.Put(1, 1)), pair.NewPair(0, 0))
-	stltest.AssertEq(t, pair.NewPair(hm.Put(1, 2)), pair.NewPair(0, 1))
-	stltest.AssertEq(t, pair.NewPair(hm.Put(2, 1)), pair.NewPair(0, 0))
+	stltest.AssertEq(t, tuple.Pack2(hm.Put(1, 1)), tuple.Pack2(0, 0))
+	stltest.AssertEq(t, tuple.Pack2(hm.Put(1, 2)), tuple.Pack2(0, 1))
+	stltest.AssertEq(t, tuple.Pack2(hm.Put(2, 1)), tuple.Pack2(0, 0))
 }
 
 func TestAnyBiMap_Get(t *testing.T) {
@@ -89,8 +89,8 @@ func TestAnyBiMap_Values(t *testing.T) {
 func TestAnyBiMap_KeyValues(t *testing.T) {
 	hm := _NewAnyBiMapWith[int, int](1, 1, 2, 2)
 	pairs := hm.KeyValues()
-	stltest.AssertEq(t, stlslices.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 1)), true)
-	stltest.AssertEq(t, stlslices.Contain[pair.Pair[int, int]](pairs, pair.NewPair(1, 2)), false)
+	stltest.AssertEq(t, stlslices.Contain[tuple.Tuple2[int, int]](pairs, tuple.Pack2(1, 1)), true)
+	stltest.AssertEq(t, stlslices.Contain[tuple.Tuple2[int, int]](pairs, tuple.Pack2(1, 2)), false)
 }
 
 func TestAnyBiMap_String(t *testing.T) {

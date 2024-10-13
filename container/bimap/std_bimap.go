@@ -8,7 +8,7 @@ import (
 
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 	stlval "github.com/kkkunny/stl/value"
 )
 
@@ -65,16 +65,16 @@ func (self *_StdBiMap[T, E]) Equal(dstObj any) bool {
 	return self.keys.Equal(dst.getKeyData())
 }
 
-func (_ *_StdBiMap[T, E]) NewWithIterator(iter stliter.Iterator[pair.Pair[T, E]]) any {
+func (_ *_StdBiMap[T, E]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[T, E]]) any {
 	self := _NewStdBiMapWithCapacity[T, E](iter.Length())
 	for iter.Next() {
 		item := iter.Value()
-		self.Put(item.First, item.Second)
+		self.Put(item.Unpack())
 	}
 	return self
 }
 
-func (self *_StdBiMap[T, E]) Iterator() stliter.Iterator[pair.Pair[T, E]] {
+func (self *_StdBiMap[T, E]) Iterator() stliter.Iterator[tuple.Tuple2[T, E]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
@@ -173,7 +173,7 @@ func (self *_StdBiMap[T, E]) Values() []E {
 }
 
 // KeyValues 获取所有键值对
-func (self *_StdBiMap[T, E]) KeyValues() []pair.Pair[T, E] {
+func (self *_StdBiMap[T, E]) KeyValues() []tuple.Tuple2[T, E] {
 	return self.keys.KeyValues()
 }
 
@@ -181,9 +181,10 @@ func (self *_StdBiMap[T, E]) String() string {
 	var buf strings.Builder
 	buf.WriteString("BiMap{")
 	for i, p := range self.KeyValues() {
-		buf.WriteString(fmt.Sprintf("%v", p.First))
+		k, v := p.Unpack()
+		buf.WriteString(fmt.Sprintf("%v", k))
 		buf.WriteString(": ")
-		buf.WriteString(fmt.Sprintf("%v", p.Second))
+		buf.WriteString(fmt.Sprintf("%v", v))
 		if i < int(self.Length())-1 {
 			buf.WriteString(", ")
 		}
@@ -207,7 +208,8 @@ func (self *_StdBiMap[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	for i, p := range self.KeyValues() {
-		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", p.First))
+		k, v := p.Unpack()
+		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", k))
 		if err != nil {
 			return nil, err
 		}
@@ -215,7 +217,7 @@ func (self *_StdBiMap[K, V]) MarshalJSON() ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		vs, err := json.Marshal(p.Second)
+		vs, err := json.Marshal(v)
 		if err != nil {
 			return nil, err
 		}

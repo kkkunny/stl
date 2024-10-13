@@ -12,7 +12,7 @@ func (self *_AnyTreeMap[K, V]) Iter2() iter.Seq2[K, V] {
 	return func(yield func(K, V) bool) {
 		self.data.Ascend(self.data.Min(), func(item rbtree.Item) bool {
 			node := item.(*anyTreeMapEntry[K, V])
-			return yield(node.First, node.Second)
+			return yield(node.data.Unpack())
 		})
 	}
 }

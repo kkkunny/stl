@@ -7,7 +7,7 @@ import (
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stlheap "github.com/kkkunny/stl/container/heap"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
+	"github.com/kkkunny/stl/container/tuple"
 	"github.com/kkkunny/stl/value"
 )
 
@@ -15,7 +15,7 @@ type PQueue[T any] interface {
 	pqueueIter[T]
 	stlval.Cloneable[PQueue[T]]
 	stlcmp.Equalable[PQueue[T]]
-	stliter.IteratorContainer[pair.Pair[uint64, T]]
+	stliter.IteratorContainer[tuple.Tuple2[uint64, T]]
 	stlbasic.Lengthable
 	Push(prior uint64, value T)
 	Pop() (uint64, T)
@@ -23,7 +23,7 @@ type PQueue[T any] interface {
 	Clear()
 	Empty() bool
 	fmt.Stringer
-	ToSlice() []pair.Pair[uint64, T]
+	ToSlice() []tuple.Tuple2[uint64, T]
 	getData() stlheap.Heap[anyPQueueNode[T]]
 }
 

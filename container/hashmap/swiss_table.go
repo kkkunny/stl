@@ -10,8 +10,8 @@ import (
 
 	stlbasic "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 )
 
 var initSwissTableCapacity uint
@@ -80,16 +80,16 @@ func (self *_SwissTable[K, V]) Equal(dstObj any) (eq bool) {
 	return eq
 }
 
-func (_ *_SwissTable[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {
+func (_ *_SwissTable[K, V]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[K, V]]) any {
 	self := _NewSwissTableWithCapacity[K, V](iter.Length())
 	for iter.Next() {
 		item := iter.Value()
-		self.Set(item.First, item.Second)
+		self.Set(item.Unpack())
 	}
 	return self
 }
 
-func (self *_SwissTable[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
+func (self *_SwissTable[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
@@ -207,11 +207,11 @@ func (self *_SwissTable[K, V]) Values() []V {
 }
 
 // KeyValues 获取所有键值对
-func (self *_SwissTable[K, V]) KeyValues() []pair.Pair[K, V] {
-	kvs := make([]pair.Pair[K, V], self.Length())
+func (self *_SwissTable[K, V]) KeyValues() []tuple.Tuple2[K, V] {
+	kvs := make([]tuple.Tuple2[K, V], self.Length())
 	var i int
 	self.data.Iter(func(k K, v V) bool {
-		kvs[i] = pair.NewPair(k, v)
+		kvs[i] = tuple.Pack2(k, v)
 		i++
 		return false
 	})

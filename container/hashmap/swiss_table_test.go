@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 	stlmath "github.com/kkkunny/stl/math"
 	stltest "github.com/kkkunny/stl/test"
 	stlval "github.com/kkkunny/stl/value"
@@ -116,8 +116,8 @@ func TestSwissTable_Values(t *testing.T) {
 func TestSwissTable_KeyValues(t *testing.T) {
 	hm := _NewSwissTableWith[int, int](1, 1, 2, 2)
 	pairs := hm.KeyValues()
-	stltest.AssertEq(t, stlslices.Contain(pairs, pair.NewPair(1, 1)), true)
-	stltest.AssertEq(t, stlslices.Contain(pairs, pair.NewPair(1, 2)), false)
+	stltest.AssertEq(t, stlslices.Contain(pairs, tuple.Pack2(1, 1)), true)
+	stltest.AssertEq(t, stlslices.Contain(pairs, tuple.Pack2(1, 2)), false)
 }
 
 func TestSwissTable_String(t *testing.T) {

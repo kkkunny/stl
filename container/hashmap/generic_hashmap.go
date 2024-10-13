@@ -11,8 +11,8 @@ import (
 
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 	stlhash "github.com/kkkunny/stl/hash"
 )
 
@@ -108,23 +108,23 @@ func (self *_GenericHashMap[K, V]) Equal(dstObj any) (eq bool) {
 	}
 
 	for _, p := range self.KeyValues() {
-		if !dst.Contain(p.First) || !stlcmp.Equal(p.Second, dst.Get(p.First)) {
+		k, v := p.Unpack()
+		if !dst.Contain(k) || !stlcmp.Equal(v, dst.Get(k)) {
 			return false
 		}
 	}
 	return true
 }
 
-func (_ *_GenericHashMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {
+func (_ *_GenericHashMap[K, V]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[K, V]]) any {
 	self := _NewGenericHashMapWithCapacity[K, V](iter.Length())
 	for iter.Next() {
-		item := iter.Value()
-		self.Set(item.First, item.Second)
+		self.Set(iter.Value().Unpack())
 	}
 	return self
 }
 
-func (self *_GenericHashMap[K, V]) Iterator() stliter.Iterator[pair.Pair[K, V]] {
+func (self *_GenericHashMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
@@ -135,7 +135,8 @@ func (self *_GenericHashMap[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	for i, p := range self.KeyValues() {
-		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", p.First))
+		k, v := p.Unpack()
+		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", k))
 		if err != nil {
 			return nil, err
 		}
@@ -143,7 +144,7 @@ func (self *_GenericHashMap[K, V]) MarshalJSON() ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		vs, err := json.Marshal(p.Second)
+		vs, err := json.Marshal(v)
 		if err != nil {
 			return nil, err
 		}
@@ -234,11 +235,11 @@ func (self *_GenericHashMap[K, V]) Values() []V {
 }
 
 // KeyValues 获取所有键值对
-func (self *_GenericHashMap[K, V]) KeyValues() []pair.Pair[K, V] {
-	kvs := make([]pair.Pair[K, V], self.Length())
+func (self *_GenericHashMap[K, V]) KeyValues() []tuple.Tuple2[K, V] {
+	kvs := make([]tuple.Tuple2[K, V], self.Length())
 	var i int
 	self.data.Each(func(k K, v V) {
-		kvs[i] = pair.NewPair(k, v)
+		kvs[i] = tuple.Pack2(k, v)
 		i++
 	})
 	return kvs
