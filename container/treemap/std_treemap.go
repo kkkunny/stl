@@ -7,6 +7,7 @@ import (
 
 	rbtree "github.com/sakeven/RbTree"
 
+	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
@@ -53,7 +54,7 @@ func (self *_StdTreeMap[K, V]) Equal(dstObj any) bool {
 	if self.Length() != dst.Length() {
 		return false
 	}
-	return stlslices.Equal(self.KeyValues(), dst.KeyValues())
+	return stlcmp.Equal(self.KeyValues(), dst.KeyValues())
 }
 
 func (_ *_StdTreeMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {

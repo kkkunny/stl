@@ -3,6 +3,8 @@ package stlcmp
 import (
 	"fmt"
 	"reflect"
+
+	stlreflect "github.com/kkkunny/stl/reflect"
 )
 
 // Equalable 可相等的
@@ -11,23 +13,19 @@ type Equalable[Self any] interface {
 }
 
 // GetEqualFunc 获取比较函数，若没有会panic
-func GetEqualFunc[T any](vs ...T) func(l, r T) bool {
-	var v T
-	if len(vs) > 0 {
-		v = vs[0]
-	}
-
-	switch any(v).(type) {
-	case Equalable[T]:
+func GetEqualFunc[T any]() func(l, r T) bool {
+	t := stlreflect.Type[T]()
+	switch {
+	case t.Implements(stlreflect.Type[Equalable[T]]()):
 		return func(l, r T) bool {
 			return any(l).(Equalable[T]).Equal(r)
 		}
-	case Equalable[any]:
+	case t.Implements(stlreflect.Type[Equalable[any]]()):
 		return func(l, r T) bool {
 			return any(l).(Equalable[any]).Equal(r)
 		}
 	default:
-		f := getReflectEqualFunc(reflect.ValueOf(v))
+		f := getReflectEqualFunc(stlreflect.Zero[T]())
 		return func(l, r T) bool {
 			return f(l, r)
 		}
@@ -69,5 +67,5 @@ func getReflectEqualFunc(v reflect.Value) func(l, r any) bool {
 
 // Equal 比较是否相等
 func Equal[T any](lv, rv T) bool {
-	return GetEqualFunc[T](lv, rv)(lv, rv)
+	return GetEqualFunc[T]()(lv, rv)
 }

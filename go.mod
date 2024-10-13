@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/HuKeping/rbtree v1.0.1
 	github.com/gookit/color v1.5.4
-	github.com/kkkunny/maphash v0.0.0-20240930153939-d983313dfa42
+	github.com/kkkunny/maphash v0.0.0-20241013073711-aff67359a91c
 	github.com/kkkunny/swiss v0.0.0-20240930154237-41a03804fd4f
 	github.com/mattn/go-isatty v0.0.20
 	github.com/mitchellh/go-homedir v1.1.0

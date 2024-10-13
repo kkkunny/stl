@@ -8,6 +8,7 @@ import (
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/internal/slices"
 )
 
 type anyPQueueNode[T any] struct {
@@ -121,7 +122,11 @@ func (self *_AnyPQueue[T]) String() string {
 }
 
 func (self *_AnyPQueue[T]) ToSlice() []pair.Pair[uint64, T] {
-	return stlslices.Map(stlslices.Sort(self.data.ToSlice(), true), func(_ int, node anyPQueueNode[T]) pair.Pair[uint64, T] {
+	data := self.data.ToSlice()
+	slices.SortFunc(data, func(a anyPQueueNode[T], b anyPQueueNode[T]) int {
+		return -a.Compare(b)
+	})
+	return stlslices.Map(data, func(_ int, node anyPQueueNode[T]) pair.Pair[uint64, T] {
 		return pair.NewPair(node.priority, node.value)
 	})
 }

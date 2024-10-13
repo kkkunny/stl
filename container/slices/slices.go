@@ -1,10 +1,10 @@
 package stlslices
 
 import (
+	"cmp"
 	"math/rand"
 	"time"
 
-	"github.com/kkkunny/stl/cmp"
 	"github.com/kkkunny/stl/internal/slices"
 )
 
@@ -76,11 +76,11 @@ func Filter[T any](slice []T, filter func(i int, e T) bool) []T {
 	return res
 }
 
-func ContainAll[T any](slice []T, v ...T) bool {
+func ContainAll[T comparable](slice []T, v ...T) bool {
 loop:
 	for _, vv := range v {
 		for _, e := range slice {
-			if stlcmp.Equal(e, vv) {
+			if e == vv {
 				continue loop
 			}
 		}
@@ -89,10 +89,10 @@ loop:
 	return true
 }
 
-func ContainAny[T any](slice []T, v ...T) bool {
+func ContainAny[T comparable](slice []T, v ...T) bool {
 	for _, vv := range v {
 		for _, e := range slice {
-			if stlcmp.Equal(e, vv) {
+			if e == vv {
 				return true
 			}
 		}
@@ -100,17 +100,17 @@ func ContainAny[T any](slice []T, v ...T) bool {
 	return false
 }
 
-func Contain[T any](slice []T, v T) bool {
+func Contain[T comparable](slice []T, v T) bool {
 	return ContainAny(slice, v)
 }
 
-func Sort[T any](slice []T, reverse ...bool) []T {
+func Sort[T cmp.Ordered](slice []T, reverse ...bool) []T {
 	slice = slices.Clone(slice)
 	slices.SortFunc(slice, func(l, r T) int {
 		if len(reverse) > 0 && reverse[0] {
-			return stlcmp.Compare(r, l)
+			return cmp.Compare(r, l)
 		} else {
-			return stlcmp.Compare(l, r)
+			return cmp.Compare(l, r)
 		}
 	})
 	return slice
@@ -123,12 +123,12 @@ func As[T any, F any](slice []T) []F {
 }
 
 // DiffTo 返回l中r没有的值
-func DiffTo[T any](l, r []T) (res []T) {
+func DiffTo[T comparable](l, r []T) (res []T) {
 	res = make([]T, 0, len(l))
 loop:
 	for _, le := range l {
 		for _, re := range r {
-			if stlcmp.Equal(le, re) {
+			if le == re {
 				continue loop
 			}
 		}
@@ -138,7 +138,7 @@ loop:
 }
 
 // Diff 返回l和r中各在对方没有的值
-func Diff[T any](l, r []T) []T {
+func Diff[T comparable](l, r []T) []T {
 	return Union(DiffTo(l, r), DiffTo(r, l))
 }
 
@@ -148,11 +148,11 @@ func Union[T any](l, r []T) []T {
 }
 
 // Intersect 返回l和r中各在对方有的值
-func Intersect[T any](l, r []T) (res []T) {
+func Intersect[T comparable](l, r []T) (res []T) {
 	return DiffTo(l, DiffTo(l, r))
 }
 
-func RemoveRepeat[T any](slice []T) (res []T) {
+func RemoveRepeat[T comparable](slice []T) (res []T) {
 	if len(slice) <= 1 {
 		return slice
 	}
@@ -164,7 +164,7 @@ func RemoveRepeat[T any](slice []T) (res []T) {
 			continue
 		}
 		for j, je := range slice[i+1:] {
-			if !stlcmp.Equal(ie, je) {
+			if ie != je {
 				continue
 			}
 			conflictMap[i+j+1] = true
@@ -199,12 +199,12 @@ func Empty[T any](slice []T) bool {
 }
 
 // And 同Diff
-func And[T any](l, r []T) []T {
+func And[T comparable](l, r []T) []T {
 	return Diff(l, r)
 }
 
 // Or 同Union+RemoveRepeat
-func Or[T any](l, r []T) []T {
+func Or[T comparable](l, r []T) []T {
 	return RemoveRepeat(Union(l, r))
 }
 
@@ -266,13 +266,13 @@ func Repeat[T any](v T, n int) []T {
 }
 
 // Equal 比较两个切片里的元素是否相等
-func Equal[T any](l, r []T) bool {
+func Equal[T comparable](l, r []T) bool {
 	if len(l) != len(r) {
 		return false
 	}
 	for i, lv := range l {
 		rv := r[i]
-		if !stlcmp.Equal(lv, rv) {
+		if lv != rv {
 			return false
 		}
 	}

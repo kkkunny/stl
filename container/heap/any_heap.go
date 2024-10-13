@@ -10,6 +10,7 @@ import (
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/internal/slices"
 )
 
 type anyHeapData[T any] struct {
@@ -84,8 +85,24 @@ func (self *_AnyHeap[T]) Equal(dst Heap[T]) bool {
 	if self.Length() != dst.Length() {
 		return false
 	}
-	lv, rv := stlslices.Sort(toAnyHeapData(self.data).data), stlslices.Sort(dst.ToSlice())
-	return stlslices.Equal(lv, rv)
+	selfHeap := toAnyHeapData(self.data)
+	lv := stlslices.Clone(selfHeap.data)
+	slices.SortFunc(lv, func(a T, b T) int {
+		if selfHeap.less(a, b) {
+			return -1
+		} else {
+			return 1
+		}
+	})
+	rv := dst.ToSlice()
+	slices.SortFunc(rv, func(a T, b T) int {
+		if selfHeap.less(a, b) {
+			return -1
+		} else {
+			return 1
+		}
+	})
+	return stlcmp.Equal(lv, rv)
 }
 
 func (self *_AnyHeap[T]) NewWithIterator(iter stliter.Iterator[T]) any {

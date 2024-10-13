@@ -2,8 +2,6 @@ package stlval
 
 import (
 	"unsafe"
-
-	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
 func Default[T any]() T {
@@ -15,16 +13,22 @@ func Default[T any]() T {
 func ValueOr[T comparable](v T, defaultVal ...T) T {
 	if v != Default[T]() {
 		return v
+	} else if len(defaultVal) > 0 {
+		return defaultVal[len(defaultVal)-1]
+	} else {
+		return Default[T]()
 	}
-	return stlslices.Last(defaultVal)
 }
 
 // DerefPtrOr 解引用，如果为nil则返回defaultVal
 func DerefPtrOr[T any](p *T, defaultVal ...T) T {
 	if p != nil {
 		return *p
+	} else if len(defaultVal) > 0 {
+		return defaultVal[len(defaultVal)-1]
+	} else {
+		return Default[T]()
 	}
-	return stlslices.Last(defaultVal)
 }
 
 // Ptr 获取值指针

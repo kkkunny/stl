@@ -9,7 +9,6 @@ import (
 	"github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/pair"
-	stlslices "github.com/kkkunny/stl/container/slices"
 )
 
 type anyTreeMapEntry[K, V any] pair.Pair[K, V]
@@ -63,7 +62,7 @@ func (self *_AnyTreeMap[K, V]) Equal(dstObj any) bool {
 	if self.Length() != dst.Length() {
 		return false
 	}
-	return stlslices.Equal(self.KeyValues(), dst.KeyValues())
+	return stlcmp.Equal(self.KeyValues(), dst.KeyValues())
 }
 
 func (_ *_AnyTreeMap[K, V]) NewWithIterator(iter stliter.Iterator[pair.Pair[K, V]]) any {

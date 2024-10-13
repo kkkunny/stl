@@ -4,6 +4,8 @@ import (
 	"cmp"
 	"fmt"
 	"reflect"
+
+	stlreflect "github.com/kkkunny/stl/reflect"
 )
 
 // Comparable 可比较的
@@ -12,19 +14,15 @@ type Comparable[Self any] interface {
 	Compare(dst Self) int
 }
 
-func GetCompareFunc[T any](vs ...T) func(l, r T) int {
-	var v T
-	if len(vs) > 0 {
-		v = vs[0]
-	}
-
-	switch any(v).(type) {
-	case Comparable[T]:
+func GetCompareFunc[T any]() func(l, r T) int {
+	t := stlreflect.Type[T]()
+	switch {
+	case t.Implements(stlreflect.Type[Comparable[T]]()):
 		return func(l, r T) int {
 			return any(l).(Comparable[T]).Compare(r)
 		}
 	default:
-		f := getReflectCompareFunc(reflect.ValueOf(v))
+		f := getReflectCompareFunc(stlreflect.Zero[T]())
 		return func(l, r T) int {
 			return f(l, r)
 		}
@@ -71,5 +69,5 @@ func getReflectCompareFunc(v reflect.Value) func(l, r any) int {
 
 // Compare 比较大小
 func Compare[T any](lv, rv T) int {
-	return GetCompareFunc[T](lv, rv)(lv, rv)
+	return GetCompareFunc[T]()(lv, rv)
 }

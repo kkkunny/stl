@@ -116,7 +116,7 @@ func (self *_Queue[T]) Iterator() stliter.Iterator[T] {
 
 // Equal 比较相等
 func (self *_Queue[T]) Equal(dst Queue[T]) bool {
-	return stlslices.Equal(self.data, dst.getData())
+	return stlcmp.Equal(self.data, dst.getData())
 }
 
 // Clone 克隆

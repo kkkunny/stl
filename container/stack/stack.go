@@ -119,7 +119,7 @@ func (self *_Stack[T]) Iterator() stliter.Iterator[T] {
 
 // Equal 比较相等
 func (self *_Stack[T]) Equal(dst Stack[T]) bool {
-	return stlslices.Equal(self.data, dst.getData())
+	return stlcmp.Equal(self.data, dst.getData())
 }
 
 // Clone 克隆
