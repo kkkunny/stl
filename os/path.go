@@ -4,8 +4,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-
-	stlbasic "github.com/kkkunny/stl/hash"
 )
 
 // FilePath 文件路径
@@ -22,22 +20,6 @@ func GetWorkDirectory() (FilePath, error) {
 		return "", err
 	}
 	return FilePath(fp), nil
-}
-
-func (self FilePath) String() string {
-	return string(self)
-}
-
-func (self FilePath) Clone() FilePath {
-	return self
-}
-
-func (self FilePath) Equal(dst FilePath) bool {
-	return self == dst
-}
-
-func (self FilePath) Hash() uint64 {
-	return stlbasic.Hash(string(self))
 }
 
 func (self FilePath) Abs() (FilePath, error) {

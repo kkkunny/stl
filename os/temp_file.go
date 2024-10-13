@@ -53,7 +53,7 @@ func CreateTempFile(prefix string) (FilePath, *os.File, error) {
 	if err != nil {
 		return "", nil, err
 	}
-	file, err := os.Create(path.String())
+	file, err := os.Create(string(path))
 	if err != nil {
 		return "", nil, err
 	}
@@ -69,7 +69,7 @@ func (f *TempFile) Close() error {
 	if err := f.File.Close(); err != nil {
 		return err
 	}
-	return os.Remove(f.path.String())
+	return os.Remove(string(f.path))
 }
 
 // CreateTempFileWithCloser 创建一个带自动删除的缓存文件

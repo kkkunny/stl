@@ -6,6 +6,7 @@ import (
 
 	"github.com/kkkunny/stl/container/pair"
 	stltest "github.com/kkkunny/stl/test"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 func TestAnyPQueue_String(t *testing.T) {
@@ -19,8 +20,8 @@ func TestAnyPQueue_String(t *testing.T) {
 func TestAnyPQueue_Clone(t *testing.T) {
 	v1 := _NewAnyPQueue[int]()
 	v1.Push(1, 1)
-	v2 := v1.Clone()
-	stltest.AssertEq(t, v1.Equal(v2), true)
+	v2 := stlval.Clone(v1)
+	stltest.AssertEq(t, v1, v2)
 }
 
 func TestAnyPQueue_Equal(t *testing.T) {

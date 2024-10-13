@@ -87,15 +87,3 @@ func (self Size) String() string {
 	}
 	return fmt.Sprintf("%s %s", prefix, more.String())
 }
-
-func (self Size) Clone() Size {
-	return self
-}
-
-func (self Size) Equal(dst Size) bool {
-	return self == dst
-}
-
-func (self Size) Hash() uint64 {
-	return uint64(self)
-}

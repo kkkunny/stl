@@ -4,7 +4,7 @@ import (
 	stlbasic "github.com/kkkunny/stl/value"
 )
 
-func (self Either[L, R]) Clone() Either[L, R] {
+func (self Either[L, R]) Clone() any {
 	self.init()
 	return Either[L, R]{
 		left: self.left,

@@ -9,6 +9,7 @@ import (
 	"github.com/kkkunny/stl/container/pair"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/internal/slices"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 type anyPQueueNode[T any] struct {
@@ -48,7 +49,7 @@ func _NewAnyPQueueWith[T any](vs ...any) PQueue[T] {
 
 // Clone 克隆
 func (self *_AnyPQueue[T]) Clone() PQueue[T] {
-	return &_AnyPQueue[T]{data: self.data.Clone()}
+	return &_AnyPQueue[T]{data: stlval.Clone(self.data)}
 }
 
 // Equal 比较相等

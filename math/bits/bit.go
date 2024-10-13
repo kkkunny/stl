@@ -17,14 +17,6 @@ func (self Bit) String() string {
 	}
 }
 
-func (self Bit) Equal(dst Bit) bool {
-	return self == dst
-}
-
-func (self Bit) Clone() Bit {
-	return self
-}
-
 func (self Bit) Hash() uint64 {
 	if self {
 		return 1

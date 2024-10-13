@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	stlreflect "github.com/kkkunny/stl/reflect"
+	reflect2 "github.com/kkkunny/stl/internal/reflect"
 )
 
 // Comparable 可比较的
@@ -15,9 +15,9 @@ type Comparable[Self any] interface {
 }
 
 func GetCompareFunc[T any]() func(l, r T) int {
-	t := stlreflect.Type[T]()
+	t := reflect2.TypeFor[T]()
 	switch {
-	case t.Implements(stlreflect.Type[Comparable[T]]()):
+	case t.Implements(reflect2.TypeFor[Comparable[T]]()):
 		return func(l, r T) int {
 			return any(l).(Comparable[T]).Compare(r)
 		}
