@@ -22,21 +22,15 @@ func GetCompareFunc[T any]() func(l, r T) int {
 			return any(l).(Comparable[T]).Compare(r)
 		}
 	default:
-		f := getReflectCompareFunc(stlreflect.Zero[T]())
+		f := getReflectCompareFunc(t)
 		return func(l, r T) int {
 			return f(l, r)
 		}
 	}
 }
 
-func getReflectCompareFunc(v reflect.Value) func(l, r any) int {
-	if !v.IsValid() {
-		return func(_, _ any) int {
-			return 0
-		}
-	}
-
-	switch vt := v.Type(); vt.Kind() {
+func getReflectCompareFunc(vt reflect.Type) func(l, r any) int {
+	switch vt.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return func(l, r any) int {
 			lv, rv := reflect.ValueOf(l).Int(), reflect.ValueOf(r).Int()

@@ -2,8 +2,6 @@ package stlreflect
 
 import (
 	"reflect"
-
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func Type[T any]() reflect.Type {
@@ -12,5 +10,6 @@ func Type[T any]() reflect.Type {
 }
 
 func Zero[T any]() reflect.Value {
-	return reflect.ValueOf(stlval.New[T]()).Elem()
+	var v T
+	return reflect.ValueOf(&v).Elem()
 }
