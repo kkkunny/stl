@@ -35,7 +35,15 @@ func GetEqualFunc[T any]() func(l, r T) bool {
 	}
 }
 
-func getEqualFunc(t reflect.Type, useRuntime bool) (func(l, r any) bool, bool) {
+func getEqualFunc(t reflect.Type, useRuntime bool) (f func(l, r any) bool, ok bool) {
+	ret, ok := eqFuncCache.Get(t.String())
+	if ok {
+		return ret.f, ret.ok
+	}
+	defer func() {
+		eqFuncCache.Add(t.String(), eqRetType{f: f, ok: ok})
+	}()
+
 	it := reflect2.TypeFor[Equalable[any]]()
 	switch {
 	case t.Implements(it):
@@ -60,11 +68,7 @@ func getEqualFunc(t reflect.Type, useRuntime bool) (func(l, r any) bool, bool) {
 		if !useRuntime {
 			return nil, false
 		}
-		f, ok := getRuntimeEqualFunc(t)
-		if !ok {
-			return nil, false
-		}
-		return f, true
+		return getRuntimeEqualFunc(t)
 	}
 }
 

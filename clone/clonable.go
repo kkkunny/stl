@@ -13,7 +13,7 @@ type Cloneable[Self any] interface {
 }
 
 // GetCloneFunc 获取克隆函数，若没有会panic
-func GetCloneFunc[T any]() func(v T) T {
+func GetCloneFunc[T any]() (f func(v T) T) {
 	t := reflect2.TypeFor[T]()
 	switch {
 	case t.Implements(reflect2.TypeFor[Cloneable[T]]()):
@@ -35,7 +35,15 @@ func GetCloneFunc[T any]() func(v T) T {
 	}
 }
 
-func getCloneFunc(t reflect.Type, useRuntime bool) (func(v any) any, bool) {
+func getCloneFunc(t reflect.Type, useRuntime bool) (f func(v any) any, ok bool) {
+	ret, ok := cloneFuncCache.Get(t.String())
+	if ok {
+		return ret.f, ret.ok
+	}
+	defer func() {
+		cloneFuncCache.Add(t.String(), retType{f: f, ok: ok})
+	}()
+
 	it := reflect2.TypeFor[Cloneable[any]]()
 	switch {
 	case t.Implements(it):
@@ -60,11 +68,7 @@ func getCloneFunc(t reflect.Type, useRuntime bool) (func(v any) any, bool) {
 		if !useRuntime {
 			return nil, false
 		}
-		f, ok := getRuntimeCloneFunc(t)
-		if !ok {
-			return nil, false
-		}
-		return f, true
+		return getRuntimeCloneFunc(t)
 	}
 }
 
