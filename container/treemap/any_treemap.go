@@ -8,6 +8,7 @@ import (
 
 	"github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -37,7 +38,7 @@ func _NewAnyTreeMapWith[K, V any](vs ...any) TreeMap[K, V] {
 }
 
 // Clone 克隆
-func (self *_AnyTreeMap[K, V]) Clone() any {
+func (self *_AnyTreeMap[K, V]) Clone() stlmaps.MapObj[K, V] {
 	tm := _NewAnyTreeMap[K, V]()
 	if !self.Empty() {
 		self.data.Ascend(self.data.Min(), func(item rbtree.Item) bool {
@@ -49,7 +50,7 @@ func (self *_AnyTreeMap[K, V]) Clone() any {
 }
 
 // Equal 比较
-func (self *_AnyTreeMap[K, V]) Equal(dstObj any) bool {
+func (self *_AnyTreeMap[K, V]) Equal(dstObj stlmaps.MapObj[K, V]) bool {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {

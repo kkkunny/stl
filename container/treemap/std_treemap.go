@@ -9,6 +9,7 @@ import (
 
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
 )
@@ -30,7 +31,7 @@ func _NewStdTreeMapWith[K cmp.Ordered, V any](vs ...any) TreeMap[K, V] {
 }
 
 // Clone 克隆
-func (self *_StdTreeMap[K, V]) Clone() any {
+func (self *_StdTreeMap[K, V]) Clone() stlmaps.MapObj[K, V] {
 	tm := _NewStdTreeMap[K, V]()
 	for iter := self.data.Iterator(); iter != nil; iter = iter.Next() {
 		tm.Set(iter.Key, iter.Value)
@@ -39,7 +40,7 @@ func (self *_StdTreeMap[K, V]) Clone() any {
 }
 
 // Equal 比较
-func (self *_StdTreeMap[K, V]) Equal(dstObj any) bool {
+func (self *_StdTreeMap[K, V]) Equal(dstObj stlmaps.MapObj[K, V]) bool {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {

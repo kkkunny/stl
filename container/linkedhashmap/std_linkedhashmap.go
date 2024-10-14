@@ -8,6 +8,7 @@ import (
 
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
 	"github.com/kkkunny/stl/list"
 )
@@ -43,7 +44,7 @@ func (self *_StdLinkedHashMap[K, V]) Capacity() uint {
 	return self.kvs.Capacity()
 }
 
-func (self *_StdLinkedHashMap[K, V]) Clone() any {
+func (self *_StdLinkedHashMap[K, V]) Clone() stlmaps.MapObj[K, V] {
 	hm := _NewStdLinkedHashMapWithCapacity[K, V](self.Capacity())
 	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		hm.Set(cursor.Value.Unpack())
@@ -51,7 +52,7 @@ func (self *_StdLinkedHashMap[K, V]) Clone() any {
 	return hm
 }
 
-func (self *_StdLinkedHashMap[K, V]) Equal(dstObj any) bool {
+func (self *_StdLinkedHashMap[K, V]) Equal(dstObj stlmaps.MapObj[K, V]) bool {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {

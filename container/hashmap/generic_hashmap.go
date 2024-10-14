@@ -11,6 +11,7 @@ import (
 
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
 	stlhash "github.com/kkkunny/stl/hash"
@@ -87,11 +88,11 @@ func (self *_GenericHashMap[K, V]) Capacity() uint {
 	return uint(h.capacity)
 }
 
-func (self *_GenericHashMap[K, V]) Clone() any {
+func (self *_GenericHashMap[K, V]) Clone() stlmaps.MapObj[K, V] {
 	return &_GenericHashMap[K, V]{data: self.data.Copy()}
 }
 
-func (self *_GenericHashMap[K, V]) Equal(dstObj any) (eq bool) {
+func (self *_GenericHashMap[K, V]) Equal(dstObj stlmaps.MapObj[K, V]) (eq bool) {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {

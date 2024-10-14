@@ -12,8 +12,8 @@ import (
 
 type MapObj[K, V any] interface {
 	mapIter2[K, V]
-	stlval.Cloneable[any]
-	stlcmp.Equalable[any]
+	stlval.Cloneable[MapObj[K, V]]
+	stlcmp.Equalable[MapObj[K, V]]
 	stliter.IteratorContainer[tuple.Tuple2[K, V]]
 	stlbasic.Lengthable
 	Set(k K, v V) V

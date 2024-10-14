@@ -43,25 +43,28 @@ func getCloneFunc(t reflect.Type, useRuntime bool) (func(v any) any, bool) {
 			return v.(Cloneable[any]).Clone()
 		}, true
 	default:
-		methods := make([]reflect.Method, it.NumMethod())
-		for i := 0; i < len(methods); i++ {
-			methods[i] = reflect2.ReplaceMethodAnyTo(it.Method(i), t)
-		}
-		if !reflect2.HasAllMethod(t, methods...) {
-			if !useRuntime {
-				return nil, false
+		method, ok := t.MethodByName("Clone")
+		if ok && method.Type.NumOut() == 1 {
+			methods := make([]reflect.Method, it.NumMethod())
+			for i := 0; i < len(methods); i++ {
+				methods[i] = it.Method(i)
 			}
-			f, ok := getRuntimeCloneFunc(t)
-			if !ok {
-				return nil, false
+			if reflect2.HasAllMethod(t, method.Type.Out(0), methods...) {
+				return func(v any) any {
+					vv := reflect.ValueOf(v)
+					method := vv.MethodByName("Clone")
+					return method.Call(nil)[0].Interface()
+				}, true
 			}
-			return f, true
 		}
-		return func(v any) any {
-			vv := reflect.ValueOf(v)
-			method := vv.MethodByName("Clone")
-			return method.Call([]reflect.Value{vv})[0].Interface()
-		}, true
+		if !useRuntime {
+			return nil, false
+		}
+		f, ok := getRuntimeCloneFunc(t)
+		if !ok {
+			return nil, false
+		}
+		return f, true
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 
 	stlbasic "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
 )
@@ -44,7 +45,7 @@ func (self *_SwissTable[K, V]) Capacity() uint {
 	return uint(self.data.Capacity() + self.data.Count())
 }
 
-func (self *_SwissTable[K, V]) Clone() any {
+func (self *_SwissTable[K, V]) Clone() stlmaps.MapObj[K, V] {
 	newMap := _NewSwissTableWithCapacity[K, V](self.Capacity())
 	self.data.Iter(func(k K, v V) bool {
 		newMap.Set(k, v)
@@ -53,7 +54,7 @@ func (self *_SwissTable[K, V]) Clone() any {
 	return newMap
 }
 
-func (self *_SwissTable[K, V]) Equal(dstObj any) (eq bool) {
+func (self *_SwissTable[K, V]) Equal(dstObj stlmaps.MapObj[K, V]) (eq bool) {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {

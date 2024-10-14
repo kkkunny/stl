@@ -8,6 +8,7 @@ import (
 
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
+	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -43,14 +44,14 @@ func (self *_StdBiMap[T, E]) Capacity() uint {
 	return self.keys.Capacity()
 }
 
-func (self *_StdBiMap[T, E]) Clone() any {
+func (self *_StdBiMap[T, E]) Clone() stlmaps.MapObj[T, E] {
 	return &_StdBiMap[T, E]{
 		keys:   stlval.Clone(self.keys),
 		values: stlval.Clone(self.values),
 	}
 }
 
-func (self *_StdBiMap[T, E]) Equal(dstObj any) bool {
+func (self *_StdBiMap[T, E]) Equal(dstObj stlmaps.MapObj[T, E]) bool {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {

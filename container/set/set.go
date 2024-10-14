@@ -17,8 +17,8 @@ import (
 
 type Set[T any] interface {
 	setIter[T]
-	stlval.Cloneable[any]
-	stlcmp.Equalable[any]
+	stlval.Cloneable[Set[T]]
+	stlcmp.Equalable[Set[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable
 	Add(v T) bool
@@ -113,11 +113,11 @@ func _NewSet[T any](data stlmaps.MapObj[T, struct{}]) Set[T] {
 	return &_Set[T]{data: data}
 }
 
-func (self *_Set[T]) Clone() any {
+func (self *_Set[T]) Clone() Set[T] {
 	return &_Set[T]{data: stlval.Clone(self.data)}
 }
 
-func (self *_Set[T]) Equal(dstObj any) bool {
+func (self *_Set[T]) Equal(dstObj Set[T]) bool {
 	if dstObj == nil && self == nil {
 		return true
 	} else if dstObj == nil {
