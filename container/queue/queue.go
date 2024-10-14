@@ -5,15 +5,15 @@ import (
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/clone"
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
-	"github.com/kkkunny/stl/value"
 )
 
 type Queue[T any] interface {
 	queueIter[T]
-	stlval.Cloneable[Queue[T]]
+	clone.Cloneable[Queue[T]]
 	stlcmp.Equalable[Queue[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable

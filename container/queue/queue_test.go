@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kkkunny/stl/clone"
 	stltest "github.com/kkkunny/stl/test"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func Test_Queue_String(t *testing.T) {
@@ -62,6 +62,6 @@ func Test_Queue_Equal(t *testing.T) {
 
 func Test_Queue_Clone(t *testing.T) {
 	v1 := _NewQueueWith[int](1, 2, 3)
-	v2 := stlval.Clone(v1)
+	v2 := clone.Clone(v1)
 	stltest.AssertEq(t, v1.Equal(v2), true)
 }

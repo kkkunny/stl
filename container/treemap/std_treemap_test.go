@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/kkkunny/stl/clone"
 	"github.com/kkkunny/stl/container/tuple"
 	stltest "github.com/kkkunny/stl/test"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func BenchmarkWrite_StdTreeMap(b *testing.B) {
@@ -30,7 +30,7 @@ func BenchmarkRead_StdTreeMap(b *testing.B) {
 
 func TestStdTreeMap_Clone(t *testing.T) {
 	hm1 := _NewStdTreeMapWith[int, int](1, 1, 2, 2)
-	hm2 := stlval.Clone(hm1)
+	hm2 := clone.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 

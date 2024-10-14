@@ -1,4 +1,4 @@
-package stlval
+package clone
 
 import (
 	"fmt"

@@ -6,18 +6,18 @@ import (
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/clone"
 	stlcmp "github.com/kkkunny/stl/cmp"
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/linkedhashmap"
 	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/treemap"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 type Set[T any] interface {
 	setIter[T]
-	stlval.Cloneable[Set[T]]
+	clone.Cloneable[Set[T]]
 	stlcmp.Equalable[Set[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable
@@ -114,7 +114,7 @@ func _NewSet[T any](data stlmaps.MapObj[T, struct{}]) Set[T] {
 }
 
 func (self *_Set[T]) Clone() Set[T] {
-	return &_Set[T]{data: stlval.Clone(self.data)}
+	return &_Set[T]{data: clone.Clone(self.data)}
 }
 
 func (self *_Set[T]) Equal(dstObj Set[T]) bool {
@@ -133,7 +133,7 @@ func (self *_Set[T]) Equal(dstObj Set[T]) bool {
 }
 
 func (self *_Set[T]) NewWithIterator(iter stliter.Iterator[T]) any {
-	data := stlval.Clone(self.data)
+	data := clone.Clone(self.data)
 	data.Clear()
 	newSet := _NewSet[T](data)
 	for iter.Next() {

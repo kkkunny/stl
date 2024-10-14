@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/clone"
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
-	"github.com/kkkunny/stl/value"
 )
 
 type Heap[T any] interface {
 	heapIter[T]
-	stlval.Cloneable[Heap[T]]
+	clone.Cloneable[Heap[T]]
 	stlcmp.Equalable[Heap[T]]
 	stliter.IteratorContainer[T]
 	stlbasic.Lengthable

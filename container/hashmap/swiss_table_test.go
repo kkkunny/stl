@@ -4,11 +4,11 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/kkkunny/stl/clone"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
 	stlmath "github.com/kkkunny/stl/math"
 	stltest "github.com/kkkunny/stl/test"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func BenchmarkWrite_SwissTable(b *testing.B) {
@@ -39,7 +39,7 @@ func TestSwissTable_Capacity(t *testing.T) {
 
 func TestSwissTable_Clone(t *testing.T) {
 	hm1 := _NewSwissTableWith[int, int](1, 1, 2, 2)
-	hm2 := stlval.Clone(hm1)
+	hm2 := clone.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 

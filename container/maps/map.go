@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/clone"
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/tuple"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 type MapObj[K, V any] interface {
 	mapIter2[K, V]
-	stlval.Cloneable[MapObj[K, V]]
+	clone.Cloneable[MapObj[K, V]]
 	stlcmp.Equalable[MapObj[K, V]]
 	stliter.IteratorContainer[tuple.Tuple2[K, V]]
 	stlbasic.Lengthable

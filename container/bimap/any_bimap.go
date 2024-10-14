@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kkkunny/stl/clone"
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 type _AnyBiMap[T, E any] struct {
@@ -46,8 +46,8 @@ func (self *_AnyBiMap[T, E]) Capacity() uint {
 
 func (self *_AnyBiMap[T, E]) Clone() stlmaps.MapObj[T, E] {
 	return &_AnyBiMap[T, E]{
-		keys:   stlval.Clone(self.keys),
-		values: stlval.Clone(self.values),
+		keys:   clone.Clone(self.keys),
+		values: clone.Clone(self.values),
 	}
 }
 

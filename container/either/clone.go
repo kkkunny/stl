@@ -1,13 +1,11 @@
 package either
 
-import (
-	stlbasic "github.com/kkkunny/stl/value"
-)
+import "github.com/kkkunny/stl/clone"
 
 func (self Either[L, R]) Clone() Either[L, R] {
 	self.init()
 	return Either[L, R]{
 		left: self.left,
-		data: stlbasic.Clone(self.data),
+		data: clone.Clone(self.data),
 	}
 }

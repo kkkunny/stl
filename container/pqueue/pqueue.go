@@ -4,16 +4,16 @@ import (
 	"fmt"
 
 	stlbasic "github.com/kkkunny/stl/basic"
+	"github.com/kkkunny/stl/clone"
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stlheap "github.com/kkkunny/stl/container/heap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	"github.com/kkkunny/stl/container/tuple"
-	"github.com/kkkunny/stl/value"
 )
 
 type PQueue[T any] interface {
 	pqueueIter[T]
-	stlval.Cloneable[PQueue[T]]
+	clone.Cloneable[PQueue[T]]
 	stlcmp.Equalable[PQueue[T]]
 	stliter.IteratorContainer[tuple.Tuple2[uint64, T]]
 	stlbasic.Lengthable

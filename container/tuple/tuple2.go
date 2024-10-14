@@ -3,8 +3,8 @@ package tuple
 import (
 	"fmt"
 
+	"github.com/kkkunny/stl/clone"
 	stlcmp "github.com/kkkunny/stl/cmp"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 type Tuple2[T, E any] struct {
@@ -29,7 +29,7 @@ func (self Tuple2[T, E]) Equal(dstObj any) bool {
 }
 
 func (self Tuple2[T, E]) Clone() any {
-	return Pack2(stlval.Clone(self.t), stlval.Clone(self.e))
+	return Pack2(clone.Clone(self.t), clone.Clone(self.e))
 }
 
 func (self Tuple2[T, E]) String() string {

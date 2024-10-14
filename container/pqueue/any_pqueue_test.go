@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/kkkunny/stl/clone"
 	"github.com/kkkunny/stl/container/tuple"
 	stltest "github.com/kkkunny/stl/test"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func TestAnyPQueue_String(t *testing.T) {
@@ -20,7 +20,7 @@ func TestAnyPQueue_String(t *testing.T) {
 func TestAnyPQueue_Clone(t *testing.T) {
 	v1 := _NewAnyPQueue[int]()
 	v1.Push(1, 1)
-	v2 := stlval.Clone(v1)
+	v2 := clone.Clone(v1)
 	stltest.AssertEq(t, v1, v2)
 }
 

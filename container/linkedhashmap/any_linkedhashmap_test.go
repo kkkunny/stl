@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/kkkunny/stl/clone"
 	"github.com/kkkunny/stl/container/tuple"
 	stltest "github.com/kkkunny/stl/test"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func TestAnyLinkedHashMap_Clone(t *testing.T) {
 	hm1 := _NewAnyLinkedHashMapWith[int, int](1, 1, 2, 2)
-	hm2 := stlval.Clone(hm1)
+	hm2 := clone.Clone(hm1)
 	stltest.AssertEq(t, hm1, hm2)
 }
 

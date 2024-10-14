@@ -3,13 +3,13 @@ package set
 import (
 	"testing"
 
+	"github.com/kkkunny/stl/clone"
 	stltest "github.com/kkkunny/stl/test"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 func TestSet_Clone(t *testing.T) {
 	hs1 := StdHashSetWith[int](1, 2)
-	hs2 := stlval.Clone(hs1)
+	hs2 := clone.Clone(hs1)
 	stltest.AssertEq(t, hs1, hs2)
 }
 

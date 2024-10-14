@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/kkkunny/stl/clone"
 	stlheap "github.com/kkkunny/stl/container/heap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
 	"github.com/kkkunny/stl/internal/slices"
-	stlval "github.com/kkkunny/stl/value"
 )
 
 type anyPQueueNode[T any] struct {
@@ -49,7 +49,7 @@ func _NewAnyPQueueWith[T any](vs ...any) PQueue[T] {
 
 // Clone 克隆
 func (self *_AnyPQueue[T]) Clone() PQueue[T] {
-	return &_AnyPQueue[T]{data: stlval.Clone(self.data)}
+	return &_AnyPQueue[T]{data: clone.Clone(self.data)}
 }
 
 // Equal 比较相等
