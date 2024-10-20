@@ -1,3 +1,5 @@
+//go:build !goexperiment.rangefunc && !go1.23
+
 package stliter
 
 type sliceIterator[T any] struct {

@@ -16,7 +16,7 @@ type Stack[T any] interface {
 	stackIter[T]
 	clone.Cloneable[Stack[T]]
 	stlcmp.Equalable[Stack[T]]
-	stliter.IteratorContainer[T]
+	stliter.IterContainer[T]
 	stlbasic.Lengthable
 	Push(v T, vs ...T)
 	Pop() T

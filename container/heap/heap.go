@@ -13,7 +13,7 @@ type Heap[T any] interface {
 	heapIter[T]
 	clone.Cloneable[Heap[T]]
 	stlcmp.Equalable[Heap[T]]
-	stliter.IteratorContainer[T]
+	stliter.IterContainer[T]
 	stlbasic.Lengthable
 	Push(v T, vs ...T)
 	Pop() T

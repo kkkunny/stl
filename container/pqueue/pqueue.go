@@ -15,7 +15,7 @@ type PQueue[T any] interface {
 	pqueueIter[T]
 	clone.Cloneable[PQueue[T]]
 	stlcmp.Equalable[PQueue[T]]
-	stliter.IteratorContainer[tuple.Tuple2[uint64, T]]
+	stliter.IterContainer[tuple.Tuple2[uint64, T]]
 	stlbasic.Lengthable
 	Push(prior uint64, value T)
 	Pop() (uint64, T)

@@ -14,7 +14,7 @@ type MapObj[K, V any] interface {
 	mapIter2[K, V]
 	clone.Cloneable[MapObj[K, V]]
 	stlcmp.Equalable[MapObj[K, V]]
-	stliter.IteratorContainer[tuple.Tuple2[K, V]]
+	stliter.IterContainer[tuple.Tuple2[K, V]]
 	stlbasic.Lengthable
 	Set(k K, v V) V
 	Get(k K, defaultValue ...V) V

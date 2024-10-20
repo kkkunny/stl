@@ -15,7 +15,7 @@ type Queue[T any] interface {
 	queueIter[T]
 	clone.Cloneable[Queue[T]]
 	stlcmp.Equalable[Queue[T]]
-	stliter.IteratorContainer[T]
+	stliter.IterContainer[T, Queue[T]]
 	stlbasic.Lengthable
 	Push(v T, vs ...T)
 	Pop() T
@@ -97,21 +97,6 @@ func (self *_Queue[T]) ToSlice() []T {
 // Length 长度
 func (self *_Queue[T]) Length() uint {
 	return uint(len(self.data))
-}
-
-func (self *_Queue[T]) NewWithIterator(iter stliter.Iterator[T]) any {
-	data := make([]T, iter.Length())
-	var i int
-	for iter.Next() {
-		data[i] = iter.Value()
-		i++
-	}
-	return &_Queue[T]{data: data}
-}
-
-// Iterator 迭代器
-func (self *_Queue[T]) Iterator() stliter.Iterator[T] {
-	return stliter.NewSliceIterator(self.data...)
 }
 
 // Equal 比较相等

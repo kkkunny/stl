@@ -1,3 +1,5 @@
+//go:build !goexperiment.rangefunc && !go1.23
+
 package stliter
 
 import stlbasic "github.com/kkkunny/stl/basic"

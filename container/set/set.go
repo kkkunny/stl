@@ -19,7 +19,7 @@ type Set[T any] interface {
 	setIter[T]
 	clone.Cloneable[Set[T]]
 	stlcmp.Equalable[Set[T]]
-	stliter.IteratorContainer[T]
+	stliter.IterContainer[T]
 	stlbasic.Lengthable
 	Add(v T) bool
 	Contain(v T) bool
