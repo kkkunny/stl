@@ -4,6 +4,11 @@ import (
 	"fmt"
 )
 
+const (
+	decimalSep = 1000
+	binarySep  = 1024
+)
+
 // Size 大小
 type Size uint64
 
@@ -14,42 +19,42 @@ const (
 
 // 十进制 bit
 const (
-	Kbit Size = Bit * 1000
-	Mbit      = Kbit * 1000
-	Gbit      = Mbit * 1000
-	Tbit      = Gbit * 1000
-	Pbit      = Tbit * 1000
-	// Ebit      = Pbit * 1000
+	Kbit Size = Bit * decimalSep
+	Mbit      = Kbit * decimalSep
+	Gbit      = Mbit * decimalSep
+	Tbit      = Gbit * decimalSep
+	Pbit      = Tbit * decimalSep
+	// Ebit      = Pbit * decimalSep
 )
 
 // 十进制 byte
 const (
-	Kb Size = Byte * 1000
-	Mb      = Kb * 1000
-	Gb      = Mb * 1000
-	Tb      = Gb * 1000
-	Pb      = Tb * 1000
-	// Eb      = Pb * 1000
+	Kb Size = Byte * decimalSep
+	Mb      = Kb * decimalSep
+	Gb      = Mb * decimalSep
+	Tb      = Gb * decimalSep
+	Pb      = Tb * decimalSep
+	// Eb      = Pb * decimalSep
 )
 
 // 二进制 bit
 const (
-	Kibit Size = Bit * 1024
-	Mibit      = Kibit * 1024
-	Gibit      = Mibit * 1024
-	Tibit      = Gibit * 1024
-	Pibit      = Tibit * 1024
-	// Eibit      = Pibit * 1024
+	Kibit Size = Bit * binarySep
+	Mibit      = Kibit * binarySep
+	Gibit      = Mibit * binarySep
+	Tibit      = Gibit * binarySep
+	Pibit      = Tibit * binarySep
+	// Eibit      = Pibit * binarySep
 )
 
 // 二进制 byte
 const (
-	Kib Size = Byte * 1024
-	Mib      = Kib * 1024
-	Gib      = Mib * 1024
-	Tib      = Gib * 1024
-	Pib      = Tib * 1024
-	// Eib      = Pib * 1024
+	Kib Size = Byte * binarySep
+	Mib      = Kib * binarySep
+	Gib      = Mib * binarySep
+	Tib      = Gib * binarySep
+	Pib      = Tib * binarySep
+	// Eib      = Pib * binarySep
 )
 
 func (self Size) String() string {
@@ -86,4 +91,25 @@ func (self Size) String() string {
 		return prefix
 	}
 	return fmt.Sprintf("%s %s", prefix, more.String())
+}
+
+func (self Size) SimpleString() string {
+	switch {
+	// case self/Eib > 0:
+	// 	return fmt.Sprintf("%.2f Eib", float64(self/Pib)/float64(binarySep))
+	case self/Pib > 0:
+		return fmt.Sprintf("%.2f Pib", float64(self/Tib)/float64(binarySep))
+	case self/Tib > 0:
+		return fmt.Sprintf("%.2f Tib", float64(self/Gib)/float64(binarySep))
+	case self/Gib > 0:
+		return fmt.Sprintf("%.2f Gib", float64(self/Mib)/float64(binarySep))
+	case self/Mib > 0:
+		return fmt.Sprintf("%.2f Mib", float64(self/Kib)/float64(binarySep))
+	case self/Kib > 0:
+		return fmt.Sprintf("%.2f Kib", float64(self)/float64(Kib))
+	case self/Byte > 0:
+		return fmt.Sprintf("%.2f Kib", float64(self)/float64(Byte))
+	default:
+		return fmt.Sprintf("%d Bit", self)
+	}
 }
