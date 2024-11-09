@@ -83,6 +83,16 @@ func Random[K comparable, V any](hmap map[K]V) (K, V) {
 	return keys[index], hmap[keys[index]]
 }
 
+func Filter[K comparable, V any](hmap map[K]V, filter func(k K, v V) bool) map[K]V {
+	res := make(map[K]V, len(hmap))
+	for k, v := range hmap {
+		if filter(k, v) {
+			res[k] = v
+		}
+	}
+	return res
+}
+
 func ContainKey[K comparable, V any](hmap map[K]V, key K) bool {
 	_, ok := hmap[key]
 	return ok
@@ -98,6 +108,15 @@ func ContainAllKeys[K comparable, V any](hmap map[K]V, keys ...K) bool {
 	return stlslices.All(keys, func(_ int, key K) bool {
 		return ContainKey(hmap, key)
 	})
+}
+
+func Exist[K comparable, V any](hmap map[K]V, filter func(k K, v V) bool) bool {
+	for k, v := range hmap {
+		if filter(k, v) {
+			return true
+		}
+	}
+	return false
 }
 
 func Union[K comparable, V any](l, r map[K]V) map[K]V {

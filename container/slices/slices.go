@@ -104,6 +104,15 @@ func Contain[T comparable](slice []T, v T) bool {
 	return ContainAny(slice, v)
 }
 
+func Exist[T any](slice []T, filter func(i int, e T) bool) bool {
+	for i, e := range slice {
+		if filter(i, e) {
+			return true
+		}
+	}
+	return false
+}
+
 func Sort[T cmp.Ordered](slice []T, reverse ...bool) []T {
 	slice = slices.Clone(slice)
 	slices.SortFunc(slice, func(l, r T) int {
