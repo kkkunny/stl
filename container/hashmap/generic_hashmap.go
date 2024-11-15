@@ -72,7 +72,11 @@ func _NewGenericHashMap[K, V any]() HashMap[K, V] {
 }
 
 func _NewGenericHashMapWithCapacity[K, V any](cap uint) HashMap[K, V] {
-	return &_GenericHashMap[K, V]{data: hm.New[K, V](uint64(cap), stlcmp.GetEqualFunc[K](), stlhash.GetHashFunc[K]())}
+	equalFn := stlcmp.GetEqualFunc[K]()
+	hashFn := stlhash.GetHashFunc[K]()
+	return &_GenericHashMap[K, V]{data: hm.New[K, V](uint64(cap), func(l, r K) bool {
+		return hashFn(l) == hashFn(r) && equalFn(l, r)
+	}, hashFn)}
 }
 
 func _NewGenericHashMapWith[K, V any](vs ...any) HashMap[K, V] {
