@@ -44,32 +44,21 @@ func getEqualFunc(t reflect.Type, useRuntime bool) (f func(l, r any) bool, ok bo
 		eqFuncCache.Add(t.String(), eqRetType{f: f, ok: ok})
 	}()
 
-	it := reflect2.TypeFor[Equalable[any]]()
-	switch {
-	case t.Implements(it):
-		return func(l, r any) bool {
-			return l.(Equalable[any]).Equal(r)
-		}, true
-	default:
-		method, ok := t.MethodByName("Equal")
-		if ok && method.Type.NumIn() > 0 {
-			methods := make([]reflect.Method, it.NumMethod())
-			for i := 0; i < len(methods); i++ {
-				methods[i] = it.Method(i)
-			}
-			if reflect2.HasAllMethod(t, method.Type.In(method.Type.NumIn()-1), methods...) {
-				return func(l, r any) bool {
-					lv, rv := reflect.ValueOf(l), reflect.ValueOf(r)
-					method := lv.MethodByName("Equal")
-					return method.Call([]reflect.Value{rv})[0].Bool()
-				}, true
-			}
+	method, ok := t.MethodByName("Equal")
+	if ok && method.Type.NumIn() == 2 && method.Type.NumOut() == 1 && method.Type.Out(0).String() == reflect.Bool.String() {
+		dstType := method.Type.In(1)
+		if t.AssignableTo(dstType) {
+			return func(l, r any) bool {
+				lv, rv := reflect.ValueOf(l), reflect.ValueOf(r)
+				method := lv.MethodByName("Equal")
+				return method.Call([]reflect.Value{rv})[0].Bool()
+			}, true
 		}
-		if !useRuntime {
-			return nil, false
-		}
-		return getRuntimeEqualFunc(t)
 	}
+	if !useRuntime {
+		return nil, false
+	}
+	return getRuntimeEqualFunc(t)
 }
 
 func getRuntimeEqualFunc(t reflect.Type) (func(l, r any) bool, bool) {
