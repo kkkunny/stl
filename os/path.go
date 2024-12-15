@@ -22,96 +22,104 @@ func GetWorkDirectory() (FilePath, error) {
 	return FilePath(fp), nil
 }
 
-func (self FilePath) Abs() (FilePath, error) {
-	fp, err := filepath.Abs(string(self))
+func (fp FilePath) Abs() (FilePath, error) {
+	absFp, err := filepath.Abs(string(fp))
 	if err != nil {
 		return "", err
 	}
-	return FilePath(fp), nil
+	return FilePath(absFp), nil
 }
 
-func (self FilePath) Base() string {
-	return filepath.Base(string(self))
+func (fp FilePath) Base() string {
+	return filepath.Base(string(fp))
 }
 
-func (self FilePath) Clean() FilePath {
-	return FilePath(filepath.Clean(string(self)))
+func (fp FilePath) Clean() FilePath {
+	return FilePath(filepath.Clean(string(fp)))
 }
 
-func (self FilePath) Dir() FilePath {
-	return FilePath(filepath.Dir(string(self)))
+func (fp FilePath) Dir() FilePath {
+	return FilePath(filepath.Dir(string(fp)))
 }
 
-func (self FilePath) Ext() string {
-	return filepath.Ext(string(self))
+func (fp FilePath) Ext() string {
+	return filepath.Ext(string(fp))
 }
 
-func (self FilePath) EvalSymlinks() (FilePath, error) {
-	fp, err := filepath.EvalSymlinks(string(self))
+func (fp FilePath) EvalSymlinks() (FilePath, error) {
+	symFp, err := filepath.EvalSymlinks(string(fp))
 	if err != nil {
 		return "", err
 	}
-	return FilePath(fp), nil
+	return FilePath(symFp), nil
 }
 
-func (self FilePath) FromSlash() FilePath {
-	return FilePath(filepath.FromSlash(string(self)))
+func (fp FilePath) FromSlash() FilePath {
+	return FilePath(filepath.FromSlash(string(fp)))
 }
 
-func (self FilePath) Glob() ([]string, error) {
-	return filepath.Glob(string(self))
+func (fp FilePath) Glob() ([]string, error) {
+	return filepath.Glob(string(fp))
 }
 
-func (self FilePath) IsLocal() bool {
-	return filepath.IsLocal(string(self))
+func (fp FilePath) IsLocal() bool {
+	return filepath.IsLocal(string(fp))
 }
 
-func (self FilePath) IsAbs() bool {
-	return filepath.IsAbs(string(self))
+func (fp FilePath) IsAbs() bool {
+	return filepath.IsAbs(string(fp))
 }
 
-func (self FilePath) Join(elem ...string) FilePath {
-	elems := append([]string{string(self)}, elem...)
+func (fp FilePath) Join(elem ...string) FilePath {
+	elems := append([]string{string(fp)}, elem...)
 	return FilePath(filepath.Join(elems...))
 }
 
-func (self FilePath) Rel(dst FilePath) (FilePath, error) {
-	fp, err := filepath.Rel(string(dst), string(self))
+func (fp FilePath) Rel(dst FilePath) (string, error) {
+	relFp, err := filepath.Rel(string(dst), string(fp))
 	if err != nil {
 		return "", err
 	}
-	return FilePath(fp), nil
+	return relFp, nil
 }
 
-func (self FilePath) Match(pattern string) (bool, error) {
-	return filepath.Match(pattern, string(self))
+func (fp FilePath) Match(pattern string) (bool, error) {
+	return filepath.Match(pattern, string(fp))
 }
 
-func (self FilePath) Split() (FilePath, string) {
-	dir, file := filepath.Split(string(self))
+func (fp FilePath) Split() (FilePath, string) {
+	dir, file := filepath.Split(string(fp))
 	return FilePath(dir), file
 }
 
-func (self FilePath) SplitList() []string {
-	return filepath.SplitList(string(self))
+func (fp FilePath) SplitList() []string {
+	return filepath.SplitList(string(fp))
 }
 
-func (self FilePath) VolumeName() string {
-	return filepath.VolumeName(string(self))
+func (fp FilePath) VolumeName() string {
+	return filepath.VolumeName(string(fp))
+}
+
+func (fp FilePath) ReplaceBase(from, to FilePath) (FilePath, error) {
+	relFp, err := fp.Rel(from)
+	if err != nil {
+		return "", err
+	}
+	return to.Join(relFp), nil
 }
 
 type WalkFunc func(path FilePath, info fs.FileInfo, err error) error
 
-func (self FilePath) Walk(fn WalkFunc) error {
-	return filepath.Walk(string(self), func(path string, info fs.FileInfo, err error) error {
+func (fp FilePath) Walk(fn WalkFunc) error {
+	return filepath.Walk(string(fp), func(path string, info fs.FileInfo, err error) error {
 		return fn(FilePath(path), info, err)
 	})
 }
 
 type WalkDirFunc func(path FilePath, d fs.DirEntry, err error) error
 
-func (self FilePath) WalkDir(fn WalkDirFunc) error {
-	return filepath.WalkDir(string(self), func(path string, d fs.DirEntry, err error) error {
+func (fp FilePath) WalkDir(fn WalkDirFunc) error {
+	return filepath.WalkDir(string(fp), func(path string, d fs.DirEntry, err error) error {
 		return fn(FilePath(path), d, err)
 	})
 }
