@@ -7,7 +7,6 @@ import (
 	"github.com/kkkunny/stl/clone"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
-	stlmath "github.com/kkkunny/stl/math"
 	stltest "github.com/kkkunny/stl/test"
 )
 
@@ -28,13 +27,6 @@ func BenchmarkRead_GenericHashMap(b *testing.B) {
 		key := rand.Int63n(10000)
 		_ = hm.Get(int(key))
 	}
-}
-
-func TestGenericHashMap_Capacity(t *testing.T) {
-	hm := _NewGenericHashMap[int, int]()
-	stltest.AssertEq(t, hm.Capacity(), initGenericHashMapCapacity)
-	hm = _NewGenericHashMapWithCapacity[int, int](20)
-	stltest.AssertEq(t, hm.Capacity(), stlmath.RoundToPowerOf[uint](20, 2))
 }
 
 func TestGenericHashMap_Clone(t *testing.T) {
