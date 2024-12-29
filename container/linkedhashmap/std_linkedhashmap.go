@@ -40,12 +40,8 @@ func _NewStdLinkedHashMapWith[K comparable, V any](vs ...any) LinkedHashMap[K, V
 	return self
 }
 
-func (self *_StdLinkedHashMap[K, V]) Capacity() uint {
-	return self.kvs.Capacity()
-}
-
 func (self *_StdLinkedHashMap[K, V]) Clone() stlmaps.MapObj[K, V] {
-	hm := _NewStdLinkedHashMapWithCapacity[K, V](self.Capacity())
+	hm := _NewStdLinkedHashMapWithCapacity[K, V](self.Length())
 	for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
 		hm.Set(cursor.Value.Unpack())
 	}

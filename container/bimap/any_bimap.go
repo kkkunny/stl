@@ -40,10 +40,6 @@ func _NewAnyBiMapWith[T, E any](vs ...any) BiMap[T, E] {
 	return self
 }
 
-func (self *_AnyBiMap[T, E]) Capacity() uint {
-	return self.keys.Capacity()
-}
-
 func (self *_AnyBiMap[T, E]) Clone() stlmaps.MapObj[T, E] {
 	return &_AnyBiMap[T, E]{
 		keys:   clone.Clone(self.keys),

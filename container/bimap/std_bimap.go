@@ -40,10 +40,6 @@ func _NewStdBiMapWith[T, E comparable](vs ...any) BiMap[T, E] {
 	return self
 }
 
-func (self *_StdBiMap[T, E]) Capacity() uint {
-	return self.keys.Capacity()
-}
-
 func (self *_StdBiMap[T, E]) Clone() stlmaps.MapObj[T, E] {
 	return &_StdBiMap[T, E]{
 		keys:   clone.Clone(self.keys),
