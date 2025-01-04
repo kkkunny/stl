@@ -5,6 +5,7 @@ import (
 	"time"
 
 	stlslices "github.com/kkkunny/stl/container/slices"
+	"github.com/kkkunny/stl/container/tuple"
 	"github.com/kkkunny/stl/internal/maps"
 )
 
@@ -153,4 +154,14 @@ func Clone[K comparable, V any](hmap map[K]V) map[K]V {
 		newHMap[k] = v
 	}
 	return newHMap
+}
+
+func First[K comparable, V any](hmap map[K]V, defaultValue ...tuple.Tuple2[K, V]) tuple.Tuple2[K, V] {
+	for k, v := range hmap {
+		return tuple.Pack2(k, v)
+	}
+	if len(defaultValue) > 0 {
+		return defaultValue[0]
+	}
+	return tuple.Tuple2[K, V]{}
 }
