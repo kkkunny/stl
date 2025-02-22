@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"iter"
 	"strings"
 
 	"github.com/kkkunny/stl/container/hashmap"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
+	json2 "github.com/kkkunny/stl/internal/json"
 	"github.com/kkkunny/stl/list"
 )
 
@@ -84,6 +86,16 @@ func (self *_AnyLinkedHashMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K,
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
+func (self *_AnyLinkedHashMap[K, V]) Iter2() iter.Seq2[K, V] {
+	return func(yield func(K, V) bool) {
+		for cursor := self.list.Front(); cursor != nil; cursor = cursor.Next() {
+			if !yield(cursor.Value.Unpack()) {
+				return
+			}
+		}
+	}
+}
+
 func (self *_AnyLinkedHashMap[K, V]) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	err := buf.WriteByte('{')
@@ -120,6 +132,16 @@ func (self *_AnyLinkedHashMap[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+func (self *_AnyLinkedHashMap[K, V]) UnmarshalJSON(data []byte) error {
+	for kvs, err := range json2.UnmarshalToMapObj[K, V](bytes.NewReader(data)) {
+		if err != nil {
+			return err
+		}
+		self.Set(kvs.Unpack())
+	}
+	return nil
 }
 
 func (self *_AnyLinkedHashMap[K, V]) Length() uint {

@@ -1,6 +1,7 @@
 package hashmap
 
 import (
+	"encoding/json"
 	"math/rand"
 	"testing"
 
@@ -115,4 +116,20 @@ func TestSwissTable_KeyValues(t *testing.T) {
 func TestSwissTable_String(t *testing.T) {
 	hm := _NewSwissTableWith[int, int](1, 1, 2, 2)
 	stltest.AssertNotEq(t, hm.String(), "")
+}
+
+func TestSwissTable_MarshalJSON(t *testing.T) {
+	hm := _NewSwissTableWith[string, int]("1", 1)
+	data, err := json.Marshal(hm)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertNotEq(t, string(data), "{\"1\": 1}")
+}
+
+func TestSwissTable_UnmarshalJSON(t *testing.T) {
+	hm1 := _NewSwissTableWith[string, int]("1", 1)
+	data, err := json.Marshal(hm1)
+	stltest.AssertEq(t, err, nil)
+	hm2 := _NewSwissTableWith[string, int]()
+	err = json.Unmarshal(data, hm2)
+	stltest.AssertEq(t, hm1, hm2)
 }

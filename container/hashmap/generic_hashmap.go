@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"iter"
 	"strings"
 	"unsafe"
 
@@ -15,6 +16,7 @@ import (
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
 	stlhash "github.com/kkkunny/stl/hash"
+	json2 "github.com/kkkunny/stl/internal/json"
 )
 
 const initGenericHashMapCapacity = 8
@@ -133,6 +135,13 @@ func (self *_GenericHashMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
+func (self *_GenericHashMap[K, V]) Iter2() iter.Seq2[K, V] {
+	h := toGenericHashMapData(self.data)
+	return func(yield func(K, V) bool) {
+		h.Each(yield)
+	}
+}
+
 func (self *_GenericHashMap[K, V]) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	err := buf.WriteByte('{')
@@ -169,6 +178,16 @@ func (self *_GenericHashMap[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+func (self *_GenericHashMap[K, V]) UnmarshalJSON(data []byte) error {
+	for kvs, err := range json2.UnmarshalToMapObj[K, V](bytes.NewReader(data)) {
+		if err != nil {
+			return err
+		}
+		self.Set(kvs.Unpack())
+	}
+	return nil
 }
 
 func (self *_GenericHashMap[K, V]) Length() uint {

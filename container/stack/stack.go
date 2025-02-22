@@ -2,6 +2,7 @@ package stack
 
 import (
 	"fmt"
+	"iter"
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -13,7 +14,7 @@ import (
 )
 
 type Stack[T any] interface {
-	stackIter[T]
+	Iter() iter.Seq[T]
 	clone.Cloneable[Stack[T]]
 	stlcmp.Equalable[Stack[T]]
 	stliter.IteratorContainer[T]
@@ -115,6 +116,16 @@ func (self *_Stack[T]) Iterator() stliter.Iterator[T] {
 	reverse := stlslices.Clone(self.data)
 	slices.Reverse(reverse)
 	return stliter.NewSliceIterator(reverse...)
+}
+
+func (self *_Stack[T]) Iter() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		for i := len(self.data) - 1; i >= 0; i-- {
+			if !yield(self.data[i]) {
+				return
+			}
+		}
+	}
 }
 
 // Equal 比较相等

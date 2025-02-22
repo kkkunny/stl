@@ -2,13 +2,16 @@ package hashmap
 
 import (
 	"encoding/json"
+	"iter"
 
 	stlmaps "github.com/kkkunny/stl/container/maps"
 )
 
 type HashMap[K, V any] interface {
 	stlmaps.MapObj[K, V]
+	Iter2() iter.Seq2[K, V]
 	json.Marshaler
+	json.Unmarshaler
 }
 
 // StdWith 使用go的默认hash函数，相比map，write更慢，read更快

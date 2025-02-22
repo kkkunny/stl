@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"iter"
 	"strings"
 
 	"github.com/kkkunny/stl/clone"
@@ -11,6 +12,7 @@ import (
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
+	json2 "github.com/kkkunny/stl/internal/json"
 )
 
 type _StdBiMap[T, E comparable] struct {
@@ -73,6 +75,10 @@ func (_ *_StdBiMap[T, E]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[T, 
 
 func (self *_StdBiMap[T, E]) Iterator() stliter.Iterator[tuple.Tuple2[T, E]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
+}
+
+func (self *_StdBiMap[T, E]) Iter2() iter.Seq2[T, E] {
+	return self.keys.Iter2()
 }
 
 func (self *_StdBiMap[T, E]) Length() uint {
@@ -234,4 +240,14 @@ func (self *_StdBiMap[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+func (self *_StdBiMap[K, V]) UnmarshalJSON(data []byte) error {
+	for kvs, err := range json2.UnmarshalToMapObj[K, V](bytes.NewReader(data)) {
+		if err != nil {
+			return err
+		}
+		self.Set(kvs.Unpack())
+	}
+	return nil
 }

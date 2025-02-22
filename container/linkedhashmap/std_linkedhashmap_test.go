@@ -99,3 +99,19 @@ func TestStdLinkedHashMap_String(t *testing.T) {
 	hm := _NewStdLinkedHashMapWith[int, int](1, 1, 2, 2)
 	stltest.AssertEq(t, hm.String(), "LinkedHashMap{1: 1, 2: 2}")
 }
+
+func TestStdLinkedHashMap_MarshalJSON(t *testing.T) {
+	hm := _NewStdLinkedHashMapWith[string, int]("1", 1)
+	data, err := json.Marshal(hm)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertNotEq(t, string(data), "{\"1\": 1}")
+}
+
+func TestStdLinkedHashMap_UnmarshalJSON(t *testing.T) {
+	hm1 := _NewStdLinkedHashMapWith[string, int]("1", 1)
+	data, err := json.Marshal(hm1)
+	stltest.AssertEq(t, err, nil)
+	hm2 := _NewStdLinkedHashMapWith[string, int]()
+	err = json.Unmarshal(data, hm2)
+	stltest.AssertEq(t, hm1, hm2)
+}

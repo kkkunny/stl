@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"iter"
 	"strings"
 
 	"github.com/kkkunny/swiss"
@@ -13,6 +14,7 @@ import (
 	stlmaps "github.com/kkkunny/stl/container/maps"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
+	json2 "github.com/kkkunny/stl/internal/json"
 )
 
 var initSwissTableCapacity uint
@@ -94,6 +96,14 @@ func (self *_SwissTable[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
+func (self *_SwissTable[K, V]) Iter2() iter.Seq2[K, V] {
+	return func(yield func(K, V) bool) {
+		self.data.Iter(func(k K, v V) (stop bool) {
+			return !yield(k, v)
+		})
+	}
+}
+
 func (self *_SwissTable[K, V]) MarshalJSON() ([]byte, error) {
 	var buf bytes.Buffer
 	err := buf.WriteByte('{')
@@ -136,6 +146,16 @@ func (self *_SwissTable[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+func (self *_SwissTable[K, V]) UnmarshalJSON(data []byte) error {
+	for kvs, err := range json2.UnmarshalToMapObj[K, V](bytes.NewReader(data)) {
+		if err != nil {
+			return err
+		}
+		self.Set(kvs.Unpack())
+	}
+	return nil
 }
 
 func (self *_SwissTable[K, V]) Length() uint {

@@ -1,6 +1,10 @@
 package linkedlist
 
-import stliter "github.com/kkkunny/stl/container/iter"
+import (
+	"iter"
+
+	stliter "github.com/kkkunny/stl/container/iter"
+)
 
 func (_ LinkedList[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 	self := NewLinkedList[T]()
@@ -13,6 +17,16 @@ func (_ LinkedList[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 // Iterator 迭代器
 func (self LinkedList[T]) Iterator() stliter.Iterator[T] {
 	return newIterator[T](&self)
+}
+
+func (self LinkedList[T]) Iter() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		for cursor := self.root; cursor != nil; cursor = cursor.Next {
+			if !yield(cursor.Value) {
+				return
+			}
+		}
+	}
 }
 
 type _Iterator[T any] struct {

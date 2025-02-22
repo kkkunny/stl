@@ -2,6 +2,7 @@ package stlmaps
 
 import (
 	"fmt"
+	"iter"
 
 	stlbasic "github.com/kkkunny/stl/basic"
 	"github.com/kkkunny/stl/clone"
@@ -11,7 +12,7 @@ import (
 )
 
 type MapObj[K, V any] interface {
-	mapIter2[K, V]
+	Iter2() iter.Seq2[K, V]
 	clone.Cloneable[MapObj[K, V]]
 	stlcmp.Equalable[MapObj[K, V]]
 	stliter.IteratorContainer[tuple.Tuple2[K, V]]

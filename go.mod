@@ -1,6 +1,6 @@
 module github.com/kkkunny/stl
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/HuKeping/rbtree v1.0.1
@@ -12,15 +12,15 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sakeven/RbTree v1.1.1
 	github.com/zyedidia/generic v1.2.1
-	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa
+	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa
 )
 
 require github.com/orcaman/concurrent-map/v2 v2.0.1
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0
-	github.com/elastic/go-freelru v0.13.0
+	github.com/elastic/go-freelru v0.16.0
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 )

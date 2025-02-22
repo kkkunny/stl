@@ -1,6 +1,7 @@
 package hashmap
 
 import (
+	"encoding/json"
 	"math/rand"
 	"testing"
 
@@ -115,4 +116,20 @@ func TestGenericHashMap_KeyValues(t *testing.T) {
 func TestGenericHashMap_String(t *testing.T) {
 	hm := _NewGenericHashMapWith[int, int](1, 1, 2, 2)
 	stltest.AssertNotEq(t, hm.String(), "")
+}
+
+func TestGenericHashMap_MarshalJSON(t *testing.T) {
+	hm := _NewGenericHashMapWith[string, int]("1", 1)
+	data, err := json.Marshal(hm)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertNotEq(t, string(data), "{\"1\": 1}")
+}
+
+func TestGenericHashMap_UnmarshalJSON(t *testing.T) {
+	hm1 := _NewGenericHashMapWith[string, int]("1", 1)
+	data, err := json.Marshal(hm1)
+	stltest.AssertEq(t, err, nil)
+	hm2 := _NewGenericHashMapWith[string, int]()
+	err = json.Unmarshal(data, hm2)
+	stltest.AssertEq(t, hm1, hm2)
 }

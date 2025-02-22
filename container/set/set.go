@@ -3,6 +3,7 @@ package set
 import (
 	"cmp"
 	"fmt"
+	"iter"
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -16,7 +17,7 @@ import (
 )
 
 type Set[T any] interface {
-	setIter[T]
+	Iter() iter.Seq[T]
 	clone.Cloneable[Set[T]]
 	stlcmp.Equalable[Set[T]]
 	stliter.IteratorContainer[T]
@@ -144,6 +145,15 @@ func (self *_Set[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 
 func (self *_Set[T]) Iterator() stliter.Iterator[T] {
 	return stliter.NewSliceIterator(self.data.Keys()...)
+}
+
+func (self *_Set[T]) Iter() iter.Seq[T] {
+	f := self.data.Iter2()
+	return func(yield func(T) bool) {
+		f(func(v T, _ struct{}) bool {
+			return yield(v)
+		})
+	}
 }
 
 func (self *_Set[T]) Length() uint {

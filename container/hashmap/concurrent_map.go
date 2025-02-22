@@ -2,6 +2,7 @@ package hashmap
 
 import (
 	"fmt"
+	"iter"
 	"strings"
 
 	cmap "github.com/orcaman/concurrent-map/v2"
@@ -80,8 +81,23 @@ func (self *_ConcurrentMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]
 	return stliter.NewSliceIterator(self.KeyValues()...)
 }
 
+func (self *_ConcurrentMap[K, V]) Iter2() iter.Seq2[K, V] {
+	kvs := self.data.IterBuffered()
+	return func(yield func(K, V) bool) {
+		kv, ok := <-kvs
+		if !ok {
+			return
+		}
+		yield(kv.Key, kv.Val)
+	}
+}
+
 func (self *_ConcurrentMap[K, V]) MarshalJSON() ([]byte, error) {
 	return self.data.MarshalJSON()
+}
+
+func (self *_ConcurrentMap[K, V]) UnmarshalJSON(data []byte) error {
+	return self.data.UnmarshalJSON(data)
 }
 
 func (self *_ConcurrentMap[K, V]) Length() uint {

@@ -2,6 +2,7 @@ package treemap
 
 import (
 	"fmt"
+	"iter"
 	"strings"
 
 	"github.com/HuKeping/rbtree"
@@ -78,6 +79,15 @@ func (_ *_AnyTreeMap[K, V]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[K
 
 func (self *_AnyTreeMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
+}
+
+func (self *_AnyTreeMap[K, V]) Iter2() iter.Seq2[K, V] {
+	return func(yield func(K, V) bool) {
+		self.data.Ascend(self.data.Min(), func(item rbtree.Item) bool {
+			node := item.(*anyTreeMapEntry[K, V])
+			return yield(node.data.Unpack())
+		})
+	}
 }
 
 func (self *_AnyTreeMap[K, V]) Length() uint {

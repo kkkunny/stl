@@ -2,6 +2,7 @@ package queue
 
 import (
 	"fmt"
+	"iter"
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -12,7 +13,7 @@ import (
 )
 
 type Queue[T any] interface {
-	queueIter[T]
+	Iter() iter.Seq[T]
 	clone.Cloneable[Queue[T]]
 	stlcmp.Equalable[Queue[T]]
 	stliter.IteratorContainer[T]
@@ -112,6 +113,16 @@ func (self *_Queue[T]) NewWithIterator(iter stliter.Iterator[T]) any {
 // Iterator 迭代器
 func (self *_Queue[T]) Iterator() stliter.Iterator[T] {
 	return stliter.NewSliceIterator(self.data...)
+}
+
+func (self *_Queue[T]) Iter() iter.Seq[T] {
+	return func(yield func(T) bool) {
+		for _, v := range self.data {
+			if !yield(v) {
+				return
+			}
+		}
+	}
 }
 
 // Equal 比较相等

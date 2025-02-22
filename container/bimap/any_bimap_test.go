@@ -1,6 +1,7 @@
 package bimap
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/kkkunny/stl/clone"
@@ -96,4 +97,20 @@ func TestAnyBiMap_KeyValues(t *testing.T) {
 func TestAnyBiMap_String(t *testing.T) {
 	hm := _NewAnyBiMapWith[int, int](1, 1, 2, 2)
 	stltest.AssertNotEq(t, hm.String(), "")
+}
+
+func TestAnyBiMap_MarshalJSON(t *testing.T) {
+	hm := _NewAnyBiMapWith[string, int]("1", 1)
+	data, err := json.Marshal(hm)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertNotEq(t, string(data), "{\"1\": 1}")
+}
+
+func TestAnyBiMap_UnmarshalJSON(t *testing.T) {
+	hm1 := _NewAnyBiMapWith[string, int]("1", 1)
+	data, err := json.Marshal(hm1)
+	stltest.AssertEq(t, err, nil)
+	hm2 := _NewAnyBiMapWith[string, int]()
+	err = json.Unmarshal(data, hm2)
+	stltest.AssertEq(t, hm1, hm2)
 }

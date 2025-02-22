@@ -3,6 +3,7 @@ package treemap
 import (
 	"cmp"
 	"fmt"
+	"iter"
 	"strings"
 
 	rbtree "github.com/sakeven/RbTree"
@@ -68,6 +69,16 @@ func (_ *_StdTreeMap[K, V]) NewWithIterator(iter stliter.Iterator[tuple.Tuple2[K
 
 func (self *_StdTreeMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]] {
 	return stliter.NewSliceIterator(self.KeyValues()...)
+}
+
+func (self *_StdTreeMap[K, V]) Iter2() iter.Seq2[K, V] {
+	return func(yield func(K, V) bool) {
+		for i := self.data.Iterator(); i != nil; i = i.Next() {
+			if !yield(i.Key, i.Value) {
+				return
+			}
+		}
+	}
 }
 
 func (self *_StdTreeMap[K, V]) Length() uint {
