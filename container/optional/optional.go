@@ -1,6 +1,8 @@
 package optional
 
 import (
+	"reflect"
+
 	stlslices "github.com/kkkunny/stl/container/slices"
 	stlval "github.com/kkkunny/stl/value"
 )
@@ -15,6 +17,28 @@ func Some[T any](v T) Optional[T] {
 
 func None[T any]() Optional[T] {
 	return Optional[T]{data: nil}
+}
+
+func UnPtr[T any, Ptr ~*T](v Ptr) Optional[T] {
+	if v == nil {
+		return None[T]()
+	}
+	return Some[T](*v)
+}
+
+func UnEmpty[T any](v T) Optional[T] {
+	vv := reflect.ValueOf(v)
+	if !vv.IsValid() || vv.IsZero() {
+		return None[T]()
+	}
+	return Some[T](v)
+}
+
+func UnPtrEmpty[T any, Ptr ~*T](v Ptr) Optional[T] {
+	if v == nil {
+		return None[T]()
+	}
+	return UnEmpty[T](*v)
 }
 
 func (op Optional[T]) IsSome() bool {
