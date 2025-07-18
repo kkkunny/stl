@@ -67,6 +67,12 @@ func (l *Logger) NewGroup(group string) *Logger {
 func (l *Logger) SetDefaultConfig(cfg config) {
 	l.config = cfg
 }
+func (l *Logger) SetWriter(w io.Writer) {
+	l.l.SetOutput(w)
+}
+func (l *Logger) GetWriter() io.Writer {
+	return l.l.Writer()
+}
 func (l *Logger) GetLevel() Level {
 	return Level(l.lvl.Load())
 }
