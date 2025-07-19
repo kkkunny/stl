@@ -12,14 +12,15 @@ type config struct {
 	ctx   context.Context
 	level Level
 
-	displayLevel      bool
-	displayTimeFormat string
-	displayPos        bool
+	displayLevel      bool        // 是否输出日志级别
+	displayTimeFormat string      // 日志打印时间格式
+	displayPos        bool        // 是否输出日志打印位置
+	displayPosFrame   stlos.Frame // 日志打印位置
 	posSkip           uint
-	displayColor      bool
-	displayStack      bool
-	displayGroup      bool
-	frames            []stlos.Frame
+	displayColor      bool          // 是否对日志进行染色
+	displayStack      bool          // 是否输出堆栈
+	displayGroup      bool          // 是否输出日志组别
+	frames            []stlos.Frame // 堆栈
 }
 
 func spiltArgAndCfg(a []any, defaultCfg config) ([]any, config) {
@@ -67,14 +68,18 @@ func (cfg config) WithDisplayTime(format ...string) config {
 }
 
 // WithDisplayPosition 显示代码位置
-func (cfg config) WithDisplayPosition() config {
+func (cfg config) WithDisplayPosition(frame ...stlos.Frame) config {
 	cfg.displayPos = true
+	if len(frame) > 0 {
+		cfg.displayPosFrame = frame[len(frame)-1]
+	}
 	return cfg
 }
 
 // WithNoDisplayPosition 禁止显示代码位置
 func (cfg config) WithNoDisplayPosition() config {
 	cfg.displayPos = false
+	cfg.displayPosFrame = nil
 	return cfg
 }
 

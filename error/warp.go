@@ -17,7 +17,7 @@ func wrap(err error) error {
 	stacks := GetErrorStackFrames(err)
 	if len(stacks) == 0 {
 		stacks = stlslices.Map(stlos.GetCallStacks(32, 2), func(_ int, f runtime.Frame) stlos.Frame {
-			return stlos.NewRuntimeFrame(f)
+			return stlos.WrapRuntimeFrame(f)
 		})
 	}
 
@@ -47,6 +47,6 @@ func ErrorWith3[T, E, F any](v1 T, v2 E, v3 F, err error) (T, E, F, error) {
 // Errorf 新建异常
 func Errorf(f string, a ...any) error {
 	return WithStack(fmt.Errorf(f, a...), stlslices.Map(stlos.GetCallStacks(32, 1), func(_ int, f runtime.Frame) stlos.Frame {
-		return stlos.NewRuntimeFrame(f)
+		return stlos.WrapRuntimeFrame(f)
 	}))
 }

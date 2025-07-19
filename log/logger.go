@@ -15,6 +15,7 @@ import (
 	stlerr "github.com/kkkunny/stl/error"
 	"github.com/kkkunny/stl/internal/slices"
 	stlos "github.com/kkkunny/stl/os"
+	stlval "github.com/kkkunny/stl/value"
 )
 
 type Logger struct {
@@ -108,8 +109,8 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 	}
 
 	if cfg.displayPos {
-		stack := stlos.GetCurrentCallStack(cfg.posSkip + 1)
-		msg = fmt.Sprintf("%s:%d | %s", stack.File, stack.Line, msg)
+		frame := stlval.ValueOr(cfg.displayPosFrame, stlos.WrapRuntimeFrame(stlos.GetCurrentCallStack(cfg.posSkip+1)))
+		msg = fmt.Sprintf("%s:%d | %s", frame.File(), frame.Line(), msg)
 	}
 
 	if cfg.displayTimeFormat != "" {
@@ -120,7 +121,7 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 		var frames []stlos.Frame
 		if stlslices.Empty(cfg.frames) {
 			frames = stlslices.Map(stlos.GetCallStacks(32, cfg.posSkip+1), func(_ int, f runtime.Frame) stlos.Frame {
-				return stlos.NewRuntimeFrame(f)
+				return stlos.WrapRuntimeFrame(f)
 			})
 		} else {
 			frames = cfg.frames

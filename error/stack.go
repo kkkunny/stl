@@ -18,7 +18,7 @@ func GetErrorStackFrames(err error) []stlos.Frame {
 	}
 	if e, ok := err.(StackTracer); ok {
 		return stlslices.Map(e.StackTrace(), func(_ int, f errors.Frame) stlos.Frame {
-			return stlos.NewErrorFrame(f)
+			return stlos.WrapErrorFrame(f)
 		})
 	}
 

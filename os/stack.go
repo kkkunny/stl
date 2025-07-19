@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 
 	stlslices "github.com/kkkunny/stl/container/slices"
-	stlbasic "github.com/kkkunny/stl/value"
 )
 
 // Frame 栈帧
@@ -38,26 +37,30 @@ func GetCurrentCallStack(skip ...uint) runtime.Frame {
 	return stlslices.Last(GetCallStacks(1, stlslices.First(skip, 0)+1))
 }
 
-type errorFrame struct {
+type customFrame struct {
 	file string
 	line int
 }
 
-func NewErrorFrame(f errors.Frame) Frame {
+func NewFrame(file string, line int) Frame {
+	return &customFrame{
+		file: file,
+		line: line,
+	}
+}
+
+func WrapErrorFrame(f errors.Frame) Frame {
 	file := fmt.Sprintf("%+s", f)
 	file = file[strings.LastIndex(file, "\n\t")+1:]
 	line, _ := strconv.ParseInt(fmt.Sprintf("%d", f), 10, 64)
-	return stlbasic.Ptr(errorFrame{
-		file: file,
-		line: int(line),
-	})
+	return NewFrame(file, int(line))
 }
 
-func (f errorFrame) File() string {
+func (f customFrame) File() string {
 	return f.file
 }
 
-func (f errorFrame) Line() int {
+func (f customFrame) Line() int {
 	return f.line
 }
 
@@ -65,7 +68,7 @@ type runtimeFrame struct {
 	rt runtime.Frame
 }
 
-func NewRuntimeFrame(f runtime.Frame) Frame {
+func WrapRuntimeFrame(f runtime.Frame) Frame {
 	return &runtimeFrame{rt: f}
 }
 
