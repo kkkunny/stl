@@ -137,6 +137,8 @@ func (l *Logger) log(msg string, cfgs ...config) error {
 		if cfg.displayColor && writerIsTerminal(l.l.Writer()) {
 			level = cfg.level.Style().Sprintf(level)
 			msg = cfg.level.MsgColor().Sprintf("| %s", msg)
+		} else {
+			msg = fmt.Sprintf("| %s", msg)
 		}
 		msg = level + msg
 	}
