@@ -108,7 +108,7 @@ func (self Size) SimpleString() string {
 	case self/Kib > 0:
 		return fmt.Sprintf("%.2f Kib", float64(self)/float64(Kib))
 	case self/Byte > 0:
-		return fmt.Sprintf("%.2f Kib", float64(self)/float64(Byte))
+		return fmt.Sprintf("%.2f Byte", float64(self)/float64(Byte))
 	default:
 		return fmt.Sprintf("%d Bit", self)
 	}
