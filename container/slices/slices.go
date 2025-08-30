@@ -16,6 +16,8 @@ func Map[T, F any](slice []T, f func(i int, e T) F) []F {
 	return res
 }
 
+func GetRefMapFn[T any](_ int, e T) *T { return &e }
+
 func MapError[T, F any](slice []T, f func(i int, e T) (F, error)) (res []F, err error) {
 	res = make([]F, len(slice))
 	for i, e := range slice {
