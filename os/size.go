@@ -1,3 +1,5 @@
+// 参考https://www.toolhelper.cn/Digit/UnitConvert?tab=byte
+
 package stlos
 
 import (
@@ -12,104 +14,89 @@ const (
 // Size 大小
 type Size uint64
 
+// 位
+
 const (
-	Bit  Size = 1       // 比特、位
-	Byte      = Bit * 8 // 字节
+	Bit Size = 1 // 位
+
+	// 十进制
+
+	Kbit = Bit * decimalSep
+	Mbit = Kbit * decimalSep
+	Gbit = Mbit * decimalSep
+	Tbit = Gbit * decimalSep
+
+	// 二进制
+
+	Kibit = Bit * binarySep
+	Mibit = Kibit * binarySep
+	Gibit = Mibit * binarySep
+	Tibit = Gibit * binarySep
+
+	// 带宽
+
+	Kbps = Kbit
+	Mbps = Mbit
+	Gbps = Gbit
+	Tbps = Tbit
 )
 
-// 十进制 bit
+// 字节
+
 const (
-	Kbit Size = Bit * decimalSep
-	Mbit      = Kbit * decimalSep
-	Gbit      = Mbit * decimalSep
-	Tbit      = Gbit * decimalSep
-	Pbit      = Tbit * decimalSep
-	// Ebit      = Pbit * decimalSep
+	Byte = Bit * 8 // 字节
+
+	// 十进制 byte
+
+	KB = Byte * decimalSep
+	MB = KB * decimalSep
+	GB = MB * decimalSep
+	TB = GB * decimalSep
+
+	// 二进制 byte
+
+	KiB = Byte * binarySep
+	MiB = KiB * binarySep
+	GiB = MiB * binarySep
+	TiB = GiB * binarySep
 )
 
-// 十进制 byte
+type UnitType uint8
+
 const (
-	Kb Size = Byte * decimalSep
-	Mb      = Kb * decimalSep
-	Gb      = Mb * decimalSep
-	Tb      = Gb * decimalSep
-	Pb      = Tb * decimalSep
-	// Eb      = Pb * decimalSep
+	UnitTypeXbit = iota
+	UnitTypeXibit
+	UnitTypeXbps
+	UnitTypeXB
+	UnitTypeXiB
 )
 
-// 二进制 bit
-const (
-	Kibit Size = Bit * binarySep
-	Mibit      = Kibit * binarySep
-	Gibit      = Mibit * binarySep
-	Tibit      = Gibit * binarySep
-	Pibit      = Tibit * binarySep
-	// Eibit      = Pibit * binarySep
-)
-
-// 二进制 byte
-const (
-	Kib Size = Byte * binarySep
-	Mib      = Kib * binarySep
-	Gib      = Mib * binarySep
-	Tib      = Gib * binarySep
-	Pib      = Tib * binarySep
-	// Eib      = Pib * binarySep
-)
-
-func (self Size) String() string {
-	var prefix string
-	var more Size
-
-	switch {
-	// case self/Eib > 0:
-	// 	prefix = fmt.Sprintf("%d Eib", self/Eib)
-	// 	more = self % Eib
-	case self/Pib > 0:
-		prefix = fmt.Sprintf("%d Pib", self/Pib)
-		more = self % Pib
-	case self/Tib > 0:
-		prefix = fmt.Sprintf("%d Tib", self/Tib)
-		more = self % Tib
-	case self/Gib > 0:
-		prefix = fmt.Sprintf("%d Gib", self/Gib)
-		more = self % Gib
-	case self/Mib > 0:
-		prefix = fmt.Sprintf("%d Mib", self/Mib)
-		more = self % Mib
-	case self/Kib > 0:
-		prefix = fmt.Sprintf("%d Kib", self/Kib)
-		more = self % Kib
-	case self/Byte > 0:
-		prefix = fmt.Sprintf("%d Byte", self/Byte)
-		more = self % Byte
-	default:
-		return fmt.Sprintf("%d Bit", self)
-	}
-
-	if more == 0 {
-		return prefix
-	}
-	return fmt.Sprintf("%s %s", prefix, more.String())
+var unitType2Name = [...][6]string{
+	{"bit", "byte", "Kbit", "Mbit", "Gbit", "Tbit"},
+	{"bit", "byte", "Kibit", "Mibit", "Gibit", "Tibit"},
+	{"bps", "Bps", "Kbps", "Mbps", "Gbps", "Tbps"},
+	{"b", "B", "KB", "MB", "GB", "TB"},
+	{"b", "B", "KiB", "MiB", "GiB", "TiB"},
 }
 
-func (self Size) SimpleString() string {
-	switch {
-	// case self/Eib > 0:
-	// 	return fmt.Sprintf("%.2f Eib", float64(self/Pib)/float64(binarySep))
-	case self/Pib > 0:
-		return fmt.Sprintf("%.2f Pib", float64(self/Tib)/float64(binarySep))
-	case self/Tib > 0:
-		return fmt.Sprintf("%.2f Tib", float64(self/Gib)/float64(binarySep))
-	case self/Gib > 0:
-		return fmt.Sprintf("%.2f Gib", float64(self/Mib)/float64(binarySep))
-	case self/Mib > 0:
-		return fmt.Sprintf("%.2f Mib", float64(self/Kib)/float64(binarySep))
-	case self/Kib > 0:
-		return fmt.Sprintf("%.2f Kib", float64(self)/float64(Kib))
-	case self/Byte > 0:
-		return fmt.Sprintf("%.2f Byte", float64(self)/float64(Byte))
-	default:
-		return fmt.Sprintf("%d Bit", self)
+var unitType2Value = [...][6]Size{
+	{Bit, Byte, Kbit, Mbit, Gbit, Tbit},
+	{Bit, Byte, Kibit, Mibit, Gibit, Tibit},
+	{Bit, Byte, Kbps, Mbps, Gbps, Tbps},
+	{Bit, Byte, KB, MB, GB, TB},
+	{Bit, Byte, KiB, MiB, GiB, TiB},
+}
+
+func (s Size) ToString(u UnitType) string {
+	names, values := unitType2Name[u], unitType2Value[u]
+	for i := len(names) - 1; i >= 0; i-- {
+		if s/values[i] > 0 {
+			return fmt.Sprintf("%.2f %s", float64(s)/float64(values[i]), names[i])
+		}
 	}
+	return ""
+}
+
+func (s Size) String() string {
+	return s.ToString(UnitTypeXiB)
 }
