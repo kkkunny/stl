@@ -32,13 +32,6 @@ const (
 	Mibit = Kibit * binarySep
 	Gibit = Mibit * binarySep
 	Tibit = Gibit * binarySep
-
-	// 带宽
-
-	Kbps = Kbit
-	Mbps = Mbit
-	Gbps = Gbit
-	Tbps = Tbit
 )
 
 // 字节
@@ -66,7 +59,6 @@ type UnitType uint8
 const (
 	UnitTypeXbit = iota
 	UnitTypeXibit
-	UnitTypeXbps
 	UnitTypeXB
 	UnitTypeXiB
 )
@@ -74,7 +66,6 @@ const (
 var unitType2Name = [...][6]string{
 	{"bit", "byte", "Kbit", "Mbit", "Gbit", "Tbit"},
 	{"bit", "byte", "Kibit", "Mibit", "Gibit", "Tibit"},
-	{"bps", "Bps", "Kbps", "Mbps", "Gbps", "Tbps"},
 	{"b", "B", "KB", "MB", "GB", "TB"},
 	{"b", "B", "KiB", "MiB", "GiB", "TiB"},
 }
@@ -82,7 +73,6 @@ var unitType2Name = [...][6]string{
 var unitType2Value = [...][6]Size{
 	{Bit, Byte, Kbit, Mbit, Gbit, Tbit},
 	{Bit, Byte, Kibit, Mibit, Gibit, Tibit},
-	{Bit, Byte, Kbps, Mbps, Gbps, Tbps},
 	{Bit, Byte, KB, MB, GB, TB},
 	{Bit, Byte, KiB, MiB, GiB, TiB},
 }
