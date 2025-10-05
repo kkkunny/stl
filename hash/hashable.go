@@ -1,9 +1,9 @@
 package stlhash
 
 import (
-	"github.com/kkkunny/maphash"
+	"reflect"
 
-	reflect2 "github.com/kkkunny/stl/internal/reflect"
+	"github.com/kkkunny/maphash"
 )
 
 // Hashable 可哈希的
@@ -13,9 +13,9 @@ type Hashable interface {
 
 // GetHashFunc 获取哈希函数，若没有会panic
 func GetHashFunc[T any]() func(v T) uint64 {
-	t := reflect2.TypeFor[T]()
+	t := reflect.TypeFor[T]()
 	switch {
-	case t.Implements(reflect2.TypeFor[Hashable]()):
+	case t.Implements(reflect.TypeFor[Hashable]()):
 		return func(vv T) uint64 {
 			return any(vv).(Hashable).Hash()
 		}

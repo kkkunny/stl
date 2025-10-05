@@ -14,13 +14,13 @@ type Cloneable[Self any] interface {
 
 // GetCloneFunc 获取克隆函数，若没有会panic
 func GetCloneFunc[T any]() (f func(v T) T) {
-	t := reflect2.TypeFor[T]()
+	t := reflect.TypeFor[T]()
 	switch {
-	case t.Implements(reflect2.TypeFor[Cloneable[T]]()):
+	case t.Implements(reflect.TypeFor[Cloneable[T]]()):
 		return func(v T) T {
 			return any(v).(Cloneable[T]).Clone()
 		}
-	case t.Implements(reflect2.TypeFor[Cloneable[any]]()):
+	case t.Implements(reflect.TypeFor[Cloneable[any]]()):
 		return func(v T) T {
 			return any(v).(Cloneable[any]).Clone().(T)
 		}
@@ -44,7 +44,7 @@ func getCloneFunc(t reflect.Type, useRuntime bool) (f func(v any) any, ok bool) 
 		cloneFuncCache.Add(t.String(), retType{f: f, ok: ok})
 	}()
 
-	it := reflect2.TypeFor[Cloneable[any]]()
+	it := reflect.TypeFor[Cloneable[any]]()
 	switch {
 	case t.Implements(it):
 		return func(v any) any {

@@ -4,8 +4,6 @@ import (
 	"cmp"
 	"fmt"
 	"reflect"
-
-	reflect2 "github.com/kkkunny/stl/internal/reflect"
 )
 
 // Comparable 可比较的
@@ -15,15 +13,15 @@ type Comparable[Self any] interface {
 }
 
 func GetCompareFunc[T any]() func(l, r T) int {
-	t := reflect2.TypeFor[T]()
+	t := reflect.TypeFor[T]()
 	switch {
-	case t.Implements(reflect2.TypeFor[Comparable[T]]()):
+	case t.Implements(reflect.TypeFor[Comparable[T]]()):
 		return func(l, r T) int {
 			return any(l).(Comparable[T]).Compare(r)
 		}
 	default:
 		f, ok := getReflectCompareFunc(t)
-		if !ok{
+		if !ok {
 			panic(fmt.Errorf("type `%s` cannot be ordered", t))
 		}
 		return func(l, r T) int {
