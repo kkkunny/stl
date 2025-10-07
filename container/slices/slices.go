@@ -3,9 +3,8 @@ package stlslices
 import (
 	"cmp"
 	"math/rand"
+	"slices"
 	"time"
-
-	"github.com/kkkunny/stl/internal/slices"
 )
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
@@ -200,7 +199,7 @@ func First[T any](slice []T, defaultValue ...T) (v T) {
 
 func Last[T any](slice []T, defaultValue ...T) (v T) {
 	if Empty(slice) {
-		return Last(defaultValue, v)
+		return Last[T](defaultValue, v)
 	}
 	return slice[len(slice)-1]
 }

@@ -3,6 +3,7 @@ package stack
 import (
 	"fmt"
 	"iter"
+	"slices"
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -10,7 +11,6 @@ import (
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
-	"github.com/kkkunny/stl/internal/slices"
 )
 
 type Stack[T any] interface {

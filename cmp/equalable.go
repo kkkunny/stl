@@ -14,13 +14,13 @@ type Equalable[Self any] interface {
 
 // GetEqualFunc 获取比较函数，若没有会panic
 func GetEqualFunc[T any]() func(l, r T) bool {
-	t := reflect2.TypeFor[T]()
+	t := reflect.TypeFor[T]()
 	switch {
-	case t.Implements(reflect2.TypeFor[Equalable[T]]()):
+	case t.Implements(reflect.TypeFor[Equalable[T]]()):
 		return func(l, r T) bool {
 			return any(l).(Equalable[T]).Equal(r)
 		}
-	case t.Implements(reflect2.TypeFor[Equalable[any]]()):
+	case t.Implements(reflect.TypeFor[Equalable[any]]()):
 		return func(l, r T) bool {
 			return any(l).(Equalable[any]).Equal(r)
 		}
@@ -45,8 +45,8 @@ func getEqualFunc(t reflect.Type, useRuntime bool) (f func(l, r any) bool, ok bo
 	}()
 
 	method, ok := t.MethodByName("Equal")
-	if ok && method.Type.NumIn() == 2 && method.Type.NumOut() == 1 && method.Type.Out(0).String() == reflect.Bool.String() {
-		dstType := method.Type.In(1)
+	if ok && method.Type.NumIn() == 1 && method.Type.NumOut() == 1 && method.Type.Out(0).Kind() == reflect.Bool {
+		dstType := method.Type.In(0)
 		if t.AssignableTo(dstType) {
 			return func(l, r any) bool {
 				lv, rv := reflect.ValueOf(l), reflect.ValueOf(r)
@@ -115,7 +115,8 @@ func getRuntimeEqualFunc(t reflect.Type) (func(l, r any) bool, bool) {
 		return func(l, r any) bool {
 			lvobj, rvobj := reflect.ValueOf(l), reflect.ValueOf(r)
 			for i := 0; i < length; i++ {
-				lf, rf := lvobj.Field(i), rvobj.Field(i)
+				lf := reflect2.GetStructOrStructPtrFieldValue(lvobj, t.Field(i).Name)
+				rf := reflect2.GetStructOrStructPtrFieldValue(rvobj, t.Field(i).Name)
 				if !fieldFns[i](lf.Interface(), rf.Interface()) {
 					return false
 				}

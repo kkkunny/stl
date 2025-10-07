@@ -3,6 +3,7 @@ package stlheap
 import (
 	"fmt"
 	"iter"
+	"slices"
 	"strings"
 	"unsafe"
 
@@ -13,7 +14,6 @@ import (
 	stlcmp "github.com/kkkunny/stl/cmp"
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
-	"github.com/kkkunny/stl/internal/slices"
 )
 
 type Heap[T any] interface {

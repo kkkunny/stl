@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"fmt"
 	"iter"
+	"slices"
 	"strings"
 
 	stlbasic "github.com/kkkunny/stl/basic"
@@ -13,7 +14,6 @@ import (
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
-	"github.com/kkkunny/stl/internal/slices"
 )
 
 type PQueue[Prior cmp.Ordered, Elem any] interface {

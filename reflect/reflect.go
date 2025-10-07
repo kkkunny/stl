@@ -7,5 +7,9 @@ import (
 )
 
 func Zero[T any]() reflect.Value {
-	return reflect.Zero(reflect2.TypeFor[T]())
+	return reflect.Zero(reflect.TypeFor[T]())
+}
+
+func GetStructOrStructPtrFieldValue(v reflect.Value, fieldName string) reflect.Value {
+	return reflect2.GetStructOrStructPtrFieldValue(v, fieldName)
 }

@@ -1,9 +1,12 @@
 package reflect
 
-import "reflect"
+import (
+	"reflect"
+	"unsafe"
+)
 
 func ReplaceFuncAnyTo(f, to reflect.Type) reflect.Type {
-	anyType := TypeFor[any]()
+	anyType := reflect.TypeFor[any]()
 
 	in, out := make([]reflect.Type, f.NumIn()), make([]reflect.Type, f.NumOut())
 	for i := 0; i < len(in); i++ {
@@ -82,4 +85,29 @@ func HasAllMethod(t reflect.Type, from reflect.Type, ms ...reflect.Method) bool 
 		}
 	}
 	return true
+}
+
+// GetStructOrStructPtrFieldValue 获取结构体或结构体指针字段值，包括未导出字段
+func GetStructOrStructPtrFieldValue(v reflect.Value, fieldName string) reflect.Value {
+	// 去除指针
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	f, ok := v.Type().FieldByName(fieldName)
+	if !ok {
+		return reflect.Value{}
+	}
+	if f.IsExported() {
+		return v.FieldByName(fieldName)
+	}
+
+	if !v.CanAddr() {
+		vv := reflect.New(v.Type())
+		vv.Elem().Set(v)
+		v = vv.Elem()
+	}
+
+	addr := v.UnsafeAddr() + f.Offset
+	return reflect.NewAt(f.Type, unsafe.Pointer(addr)).Elem()
 }

@@ -4,9 +4,10 @@ import (
 	"math/rand"
 	"time"
 
+	"golang.org/x/exp/maps"
+
 	stlslices "github.com/kkkunny/stl/container/slices"
 	"github.com/kkkunny/stl/container/tuple"
-	"github.com/kkkunny/stl/internal/maps"
 )
 
 // Reverse 反转键值对
