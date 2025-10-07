@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+const Tag = "enum"
+
 /*
 1. 数字类型默认值为字段下标
 
@@ -20,16 +22,26 @@ import (
 		E float32            // value: 4.0
 	}]()
 */
-func New[T any]() T {
+func New[T any](opts ...Option) T {
 	t := reflect.TypeFor[T]()
 	if t.Kind() != reflect.Struct {
 		panic("expect a struct type")
 	}
 
 	v := reflect.New(t).Elem()
+loop:
 	for i := 0; i < t.NumField(); i++ {
 		f, fv := t.Field(i), v.Field(i)
-		tag, existTag := f.Tag.Lookup("enum")
+
+		for _, opt := range opts {
+			fvv, ok := opt(i, f)
+			if ok {
+				fv.Set(fvv)
+				continue loop
+			}
+		}
+
+		tag, existTag := f.Tag.Lookup(Tag)
 		switch f.Type.Kind() {
 		case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
 			if tagV, ok := strconv.ParseInt(tag, 10, 64); ok == nil {
