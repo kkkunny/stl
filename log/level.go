@@ -23,13 +23,13 @@ var (
 )
 
 var maxLevel Level
-var levelStringSilce []string
-var levelStyleSilce []color.Style
+var levelStringSlice []string
+var levelStyleSlice []color.Style
 
 func newLevel(s string, color color.Style) Level {
-	levelStringSilce = append(levelStringSilce, s)
-	levelStyleSilce = append(levelStyleSilce, color)
-	levelStringSilce = stlstr.CenterAlignStrings(levelStringSilce)
+	levelStringSlice = append(levelStringSlice, s)
+	levelStyleSlice = append(levelStyleSlice, color)
+	levelStringSlice = stlstr.CenterAlignStrings(levelStringSlice)
 	maxLevel++
 	return maxLevel - 1
 }
@@ -39,11 +39,11 @@ func (lvl Level) String() string {
 }
 
 func (lvl Level) AlignString() string {
-	return levelStringSilce[lvl]
+	return levelStringSlice[lvl]
 }
 
 func (lvl Level) Style() color.Style {
-	return levelStyleSilce[lvl]
+	return levelStyleSlice[lvl]
 }
 
 func (lvl Level) MsgColor() color.Color {
