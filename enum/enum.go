@@ -36,7 +36,7 @@ loop:
 		for _, opt := range opts {
 			fvv, ok := opt(i, f)
 			if ok {
-				fv.Set(fvv)
+				fv.Set(fvv.Convert(f.Type))
 				continue loop
 			}
 		}
