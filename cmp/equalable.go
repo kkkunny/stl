@@ -15,6 +15,7 @@ type Equalable[Self any] interface {
 // GetEqualFunc 获取比较函数，若没有会panic
 func GetEqualFunc[T any]() func(l, r T) bool {
 	t := reflect.TypeFor[T]()
+	fmt.Println(t.String())
 	switch {
 	case t.Implements(reflect.TypeFor[Equalable[T]]()):
 		return func(l, r T) bool {
@@ -45,9 +46,14 @@ func GetEqualFuncFromReflect(t reflect.Type, useRuntime bool) (f func(l, r any) 
 	}()
 
 	method, ok := t.MethodByName("Equal")
-	if ok && method.Type.NumIn() == 1 && method.Type.NumOut() == 1 && method.Type.Out(0).Kind() == reflect.Bool {
-		dstType := method.Type.In(0)
-		if t.AssignableTo(dstType) {
+	if ok && method.Type.NumOut() == 1 && method.Type.Out(0).Kind() == reflect.Bool {
+		var dstType reflect.Type
+		if t.Kind() == reflect.Interface && method.Type.NumIn() == 1 {
+			dstType = method.Type.In(0)
+		} else if t.Kind() != reflect.Interface && method.Type.NumIn() == 2 {
+			dstType = method.Type.In(1)
+		}
+		if dstType != nil && t.AssignableTo(dstType) {
 			return func(l, r any) bool {
 				lv, rv := reflect.ValueOf(l), reflect.ValueOf(r)
 				method := lv.MethodByName("Equal")
