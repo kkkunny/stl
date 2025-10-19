@@ -25,7 +25,7 @@ func GetEqualFunc[T any]() func(l, r T) bool {
 			return any(l).(Equalable[any]).Equal(r)
 		}
 	default:
-		f, ok := getEqualFunc(t, true)
+		f, ok := GetEqualFuncFromReflect(t, true)
 		if !ok {
 			panic(fmt.Errorf("type `%s` cannot be compared", t))
 		}
@@ -35,7 +35,7 @@ func GetEqualFunc[T any]() func(l, r T) bool {
 	}
 }
 
-func getEqualFunc(t reflect.Type, useRuntime bool) (f func(l, r any) bool, ok bool) {
+func GetEqualFuncFromReflect(t reflect.Type, useRuntime bool) (f func(l, r any) bool, ok bool) {
 	ret, ok := eqFuncCache.Get(t.String())
 	if ok {
 		return ret.f, ret.ok
@@ -64,7 +64,7 @@ func getEqualFunc(t reflect.Type, useRuntime bool) (f func(l, r any) bool, ok bo
 func getRuntimeEqualFunc(t reflect.Type) (func(l, r any) bool, bool) {
 	switch {
 	case t.Kind() == reflect.Array, t.Kind() == reflect.Slice:
-		elemFn, ok := getEqualFunc(t.Elem(), true)
+		elemFn, ok := GetEqualFuncFromReflect(t.Elem(), true)
 		if !ok {
 			return nil, false
 		}
@@ -81,7 +81,7 @@ func getRuntimeEqualFunc(t reflect.Type) (func(l, r any) bool, bool) {
 			return true
 		}, true
 	case t.Kind() == reflect.Map:
-		valFn, ok := getEqualFunc(t.Elem(), true)
+		valFn, ok := GetEqualFuncFromReflect(t.Elem(), true)
 		if !ok {
 			return nil, false
 		}
@@ -99,7 +99,7 @@ func getRuntimeEqualFunc(t reflect.Type) (func(l, r any) bool, bool) {
 			return true
 		}, true
 	case t.Kind() == reflect.Struct:
-		f, ok := getEqualFunc(t, false)
+		f, ok := GetEqualFuncFromReflect(t, false)
 		if ok {
 			return f, true
 		}
@@ -107,7 +107,7 @@ func getRuntimeEqualFunc(t reflect.Type) (func(l, r any) bool, bool) {
 		length := t.NumField()
 		fieldFns := make([]func(any, any) bool, length)
 		for i := 0; i < length; i++ {
-			fieldFns[i], ok = getEqualFunc(t.Field(i).Type, true)
+			fieldFns[i], ok = GetEqualFuncFromReflect(t.Field(i).Type, true)
 			if !ok {
 				return nil, false
 			}
