@@ -10,6 +10,14 @@ import (
 	"github.com/kkkunny/stl/container/tuple"
 )
 
+func Keys[K comparable, V any](m map[K]V) []K {
+	return maps.Keys(m)
+}
+
+func Values[K comparable, V any](m map[K]V) []V {
+	return maps.Values(m)
+}
+
 // Reverse 反转键值对
 func Reverse[K, V comparable](m map[K]V) map[V]K {
 	res := make(map[V]K, len(m))
@@ -69,20 +77,52 @@ func FlatMapError[K1 comparable, V1 any, K2 comparable, V2 any](hmap map[K1]V1, 
 	return res, nil
 }
 
-func ToSlice[K comparable, V any, T any](hmap map[K]V, mapFn func(K, V) T) []T {
+func MapToSlice[K comparable, V any, T any](hmap map[K]V, f func(K, V) T) []T {
 	res := make([]T, len(hmap))
 	var i int
-	for k, v := range hmap {
-		res[i] = mapFn(k, v)
+	for k1, v1 := range hmap {
+		res[i] = f(k1, v1)
 		i++
 	}
 	return res
 }
 
-func Random[K comparable, V any](hmap map[K]V) (K, V) {
-	keys := maps.Keys(hmap)
-	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(keys))
-	return keys[index], hmap[keys[index]]
+func MapErrorToSlice[K comparable, V any, T any](hmap map[K]V, f func(K, V) (T, error)) ([]T, error) {
+	res := make([]T, len(hmap))
+	var i int
+	for k1, v1 := range hmap {
+		e, err := f(k1, v1)
+		if err != nil {
+			return nil, err
+		}
+		res[i] = e
+		i++
+	}
+	return res, nil
+}
+
+func FlatMapToSlice[K comparable, V any, T any](hmap map[K]V, f func(K, V) []T) []T {
+	res := make([]T, 0, len(hmap))
+	for k1, v1 := range hmap {
+		res = append(res, f(k1, v1)...)
+	}
+	return res
+}
+
+func FlatMapErrorToSlice[K comparable, V any, T any](hmap map[K]V, f func(K, V) ([]T, error)) ([]T, error) {
+	res := make([]T, 0, len(hmap))
+	for k1, v1 := range hmap {
+		es, err := f(k1, v1)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, es...)
+	}
+	return res, nil
+}
+
+func ToSlice[K comparable, V any, T any](hmap map[K]V, mapFn func(K, V) T) []T {
+	return MapToSlice(hmap, mapFn)
 }
 
 func Filter[K comparable, V any](hmap map[K]V, filter func(k K, v V) bool) map[K]V {
@@ -157,12 +197,21 @@ func Clone[K comparable, V any](hmap map[K]V) map[K]V {
 	return newHMap
 }
 
-func First[K comparable, V any](hmap map[K]V, defaultValue ...tuple.Tuple2[K, V]) tuple.Tuple2[K, V] {
+func Random[K comparable, V any](hmap map[K]V, defaultValue ...tuple.Tuple2[K, V]) (K, V) {
+	if len(hmap) == 0 && len(defaultValue) > 0 {
+		return defaultValue[0].Unpack()
+	}
+	keys := maps.Keys(hmap)
+	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(keys))
+	return keys[index], hmap[keys[index]]
+}
+
+func First[K comparable, V any](hmap map[K]V, defaultValue ...tuple.Tuple2[K, V]) (k K, v V) {
 	for k, v := range hmap {
-		return tuple.Pack2(k, v)
+		return tuple.Pack2(k, v).Unpack()
 	}
 	if len(defaultValue) > 0 {
-		return defaultValue[0]
+		return defaultValue[0].Unpack()
 	}
-	return tuple.Tuple2[K, V]{}
+	return k, v
 }
