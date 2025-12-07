@@ -15,7 +15,6 @@ type Equalable[Self any] interface {
 // GetEqualFunc 获取比较函数，若没有会panic
 func GetEqualFunc[T any]() func(l, r T) bool {
 	t := reflect.TypeFor[T]()
-	fmt.Println(t.String())
 	switch {
 	case t.Implements(reflect.TypeFor[Equalable[T]]()):
 		return func(l, r T) bool {
