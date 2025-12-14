@@ -1,8 +1,7 @@
 package stlmaps
 
 import (
-	"math/rand"
-	"time"
+	"math/rand/v2"
 
 	"golang.org/x/exp/maps"
 
@@ -202,7 +201,7 @@ func Random[K comparable, V any](hmap map[K]V, defaultValue ...tuple.Tuple2[K, V
 		return defaultValue[0].Unpack()
 	}
 	keys := maps.Keys(hmap)
-	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(keys))
+	index := rand.IntN(len(keys))
 	return keys[index], hmap[keys[index]]
 }
 

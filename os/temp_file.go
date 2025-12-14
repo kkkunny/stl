@@ -2,11 +2,10 @@ package stlos
 
 import (
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	stlbasic "github.com/kkkunny/stl/value"
 )
@@ -18,11 +17,10 @@ const (
 
 // RandomTempFilePath 随机一个缓存文件地址
 func RandomTempFilePath(prefix string) (string, error) {
-	rander := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		var nameBuffer strings.Builder
 		for i := 0; i < randomNameLength; i++ {
-			num := rune(rander.Intn(52))
+			num := rune(rand.IntN(52))
 			char := stlbasic.Ternary(num < 26, 'a'+num, 'A'+num-26)
 			nameBuffer.WriteRune(char)
 		}

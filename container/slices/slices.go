@@ -2,9 +2,8 @@ package stlslices
 
 import (
 	"cmp"
-	"math/rand"
+	"math/rand/v2"
 	"slices"
-	"time"
 )
 
 func Map[T, F any](slice []T, f func(i int, e T) F) []F {
@@ -221,7 +220,7 @@ func Or[T comparable](l, r []T) []T {
 func Shuffle[T any](slice []T) []T {
 	res := make([]T, len(slice))
 	copy(res, slice)
-	rand.New(rand.NewSource(time.Now().UnixNano())).Shuffle(len(slice), func(i, j int) {
+	rand.Shuffle(len(slice), func(i, j int) {
 		res[i], res[j] = res[j], res[i]
 	})
 	return res
@@ -237,7 +236,7 @@ func ToMap[T any, K comparable, V any](slice []T, mapFn func(T) (K, V)) map[K]V 
 }
 
 func Random[T any](slice []T) T {
-	index := rand.New(rand.NewSource(time.Now().UnixNano())).Intn(len(slice))
+	index := rand.IntN(len(slice))
 	return slice[index]
 }
 
