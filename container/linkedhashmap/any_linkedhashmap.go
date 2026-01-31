@@ -11,8 +11,8 @@ import (
 	stliter "github.com/kkkunny/stl/container/iter"
 	stlmaps "github.com/kkkunny/stl/container/maps"
 	"github.com/kkkunny/stl/container/tuple"
+	"github.com/kkkunny/stl/generic/list"
 	json2 "github.com/kkkunny/stl/internal/json"
-	"github.com/kkkunny/stl/list"
 )
 
 type _AnyLinkedHashMap[K, V any] struct {

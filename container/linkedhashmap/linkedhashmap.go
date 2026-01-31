@@ -3,7 +3,7 @@ package linkedhashmap
 import (
 	"github.com/kkkunny/stl/container/hashmap"
 	"github.com/kkkunny/stl/container/tuple"
-	"github.com/kkkunny/stl/list"
+	"github.com/kkkunny/stl/generic/list"
 )
 
 type LinkedHashMap[K, V any] interface {
