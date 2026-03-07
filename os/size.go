@@ -84,7 +84,7 @@ func (s Size) ToString(u UnitType) string {
 			return fmt.Sprintf("%.2f %s", float64(s)/float64(values[i]), names[i])
 		}
 	}
-	return ""
+	return fmt.Sprintf("0 %s", names[0])
 }
 
 func (s Size) String() string {
