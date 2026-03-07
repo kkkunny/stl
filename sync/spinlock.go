@@ -21,6 +21,7 @@ func spin(cond func() bool) {
 }
 
 // SpinLock 自旋锁
+// 避免线程上下文切换带来的开销，适用于锁竞争不激烈且锁定时间非常短的场景
 type SpinLock struct {
 	flag atomic.Bool
 }
