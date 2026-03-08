@@ -188,5 +188,7 @@ func (l *ReentrantRWLock) RUnlock() {
 	l.rownersLocker.Lock()
 	delete(l.rowners, gid)
 	l.rownersLocker.Unlock()
-	l.locker.locker.(RWLocker).RUnlock()
+	if l.locker.owner.Load() != int64(gid) {
+		l.locker.locker.(RWLocker).RUnlock()
+	}
 }
