@@ -52,16 +52,16 @@ func As[From, To any](v From) To {
 	return *(*To)(unsafe.Pointer(&v))
 }
 
-// Ternary 三目运算
-func Ternary[T any](cond bool, t, f T) T {
+// If 三目运算
+func If[T any](cond bool, t, f T) T {
 	if cond {
 		return t
 	}
 	return f
 }
 
-// TernaryAction 三目运算行为
-func TernaryAction[T any](cond bool, t, f func() T) T {
+// IfLazy 三目运算行为
+func IfLazy[T any](cond bool, t, f func() T) T {
 	if cond {
 		return t()
 	}

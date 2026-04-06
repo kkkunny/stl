@@ -21,7 +21,7 @@ func RandomTempFilePath(prefix string) (string, error) {
 		var nameBuffer strings.Builder
 		for i := 0; i < randomNameLength; i++ {
 			num := rune(rand.IntN(52))
-			char := stlbasic.Ternary(num < 26, 'a'+num, 'A'+num-26)
+			char := stlbasic.If(num < 26, 'a'+num, 'A'+num-26)
 			nameBuffer.WriteRune(char)
 		}
 		var name string
