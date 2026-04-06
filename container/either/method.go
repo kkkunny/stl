@@ -1,51 +1,37 @@
 package either
 
-func (self *Either[L, R]) init() {
-	if self.left != nil {
-		return
-	}
-	left := true
-	self.left = &left
-	var l L
-	self.data = l
+func (e Either[L, R]) TryLeft() (L, bool) {
+	return e.l, !e.right
 }
 
-func (self Either[L, R]) Left() (res L, ok bool) {
-	self.init()
-
-	if !*self.left {
-		return
-	}
-	return self.data.(L), true
+func (e Either[L, R]) Left() L {
+	return e.l
 }
 
-func (self Either[L, R]) Right() (res R, ok bool) {
-	self.init()
-
-	if *self.left {
-		return
-	}
-	return self.data.(R), true
+func (e Either[L, R]) TryRight() (R, bool) {
+	return e.r, e.right
 }
 
-func (self Either[L, R]) IsLeft() bool {
-	self.init()
-	return *self.left
+func (e Either[L, R]) Right() R {
+	return e.r
 }
 
-func (self Either[L, R]) IsRight() bool {
-	self.init()
-	return !*self.left
+func (e Either[L, R]) IsLeft() bool {
+	return !e.right
 }
 
-func (self *Either[L, R]) SetLeft(v L) {
-	left := true
-	self.left = &left
-	self.data = v
+func (e Either[L, R]) IsRight() bool {
+	return e.right
 }
 
-func (self *Either[L, R]) SetRight(v R) {
-	left := false
-	self.left = &left
-	self.data = v
+func (e *Either[L, R]) SetLeft(v L) L {
+	bak := e.l
+	e.l = v
+	return bak
+}
+
+func (e *Either[L, R]) SetRight(v R) R {
+	bak := e.r
+	e.r = v
+	return bak
 }

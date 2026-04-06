@@ -2,10 +2,10 @@ package either
 
 import "github.com/kkkunny/stl/clone"
 
-func (self Either[L, R]) Clone() Either[L, R] {
-	self.init()
+func (e Either[L, R]) Clone() Either[L, R] {
 	return Either[L, R]{
-		left: self.left,
-		data: clone.Clone(self.data),
+		right: e.right,
+		l:     clone.Clone(e.l),
+		r:     clone.Clone(e.r),
 	}
 }

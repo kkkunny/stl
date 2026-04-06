@@ -1,22 +1,21 @@
 package either
 
 type Either[L, R any] struct {
-	left *bool
-	data any
+	right bool
+	l     L
+	r     R
 }
 
 func Left[L, R any](v L) Either[L, R] {
-	left := true
 	return Either[L, R]{
-		left: &left,
-		data: v,
+		right: false,
+		l:     v,
 	}
 }
 
 func Right[L, R any](v R) Either[L, R] {
-	left := false
 	return Either[L, R]{
-		left: &left,
-		data: v,
+		right: true,
+		r:     v,
 	}
 }

@@ -2,12 +2,10 @@ package either
 
 import "fmt"
 
-func (self Either[L, R]) String() string {
-	self.init()
-
-	if self.IsLeft() {
-		return fmt.Sprintf("%v", self.data.(L))
+func (e Either[L, R]) String() string {
+	if e.IsLeft() {
+		return fmt.Sprintf("%v", e.l)
 	} else {
-		return fmt.Sprintf("%v", self.data.(R))
+		return fmt.Sprintf("%v", e.r)
 	}
 }

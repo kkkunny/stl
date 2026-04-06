@@ -4,12 +4,10 @@ import (
 	stlbasic "github.com/kkkunny/stl/hash"
 )
 
-func (self Either[L, R]) Hash() uint64 {
-	self.init()
-
-	if self.IsLeft() {
-		return stlbasic.Hash(self.data.(L))
+func (e Either[L, R]) Hash() uint64 {
+	if !e.right {
+		return stlbasic.Hash(e.l)
 	} else {
-		return stlbasic.Hash(self.data.(R))
+		return stlbasic.Hash(e.r)
 	}
 }

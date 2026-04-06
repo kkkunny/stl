@@ -2,16 +2,15 @@ package either
 
 import (
 	stlbasic "github.com/kkkunny/stl/cmp"
-	"github.com/kkkunny/stl/container/tuple"
 )
 
-func (self Either[L, R]) Equal(dst Either[L, R]) bool {
-	self.init()
-	dst.init()
-
-	if self.IsLeft() {
-		return stlbasic.Equal(tuple.Pack2(self.Left()), tuple.Pack2(dst.Left()))
+func (e Either[L, R]) Equal(dst Either[L, R]) bool {
+	if e.right != dst.right {
+		return false
+	}
+	if !e.right {
+		return stlbasic.Equal(e.l, dst.l)
 	} else {
-		return stlbasic.Equal(tuple.Pack2(self.Right()), tuple.Pack2(dst.Right()))
+		return stlbasic.Equal(e.r, dst.r)
 	}
 }
