@@ -71,3 +71,33 @@ loop:
 	}
 	return v.Interface().(T)
 }
+
+func Names(enum any) (names []string) {
+	t := reflect.ValueOf(enum).Type()
+	if t.Kind() != reflect.Struct {
+		panic("expect a struct type")
+	}
+
+	names = make([]string, t.NumField())
+
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		names[i] = f.Name
+	}
+	return names
+}
+
+func Values[T any](enum any) (values []T) {
+	v := reflect.ValueOf(enum)
+	if v.Type().Kind() != reflect.Struct {
+		panic("expect a struct type")
+	}
+
+	values = make([]T, v.NumField())
+
+	for i := 0; i < v.NumField(); i++ {
+		fv := v.Field(i)
+		values[i] = fv.Interface().(T)
+	}
+	return values
+}
