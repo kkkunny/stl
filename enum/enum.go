@@ -101,3 +101,19 @@ func Values[T any](enum any) (values []T) {
 	}
 	return values
 }
+
+func Name2Value[T any](enum any) map[string]T {
+	v := reflect.ValueOf(enum)
+	t := v.Type()
+	if t.Kind() != reflect.Struct {
+		panic("expect a struct type")
+	}
+
+	res := make(map[string]T, t.NumField())
+
+	for i := 0; i < t.NumField(); i++ {
+		f, fv := t.Field(i), v.Field(i)
+		res[f.Name] = fv.Interface().(T)
+	}
+	return res
+}
