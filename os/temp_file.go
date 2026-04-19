@@ -59,6 +59,10 @@ type TempFile struct {
 	*os.File
 }
 
+func (f *TempFile) Path() string {
+	return f.path
+}
+
 func (f *TempFile) Close() error {
 	if err := f.File.Close(); err != nil {
 		return err
