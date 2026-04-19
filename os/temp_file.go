@@ -16,7 +16,7 @@ const (
 )
 
 // RandomTempFilePath 随机一个缓存文件地址
-func RandomTempFilePath(prefix string) (string, error) {
+func RandomTempFilePath(prefix, ext string) (string, error) {
 	for {
 		var nameBuffer strings.Builder
 		for i := 0; i < randomNameLength; i++ {
@@ -26,9 +26,12 @@ func RandomTempFilePath(prefix string) (string, error) {
 		}
 		var name string
 		if prefix != "" {
-			name = fmt.Sprintf("%s_%s.tmp", prefix, nameBuffer.String())
+			name = fmt.Sprintf("%s_%s", prefix, nameBuffer.String())
 		} else {
-			name = fmt.Sprintf("%s.tmp", nameBuffer.String())
+			name = nameBuffer.String()
+		}
+		if ext != "" {
+			name += "." + ext
 		}
 		path := filepath.Join(os.TempDir(), name)
 		exist, err := Exist(path)
@@ -42,8 +45,8 @@ func RandomTempFilePath(prefix string) (string, error) {
 }
 
 // CreateTempFile 创建一个缓存文件
-func CreateTempFile(prefix string) (string, *os.File, error) {
-	path, err := RandomTempFilePath(prefix)
+func CreateTempFile(prefix, ext string) (string, *os.File, error) {
+	path, err := RandomTempFilePath(prefix, ext)
 	if err != nil {
 		return "", nil, err
 	}
@@ -71,8 +74,8 @@ func (f *TempFile) Close() error {
 }
 
 // CreateTempFileWithCloser 创建一个带自动删除的缓存文件
-func CreateTempFileWithCloser(prefix string) (*TempFile, error) {
-	path, file, err := CreateTempFile(prefix)
+func CreateTempFileWithCloser(prefix, ext string) (*TempFile, error) {
+	path, file, err := CreateTempFile(prefix, ext)
 	if err != nil {
 		return nil, err
 	}
