@@ -125,6 +125,12 @@ func Sort[T cmp.Ordered](slice []T, reverse ...bool) []T {
 	return slice
 }
 
+func AsAny[T any](slice []T) []any {
+	return Map(slice, func(_ int, e T) any {
+		return any(e)
+	})
+}
+
 func As[T any, F any](slice []T) []F {
 	return Map(slice, func(_ int, e T) F {
 		return any(e).(F)
