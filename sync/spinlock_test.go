@@ -34,18 +34,22 @@ func TestSpinLock_Lock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.Lock()
 		defer locker.Unlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.Lock()
 		defer locker.Unlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "12")
@@ -56,18 +60,22 @@ func TestSpinRWLock_Lock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.Lock()
 		defer locker.Unlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.Lock()
 		defer locker.Unlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "12")
@@ -78,18 +86,22 @@ func TestSpinRWLock_RLock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.RLock()
 		defer locker.RUnlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.RLock()
 		defer locker.RUnlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "21")

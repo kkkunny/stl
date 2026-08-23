@@ -18,12 +18,13 @@ func ProcYield(cycles uint32) {
 	// }
 }
 
-// 系统调用让出 CPU 时间片（sched_yield / SwitchToThread）
+// 让出 goroutine 调度，但当前 goroutine 留在本地 P 的 runq 上（比 Gosched 轻量）
 //
-//go:linkname osyield runtime.osyield
-func osyield()
+//go:linkname goyield runtime.goyield
+func goyield()
 
-// OsYield 让出时间片，但线程仍可运行
-func OsYield() {
-	osyield()
+// GoYield 让出当前 goroutine 的时间片，goroutine 留在本地 P 的 runq 中，很快会被重新调度；
+// 比 runtime.Gosched 轻量（不进全局 runq）
+func GoYield() {
+	goyield()
 }

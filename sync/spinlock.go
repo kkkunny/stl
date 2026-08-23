@@ -10,7 +10,7 @@ import (
 const (
 	activeSpinCount  = 4  // 纯自旋轮次
 	activeSpinSize   = 30 // 每轮执行 PAUSE 指令次数
-	passiveSpinCount = 2  // osyield 轮次
+	passiveSpinCount = 2  // goyield 轮次
 )
 
 // 自旋
@@ -22,10 +22,10 @@ func spin(cond func() bool) {
 			// 不让出任何东西，延迟最低
 			stlruntime.ProcYield(activeSpinSize)
 		} else if iter < activeSpinCount+passiveSpinCount {
-			// ====== 第2级：OS 线程级让出 ======
-			// 线程让出时间片但仍在 run queue，很快会被重新调度
-			// 比 Gosched 轻量：不涉及 goroutine 调度
-			stlruntime.OsYield()
+			// ====== 第2级：goroutine 级让出 ======
+			// 让出当前 goroutine 的时间片，但留在本地 P 的 runq 中，很快会被重新调度
+			// 比 Gosched 轻量：不进全局 runq
+			stlruntime.GoYield()
 		} else {
 			// ====== 第3级：goroutine 级让出 ======
 			// 最后的兜底，防止长时间拿不到锁时饿死其他 goroutine

@@ -14,18 +14,22 @@ func TestReentrantLock_SimpleLock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.Lock()
 		defer locker.Unlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.Lock()
 		defer locker.Unlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "12")
@@ -47,18 +51,22 @@ func TestReentrantRWLock_SimpleLock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.Lock()
 		defer locker.Unlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.Lock()
 		defer locker.Unlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "12")
@@ -80,18 +88,22 @@ func TestReentrantRWLock_SimpleRLock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.RLock()
 		defer locker.RUnlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.RLock()
 		defer locker.RUnlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "21")
@@ -114,20 +126,24 @@ func TestReentrantRWLock_DowngradeLock(t *testing.T) {
 	var s strings.Builder
 
 	var wg sync.WaitGroup
-	wg.Go(func() {
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		locker.Lock()
 		locker.RLock()
 		defer locker.RUnlock()
 		defer locker.Unlock()
 		time.Sleep(time.Millisecond * 2)
 		s.WriteString("1")
-	})
-	wg.Go(func() {
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
 		time.Sleep(time.Millisecond)
 		locker.Lock()
 		defer locker.Unlock()
 		s.WriteString("2")
-	})
+	}()
 	wg.Wait()
 
 	stltest.AssertEq(t, s.String(), "12")
