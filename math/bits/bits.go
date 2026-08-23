@@ -39,6 +39,9 @@ func (self Bits) Length() uint {
 }
 
 func (self Bits) Equal(dst Bits) bool {
+	if len(self) != len(dst) {
+		return false
+	}
 	for i := 0; i < len(self); i++ {
 		if self[i] != dst[i] {
 			return false
@@ -120,6 +123,9 @@ func (self Bits) Complement() Bits {
 }
 
 func (self Bits) SignedInteger() int64 {
+	if len(self) == 0 {
+		return 0
+	}
 	neg := self[0]
 
 	if neg {
@@ -145,8 +151,4 @@ func (self Bits) UnsignedInteger() uint64 {
 		}
 	}
 	return num
-}
-
-func (self Bits) Not() {
-
 }

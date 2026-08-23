@@ -82,13 +82,12 @@ func (self *_ConcurrentMap[K, V]) Iterator() stliter.Iterator[tuple.Tuple2[K, V]
 }
 
 func (self *_ConcurrentMap[K, V]) Iter2() iter.Seq2[K, V] {
-	kvs := self.data.IterBuffered()
 	return func(yield func(K, V) bool) {
-		kv, ok := <-kvs
-		if !ok {
-			return
+		for kv := range self.data.IterBuffered() {
+			if !yield(kv.Key, kv.Val) {
+				return
+			}
 		}
-		yield(kv.Key, kv.Val)
 	}
 }
 

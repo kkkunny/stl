@@ -103,9 +103,13 @@ func (l *SpinRWLock) TryRLock() bool {
 }
 
 func (l *SpinRWLock) RUnlock() {
-	v := l.locker.flag.Load()
-	if v <= 0 {
-		panic("sync: RUnlock of unlocked RWLock")
+	for {
+		v := l.locker.flag.Load()
+		if v <= 0 {
+			panic("sync: RUnlock of unlocked RWLock")
+		}
+		if l.locker.flag.CompareAndSwap(v, v-1) {
+			return
+		}
 	}
-	l.locker.flag.Add(-1)
 }

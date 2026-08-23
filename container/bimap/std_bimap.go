@@ -212,7 +212,11 @@ func (self *_StdBiMap[K, V]) MarshalJSON() ([]byte, error) {
 	}
 	for i, p := range self.KeyValues() {
 		k, v := p.Unpack()
-		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", k))
+		kb, err := json2.MarshalKey(k)
+		if err != nil {
+			return nil, err
+		}
+		_, err = buf.Write(kb)
 		if err != nil {
 			return nil, err
 		}

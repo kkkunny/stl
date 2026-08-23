@@ -112,7 +112,12 @@ func (self *_SwissTable[K, V]) MarshalJSON() ([]byte, error) {
 	}
 	var i int
 	self.data.Iter(func(k K, v V) bool {
-		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", k))
+		var kb []byte
+		kb, err = json2.MarshalKey(k)
+		if err != nil {
+			return true
+		}
+		_, err = buf.Write(kb)
 		if err != nil {
 			return true
 		}

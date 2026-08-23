@@ -106,15 +106,14 @@ func getRuntimeCloneFunc(t reflect.Type) (func(v any) any, bool) {
 		}, true
 	case reflect.Slice:
 		et := t.Elem()
-		length := t.Len()
 		elemFn, ok := getCloneFunc(et, true)
 		if !ok {
 			return nil, false
 		}
 		return func(v any) any {
 			vv := reflect.ValueOf(v)
-			newVal := reflect.MakeSlice(et, length, vv.Cap())
-			for i := 0; i < length; i++ {
+			newVal := reflect.MakeSlice(t, vv.Len(), vv.Cap())
+			for i := 0; i < vv.Len(); i++ {
 				elem := reflect.ValueOf(elemFn(vv.Index(i).Interface()))
 				newVal.Index(i).Set(elem)
 			}
@@ -154,7 +153,7 @@ func getRuntimeCloneFunc(t reflect.Type) (func(v any) any, bool) {
 			}
 		}
 		return func(v any) any {
-			vv := reflect.ValueOf(t)
+			vv := reflect.ValueOf(v)
 			newVal := reflect.New(t)
 			for i := 0; i < length; i++ {
 				field := reflect.ValueOf(fieldFns[i](vv.Field(i).Interface()))

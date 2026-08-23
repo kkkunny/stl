@@ -133,3 +133,25 @@ func TestSwissTable_UnmarshalJSON(t *testing.T) {
 	err = json.Unmarshal(data, hm2)
 	stltest.AssertEq(t, hm1, hm2)
 }
+
+func TestSwissTable_MarshalJSON_NonStringKey(t *testing.T) {
+	hm := _NewSwissTableWith[int, int](1, 1)
+	data, err := json.Marshal(hm)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertEq(t, string(data), "{\"1\":1}")
+	hm2 := _NewSwissTableWith[int, int]()
+	err = json.Unmarshal(data, hm2)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertEq(t, hm, hm2)
+}
+
+func TestSwissTable_MarshalJSON_KeyEscape(t *testing.T) {
+	hm := _NewSwissTableWith[string, int]("a\"b", 1)
+	data, err := json.Marshal(hm)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertEq(t, string(data), "{\"a\\\"b\":1}")
+	hm2 := _NewSwissTableWith[string, int]()
+	err = json.Unmarshal(data, hm2)
+	stltest.AssertEq(t, err, nil)
+	stltest.AssertEq(t, hm, hm2)
+}

@@ -103,7 +103,11 @@ func (self *_StdLinkedHashMap[K, V]) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	for i, p := range self.KeyValues() {
-		_, err = buf.WriteString(fmt.Sprintf("\"%+v\"", p.E1()))
+		kb, err := json2.MarshalKey(p.E1())
+		if err != nil {
+			return nil, err
+		}
+		_, err = buf.Write(kb)
 		if err != nil {
 			return nil, err
 		}

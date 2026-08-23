@@ -53,7 +53,7 @@ func LatestFunc[F any](fn F) F {
 			return eqFn(inCaches[i], newIns[i])
 		})
 		if eq {
-			return oldOuts
+			return outCaches
 		}
 
 		outs := f.Call(args)

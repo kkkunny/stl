@@ -106,3 +106,32 @@ func TestSpinRWLock_RLock(t *testing.T) {
 
 	stltest.AssertEq(t, s.String(), "21")
 }
+
+func TestSpinRWLock_RUnlock_Concurrent(t *testing.T) {
+	locker := NewSpinRWLock()
+	locker.RLock()
+	locker.RLock()
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		locker.RUnlock()
+	}()
+	go func() {
+		defer wg.Done()
+		locker.RUnlock()
+	}()
+	wg.Wait()
+
+	locker.Lock()
+	locker.Unlock()
+}
+
+func TestSpinRWLock_RUnlock_Panic(t *testing.T) {
+	locker := NewSpinRWLock()
+	defer func() {
+		stltest.AssertNotEq(t, recover(), nil)
+	}()
+	locker.RUnlock()
+}

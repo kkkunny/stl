@@ -120,6 +120,16 @@ func TestConcurrentMap_String(t *testing.T) {
 	stltest.AssertNotEq(t, hm.String(), "")
 }
 
+func TestConcurrentMap_Iter2(t *testing.T) {
+	hm := _NewConcurrentMapWith[int, int](1, 1, 2, 2, 3, 3)
+	var count int
+	for k, v := range hm.Iter2() {
+		stltest.AssertEq(t, k, v)
+		count++
+	}
+	stltest.AssertEq(t, count, 3)
+}
+
 func TestConcurrentMap_MarshalJSON(t *testing.T) {
 	hm := _NewConcurrentMapWith[string, int]("1", 1)
 	data, err := json.Marshal(hm)

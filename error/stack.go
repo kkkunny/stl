@@ -12,7 +12,6 @@ func GetErrorStackFrames(err error) []stlos.Frame {
 		return nil
 	}
 
-	err = errors.Cause(err)
 	type StackTracer interface {
 		StackTrace() errors.StackTrace
 	}
@@ -24,6 +23,10 @@ func GetErrorStackFrames(err error) []stlos.Frame {
 
 	if e, ok := err.(StackError); ok {
 		return e.StackFrames()
+	}
+
+	if e, ok := err.(interface{ Unwrap() error }); ok {
+		return GetErrorStackFrames(e.Unwrap())
 	}
 
 	return nil
